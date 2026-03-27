@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPSS Takip - Çalışma Yolculuğunuz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --warm-dark: #3d3228;
+            --warm-brown: #7d5a3f;
+            --warm-tan: #b8905f;
+            --warm-cream: #e6d4b8;
+            --warm-light: #f5ede0;
+            --warm-orange: #d97449;
+            --warm-peach: #e8a87c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--warm-light) 0%, var(--warm-cream) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background: rgba(61, 50, 40, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--warm-peach);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "📚";
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--warm-cream);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: var(--warm-peach);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            color: var(--warm-dark);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--warm-brown);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .hero-image {
+            background: rgba(255, 255, 255, 0.6);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stats-preview {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: var(--warm-light);
+            border-radius: 10px;
+            border-left: 4px solid var(--warm-orange);
+        }
+
+        .stat-label {
+            color: var(--warm-brown);
+            font-weight: 600;
+        }
+
+        .stat-value {
+            color: var(--warm-orange);
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--warm-orange);
+            color: white;
+            box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #c25f35;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(217, 116, 73, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--warm-brown);
+            border: 2px solid var(--warm-brown);
+        }
+
+        .btn-secondary:hover {
+            background: var(--warm-brown);
+            color: white;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--warm-cream);
+            border: 2px solid var(--warm-cream);
+        }
+
+        .btn-ghost:hover {
+            background: var(--warm-cream);
+            color: var(--warm-dark);
+        }
+
+        /* Features Section */
+        .features {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 4rem 2rem;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            color: var(--warm-dark);
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--warm-brown);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .modal-content h2 {
+            color: var(--warm-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--warm-brown);
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--warm-cream);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--warm-orange);
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+
+        .form-footer a {
+            color: var(--warm-orange);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">KPSS Takip</div>
+            <ul class="nav-links">
+                <li><a href="#anasayfa">Ana Sayfa</a></li>
+                <li><a href="#ozellikler">Özellikler</a></li>
+                <li><a href="#hakkimizda">Hakkımızda</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <button class="btn btn-ghost" onclick="openModal('login')">Giriş Yap</button>
+                <button class="btn btn-primary" onclick="openModal('register')">Kayıt Ol</button>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>KPSS Yolculuğunuzda Yanınızdayız</h1>
+            <p>Her gün attığınız adımları takip edin, ilerlemenizi görün, hedefinize ulaşın. Günlük soru çözümlerinizi ve deneme sonuçlarınızı kolayca kaydedin.</p>
+            <div>
+                <button class="btn btn-primary" onclick="openModal('register')" style="margin-right: 1rem;">Hemen Başla</button>
+                <button class="btn btn-secondary">Daha Fazla Bilgi</button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="stats-preview">
+                <h3 style="color: var(--warm-brown); margin-bottom: 1.5rem; text-align: center;">Bugünkü İlerlemeniz</h3>
+                <div class="stat-item">
+                    <span class="stat-label">Türkçe</span>
+                    <span class="stat-value">25 soru</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Matematik</span>
+                    <span class="stat-value">20 soru</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Tarih</span>
+                    <span class="stat-value">15 soru</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Coğrafya</span>
+                    <span class="stat-value">18 soru</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="ozellikler">
+        <div class="features-container">
+            <h2>Neden KPSS Takip?</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Günlük Takip</h3>
+                    <p>Her ders için çözdüğünüz soruları günlük olarak kaydedin ve ilerlemenizi görün.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Deneme Yönetimi</h3>
+                    <p>Deneme sınavlarınızı kaydedin, net sayılarınızı takip edin, gelişiminizi analiz edin.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>İstatistikler</h3>
+                    <p>Detaylı grafikler ve analizlerle çalışma verilerinizi görselleştirin.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Hedef Belirleme</h3>
+                    <p>Günlük ve haftalık hedefler koyun, motivasyonunuzu yüksek tutun.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('login')">&times;</button>
+            <h2>Giriş Yap</h2>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" required placeholder="ornek@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Giriş Yap</button>
+                <div class="form-footer">
+                    Hesabınız yok mu? <a href="#" onclick="switchModal('login', 'register')">Kayıt Olun</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('register')">&times;</button>
+            <h2>Kayıt Ol</h2>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" required placeholder="Adınız Soyadınız">
+                </div>
+                <div class="form-group">
+                    <label>E-posta</label>
+                    <input type="email" required placeholder="ornek@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <input type="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Kayıt Ol</button>
+                <div class="form-footer">
+                    Zaten hesabınız var mı? <a href="#" onclick="switchModal('register', 'login')">Giriş Yapın</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.classList.add('active');
+        }
+
+        function closeModal(type) {
+            const modal = document.getElementById(type + 'Modal');
+            modal.classList.remove('active');
+        }
+
+        function switchModal(from, to) {
+            closeModal(from);
+            openModal(to);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            alert('Giriş yapıldı! Dashboard sayfasına yönlendiriliyorsunuz...');
+            closeModal('login');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+            switchModal('register', 'login');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>
