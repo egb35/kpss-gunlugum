@@ -484,10 +484,8 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            alert('Giriş yapıldı! Dashboard sayfasına yönlendiriliyorsunuz...');
-            closeModal('login');
+            window.location.href = 'dashboard.html';
         }
-
         function handleRegister(e) {
             e.preventDefault();
             alert('Kayıt başarılı! Giriş yapabilirsiniz.');
