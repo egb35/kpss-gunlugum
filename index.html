@@ -13,148 +13,178 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
-        .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; align-items: center; padding: 4rem; gap: 4rem; max-width: 1400px; margin: 0 auto; }
-        .hero-content h1 { font-size: 3.5rem; color: var(--warm-dark); margin-bottom: 1.5rem; line-height: 1.2; }
-        .hero-content p { font-size: 1.3rem; color: var(--warm-brown); margin-bottom: 2rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
-        .stat-item { text-align: center; }
-        .stat-item h3 { font-size: 3rem; color: var(--warm-orange); font-weight: bold; }
-        .stat-item p { color: var(--warm-brown); margin-top: 0.5rem; }
-        .auth-card { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .auth-card h2 { color: var(--warm-dark); margin-bottom: 2rem; text-align: center; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--warm-dark); }
+        .navbar { position: fixed; top: 0; width: 100%; background: rgba(61, 50, 40, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--warm-cream); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--warm-peach); }
+        .login-btn { background: var(--warm-orange); color: white; padding: 0.5rem 1.5rem; border-radius: 25px; border: none; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .login-btn:hover { background: #c25f35; transform: translateY(-2px); }
+        .hero { min-height: 100vh; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); display: flex; align-items: center; justify-content: center; padding: 6rem 2rem 2rem; }
+        .hero-content { max-width: 1200px; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .hero-text h1 { font-size: 3.5rem; color: var(--warm-dark); margin-bottom: 1.5rem; line-height: 1.2; }
+        .hero-text p { font-size: 1.3rem; color: var(--warm-brown); margin-bottom: 2rem; line-height: 1.6; }
+        .cta-buttons { display: flex; gap: 1rem; }
+        .cta-btn { padding: 1rem 2rem; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .cta-primary { background: var(--warm-orange); color: white; }
+        .cta-primary:hover { background: #c25f35; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(217, 116, 73, 0.3); }
+        .cta-secondary { background: white; color: var(--warm-orange); border: 2px solid var(--warm-orange); }
+        .cta-secondary:hover { background: var(--warm-orange); color: white; }
+        .hero-image { text-align: center; font-size: 15rem; }
+        .features { padding: 5rem 2rem; background: white; }
+        .features-content { max-width: 1200px; margin: 0 auto; }
+        .features-content h2 { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: var(--warm-dark); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .feature-card { padding: 2rem; border-radius: 15px; background: var(--warm-light); transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-10px); }
+        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .feature-card h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.5rem; }
+        .feature-card p { color: var(--warm-brown); line-height: 1.6; }
+        .stats { padding: 5rem 2rem; background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; }
+        .stats-content { max-width: 1200px; margin: 0 auto; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; text-align: center; }
+        .stat-number { font-size: 3.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .stat-label { font-size: 1.2rem; opacity: 0.9; }
+        footer { background: var(--warm-dark); color: var(--warm-cream); padding: 3rem 2rem; }
+        .footer-content { max-width: 1200px; margin: 0 auto; text-align: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 2.5rem; border-radius: 20px; max-width: 450px; width: 90%; position: relative; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        .close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--warm-brown); }
+        .modal-content h2 { color: var(--warm-dark); margin-bottom: 1.5rem; text-align: center; }
         .form-group { margin-bottom: 1.5rem; }
         .form-group label { display: block; color: var(--warm-brown); font-weight: 600; margin-bottom: 0.5rem; }
         .form-group input { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem; transition: border-color 0.3s; }
         .form-group input:focus { outline: none; border-color: var(--warm-orange); }
         .form-footer { text-align: center; margin-top: 1.5rem; color: #666; }
         .form-footer a { color: var(--warm-orange); text-decoration: none; font-weight: 600; cursor: pointer; }
-        .btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; margin-bottom: 1rem; }
+        .form-footer a:hover { text-decoration: underline; }
+        .btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; margin-bottom: 0.5rem; }
         .btn:hover { background: #c25f35; transform: translateY(-2px); }
-        .btn-secondary { background: var(--warm-tan); }
-        .forgot-password { text-align: center; margin-top: 1rem; }
-        .forgot-password a { color: var(--warm-orange); text-decoration: none; font-size: 0.9rem; cursor: pointer; }
-        .forgot-password a:hover { text-decoration: underline; }
+        .forgot-link { display: block; text-align: center; margin-top: 1rem; font-size: 0.9rem; }
         @media (max-width: 768px) { 
-            .hero { grid-template-columns: 1fr; padding: 2rem 1rem; } 
-            .hero-content h1 { font-size: 2rem; } 
-            .hero-content p { font-size: 1rem; }
+            .hero-content { grid-template-columns: 1fr; } 
+            .hero-text h1 { font-size: 2rem; } 
+            .hero-text p { font-size: 1rem; }
+            .nav-links { display: none; }
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-            .stat-item h3 { font-size: 2rem; }
-            .auth-card { padding: 1.5rem; }
+            .stat-number { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="hero">
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">📚 KPSS Günlüğüm</div>
+            <ul class="nav-links">
+                <li><a href="#anasayfa">Ana Sayfa</a></li>
+                <li><a href="#ozellikler">Özellikler</a></li>
+                <li><a href="#istatistikler">İstatistikler</a></li>
+            </ul>
+            <button class="login-btn" onclick="showLogin()">Giriş Yap</button>
+        </div>
+    </nav>
+
+    <section id="anasayfa" class="hero">
         <div class="hero-content">
-            <h1>📚 KPSS Günlüğüm</h1>
-            <p>KPSS sınavına hazırlananlar için çalışma takip ve motivasyon platformu. Günlük soru takibi, deneme analizi, grup çalışması ve streak sistemi ile hedeflerinize ulaşın!</p>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3>10K+</h3>
-                    <p>Çözülen Soru</p>
+            <div class="hero-text">
+                <h1>KPSS Yolculuğunuzda Yanınızdayız</h1>
+                <p>Günlük çalışma takibi, deneme analizi, grup motivasyonu ve streak sistemi ile KPSS hedeflerinize ulaşın. Tamamen ücretsiz!</p>
+                <div class="cta-buttons">
+                    <button class="cta-btn cta-primary" onclick="showRegister()">Hemen Başla</button>
+                    <button class="cta-btn cta-secondary" onclick="showLogin()">Giriş Yap</button>
                 </div>
-                <div class="stat-item">
-                    <h3>500+</h3>
-                    <p>Kullanıcı</p>
-                </div>
-                <div class="stat-item">
-                    <h3>50+</h3>
-                    <p>Aktif Grup</p>
-                </div>
+            </div>
+            <div class="hero-image">📚</div>
+        </div>
+    </section>
+
+    <section id="ozellikler" class="features">
+        <div class="features-content">
+            <h2>Neden KPSS Günlüğüm?</h2>
+            <div class="features-grid">
+                <div class="feature-card"><div class="feature-icon">📊</div><h3>Günlük Takip</h3><p>Çözdüğünüz soruları günlük olarak kaydedin, ders bazlı ilerlemenizi görün ve hedeflerinize odaklanın.</p></div>
+                <div class="feature-card"><div class="feature-icon">🔥</div><h3>Streak Sistemi</h3><p>Düzenli çalışma alışkanlığı kazanın. Her gün çalışarak streak'inizi artırın ve motivasyonunuzu koruyun.</p></div>
+                <div class="feature-card"><div class="feature-icon">👥</div><h3>Grup Çalışması</h3><p>Arkadaşlarınızla grup kurun, haftalık sıralamada yarışın ve birlikte motive kalın.</p></div>
+                <div class="feature-card"><div class="feature-icon">📈</div><h3>Deneme Analizi</h3><p>Deneme sınavlarınızı kaydedin, netlerinizi takip edin ve gelişim grafiklerinizi görün.</p></div>
+                <div class="feature-card"><div class="feature-icon">🏆</div><h3>Başarı Rozetleri</h3><p>Hedeflerinize ulaştıkça özel rozetler kazanın ve başarılarınızı kutlayın.</p></div>
+                <div class="feature-card"><div class="feature-icon">💯</div><h3>Tamamen Ücretsiz</h3><p>Tüm temel özellikler ücretsiz! Premium ile daha fazla imkan.</p></div>
             </div>
         </div>
+    </section>
 
-        <div class="auth-card" id="authCard">
-            <div id="loginForm">
-                <h2>Giriş Yap</h2>
-                <div class="form-group">
-                    <label>E-posta</label>
-                    <input type="email" id="loginEmail" placeholder="ornek@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Şifre</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••">
-                </div>
-                <button class="btn" onclick="login()">Giriş Yap</button>
-                <div class="forgot-password">
-                    <a onclick="showForgotPassword()">Şifremi Unuttum</a>
-                </div>
-                <div class="form-footer">
-                    Hesabınız yok mu? <a onclick="showRegister()">Kayıt Ol</a>
-                </div>
+    <section id="istatistikler" class="stats">
+        <div class="stats-content">
+            <div class="stats-grid">
+                <div class="stat-item"><div class="stat-number">10K+</div><div class="stat-label">Çözülen Soru</div></div>
+                <div class="stat-item"><div class="stat-number">500+</div><div class="stat-label">Aktif Kullanıcı</div></div>
+                <div class="stat-item"><div class="stat-number">50+</div><div class="stat-label">Çalışma Grubu</div></div>
             </div>
+        </div>
+    </section>
 
-            <div id="registerForm" style="display: none;">
-                <h2>Kayıt Ol</h2>
-                <div class="form-group">
-                    <label>İsim</label>
-                    <input type="text" id="registerName" placeholder="Adınız Soyadınız">
-                </div>
-                <div class="form-group">
-                    <label>E-posta</label>
-                    <input type="email" id="registerEmail" placeholder="ornek@email.com">
-                </div>
-                <div class="form-group">
-                    <label>Şifre</label>
-                    <input type="password" id="registerPassword" placeholder="••••••••">
-                </div>
-                <button class="btn" onclick="register()">Kayıt Ol</button>
-                <div class="form-footer">
-                    Zaten hesabınız var mı? <a onclick="showLogin()">Giriş Yap</a>
-                </div>
-            </div>
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2024 KPSS Günlüğüm. Tüm hakları saklıdır.</p>
+        </div>
+    </footer>
 
-            <div id="forgotPasswordForm" style="display: none;">
-                <h2>Şifremi Unuttum</h2>
-                <p style="text-align: center; color: var(--warm-brown); margin-bottom: 1.5rem;">E-posta adresinizi girin, şifrenizi size gösterelim.</p>
-                <div class="form-group">
-                    <label>E-posta</label>
-                    <input type="email" id="forgotEmail" placeholder="ornek@email.com">
-                </div>
-                <button class="btn" onclick="forgotPassword()">Şifremi Göster</button>
-                <div class="form-footer">
-                    <a onclick="showLogin()">Giriş Sayfasına Dön</a>
-                </div>
-            </div>
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('login')">&times;</button>
+            <h2>Giriş Yap</h2>
+            <div class="form-group"><label>E-posta</label><input type="email" id="loginEmail" placeholder="ornek@email.com"></div>
+            <div class="form-group"><label>Şifre</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
+            <button class="btn" onclick="login()">Giriş Yap</button>
+            <a class="forgot-link" onclick="showForgotPassword()">Şifremi Unuttum</a>
+            <div class="form-footer">Hesabınız yok mu? <a onclick="showRegister()">Kayıt Ol</a></div>
+        </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('register')">&times;</button>
+            <h2>Kayıt Ol</h2>
+            <div class="form-group"><label>İsim</label><input type="text" id="registerName" placeholder="Adınız Soyadınız"></div>
+            <div class="form-group"><label>E-posta</label><input type="email" id="registerEmail" placeholder="ornek@email.com"></div>
+            <div class="form-group"><label>Şifre</label><input type="password" id="registerPassword" placeholder="••••••••"></div>
+            <button class="btn" onclick="register()">Kayıt Ol</button>
+            <div class="form-footer">Zaten hesabınız var mı? <a onclick="showLogin()">Giriş Yap</a></div>
+        </div>
+    </div>
+
+    <div id="forgotModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('forgot')">&times;</button>
+            <h2>Şifremi Unuttum</h2>
+            <p style="text-align: center; color: var(--warm-brown); margin-bottom: 1.5rem;">E-posta adresinizi girin, şifrenizi size gösterelim.</p>
+            <div class="form-group"><label>E-posta</label><input type="email" id="forgotEmail" placeholder="ornek@email.com"></div>
+            <button class="btn" onclick="forgotPassword()">Şifremi Göster</button>
+            <div class="form-footer"><a onclick="showLogin()">Giriş Sayfasına Dön</a></div>
         </div>
     </div>
 
     <script>
-        function showLogin() {
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('forgotPasswordForm').style.display = 'none';
-        }
-
-        function showRegister() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            document.getElementById('forgotPasswordForm').style.display = 'none';
-        }
-
-        function showForgotPassword() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('forgotPasswordForm').style.display = 'block';
-        }
+        function showLogin() { closeAllModals(); document.getElementById('loginModal').classList.add('active'); }
+        function showRegister() { closeAllModals(); document.getElementById('registerModal').classList.add('active'); }
+        function showForgotPassword() { closeAllModals(); document.getElementById('forgotModal').classList.add('active'); }
+        function closeModal(type) { document.getElementById(type + 'Modal').classList.remove('active'); }
+        function closeAllModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
 
         function login() {
             const email = document.getElementById('loginEmail').value.trim();
             const password = document.getElementById('loginPassword').value;
-
-            if (!email || !password) {
-                alert('⚠️ Lütfen tüm alanları doldurun!');
-                return;
-            }
-
+            if (!email || !password) { alert('⚠️ Lütfen tüm alanları doldurun!'); return; }
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const user = users.find(u => u.email === email && u.password === password);
-
             if (user) {
-                if (user.name === 'admin' && password === 'admin2254') {
+                if (user.name === 'admin') {
                     localStorage.setItem('isAdmin', 'true');
                     localStorage.setItem('currentUser', user.name);
                     window.location.href = 'admin.html';
@@ -162,110 +192,56 @@
                     localStorage.setItem('currentUser', user.name);
                     window.location.href = 'dashboard.html';
                 }
-            } else {
-                alert('❌ E-posta veya şifre hatalı!');
-            }
+            } else { alert('❌ E-posta veya şifre hatalı!'); }
         }
 
         function register() {
             const name = document.getElementById('registerName').value.trim();
             const email = document.getElementById('registerEmail').value.trim();
             const password = document.getElementById('registerPassword').value;
-
-            if (!name || !email || !password) {
-                alert('⚠️ Lütfen tüm alanları doldurun!');
-                return;
-            }
-
-            if (password.length < 6) {
-                alert('⚠️ Şifre en az 6 karakter olmalıdır!');
-                return;
-            }
-
+            if (!name || !email || !password) { alert('⚠️ Lütfen tüm alanları doldurun!'); return; }
+            if (password.length < 6) { alert('⚠️ Şifre en az 6 karakter olmalıdır!'); return; }
             const users = JSON.parse(localStorage.getItem('users')) || [];
-
-            if (users.find(u => u.email === email)) {
-                alert('❌ Bu e-posta zaten kayıtlı!');
-                return;
-            }
-
-            if (users.find(u => u.name === name)) {
-                alert('❌ Bu isim zaten kullanılıyor!');
-                return;
-            }
-
+            if (users.find(u => u.email === email)) { alert('❌ Bu e-posta zaten kayıtlı!'); return; }
+            if (users.find(u => u.name === name)) { alert('❌ Bu isim zaten kullanılıyor!'); return; }
             const referralCode = 'REF' + Date.now().toString(36).toUpperCase();
-            const newUser = {
-                name: name,
-                email: email,
-                password: password,
-                createdAt: new Date().toISOString(),
-                isPremium: false,
-                referralCode: referralCode
-            };
-
+            const newUser = { name, email, password, createdAt: new Date().toISOString(), isPremium: false, referralCode };
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('ownedProfilePictures_' + name, JSON.stringify(['default']));
-
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
             if (refCode) {
                 const referrer = users.find(u => u.referralCode === refCode);
                 if (referrer) {
                     const referrerFriends = JSON.parse(localStorage.getItem('friends_' + referrer.name)) || [];
-                    if (!referrerFriends.includes(name)) {
-                        referrerFriends.push(name);
-                        localStorage.setItem('friends_' + referrer.name, JSON.stringify(referrerFriends));
-                    }
+                    if (!referrerFriends.includes(name)) { referrerFriends.push(name); localStorage.setItem('friends_' + referrer.name, JSON.stringify(referrerFriends)); }
                     const newUserFriends = JSON.parse(localStorage.getItem('friends_' + name)) || [];
-                    if (!newUserFriends.includes(referrer.name)) {
-                        newUserFriends.push(referrer.name);
-                        localStorage.setItem('friends_' + name, JSON.stringify(newUserFriends));
-                    }
+                    if (!newUserFriends.includes(referrer.name)) { newUserFriends.push(referrer.name); localStorage.setItem('friends_' + name, JSON.stringify(newUserFriends)); }
                 }
             }
-
             alert('✅ Kayıt başarılı! Giriş yapabilirsiniz.');
             showLogin();
         }
 
         function forgotPassword() {
             const email = document.getElementById('forgotEmail').value.trim();
-
-            if (!email) {
-                alert('⚠️ Lütfen e-posta adresinizi girin!');
-                return;
-            }
-
+            if (!email) { alert('⚠️ Lütfen e-posta adresinizi girin!'); return; }
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const user = users.find(u => u.email === email);
-
-            if (user) {
-                alert(`✅ Şifreniz: ${user.password}\n\nLütfen şifrenizi not alın!`);
-                showLogin();
-            } else {
-                alert('❌ Bu e-posta ile kayıtlı kullanıcı bulunamadı!');
-            }
-        }
-
-        if (localStorage.getItem('currentUser')) {
-            window.location.href = 'dashboard.html';
+            if (user) { alert(`✅ Şifreniz: ${user.password}\n\nLütfen şifrenizi not alın!`); showLogin(); }
+            else { alert('❌ Bu e-posta ile kayıtlı kullanıcı bulunamadı!'); }
         }
 
         const adminExists = (JSON.parse(localStorage.getItem('users')) || []).find(u => u.name === 'admin');
         if (!adminExists) {
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            users.push({
-                name: 'admin',
-                email: 'admin@kpss.com',
-                password: 'admin2254',
-                createdAt: new Date().toISOString(),
-                isPremium: true,
-                referralCode: 'ADMIN'
-            });
+            users.push({ name: 'admin', email: 'admin@kpss.com', password: 'admin2254', createdAt: new Date().toISOString(), isPremium: true, referralCode: 'ADMIN' });
             localStorage.setItem('users', JSON.stringify(users));
         }
+
+        if (localStorage.getItem('currentUser')) window.location.href = 'dashboard.html';
+        document.querySelectorAll('.modal').forEach(modal => { modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });
     </script>
 </body>
 </html>

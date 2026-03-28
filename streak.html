@@ -159,6 +159,9 @@
         function loadLeaderboard() {
             const streakData = [];
             users.forEach(user => {
+                // Admin'i sıralamalara ekleme
+                if (user.name === 'admin') return;
+                
                 const streak = parseInt(localStorage.getItem('streak_' + user.name) || '0');
                 streakData.push({ name: user.name, streak: streak });
             });
