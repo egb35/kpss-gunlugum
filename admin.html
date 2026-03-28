@@ -386,7 +386,8 @@
                     createdAt: user.createdAt,
                     totalQuestions: userTotalQuestions,
                     streak: streak,
-                    isPremium: user.isPremium || false
+                    isPremium: user.isPremium || false,
+                    isTeacher: user.isTeacher || false
                 });
             });
 
@@ -415,7 +416,7 @@
                 const createdDate = new Date(user.createdAt).toLocaleDateString('tr-TR');
                 html += `
                     <tr>
-                        <td><strong>${user.name}</strong> ${user.isPremium ? '<span style="color: gold;">⭐</span>' : ''}</td>
+                        <td><strong>${user.name}</strong> ${user.isPremium ? '<span style="color: gold;">⭐</span>' : ''} ${user.isTeacher ? '<span style="background:#3498db;color:white;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.75rem;margin-left:0.3rem;">👨‍🏫</span>' : ''}</td>
                         <td>${user.email}</td>
                         <td><strong style="color: var(--warm-orange);">${user.totalQuestions.toLocaleString('tr-TR')}</strong></td>
                         <td>🔥 ${user.streak}</td>
@@ -424,6 +425,7 @@
                             <div class="button-group">
                                 <button class="btn btn-primary" onclick="showPasswordModal('${user.name}')" style="background: #3498db;">🔑</button>
                                 <button class="btn btn-gift" onclick="openSendGift('${user.name}')">🎁</button>
+                                <button class="btn" onclick="toggleTeacher('${user.name}')" style="background:${user.isTeacher ? '#e74c3c' : '#3498db'};" title="${user.isTeacher ? 'Öğretmenliği Kaldır' : 'Öğretmen Yap'}">${user.isTeacher ? '👨‍🏫 Kaldır' : '👨‍🏫 Yap'}</button>
                                 <button class="btn btn-danger" onclick="deleteUser('${user.name}')">🗑️</button>
                             </div>
                         </td>
@@ -451,6 +453,19 @@
             localStorage.removeItem('profilePicture_' + username);
 
             showNotification('Kullanıcı başarıyla silindi!', 'success');
+            loadAdminData();
+        }
+
+        function toggleTeacher(username) {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.name === username);
+            if (!user) return;
+            user.isTeacher = !user.isTeacher;
+            localStorage.setItem('users', JSON.stringify(users));
+            const msg = user.isTeacher
+                ? `${username} artık öğretmen! Sınıf oluşturabilir.`
+                : `${username} öğretmen yetkisi kaldırıldı.`;
+            showNotification(msg, user.isTeacher ? 'success' : 'info');
             loadAdminData();
         }
 
