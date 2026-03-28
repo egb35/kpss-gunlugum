@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streak Sıralaması - KPSS Günlüğüm</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
+        header { background: rgba(61, 50, 40, 0.95); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); cursor: pointer; }
+        .logo::before { content: "📚"; font-size: 1.8rem; margin-right: 0.5rem; }
+        .nav-menu { display: flex; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .card-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
+        .rank-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; transition: transform 0.3s; }
+        .rank-item:hover { transform: translateX(5px); }
+        .rank-item.me { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; }
+        .rank-medal { font-size: 2rem; margin-right: 1rem; }
+        .rank-info { flex: 1; display: flex; align-items: center; gap: 1rem; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--warm-orange); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
+        .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" onclick="location.href='dashboard.html'">KPSS Günlüğüm</div>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="friends.html">👥 Arkadaşlar</a></li>
+                <li><a href="groups.html">👨‍👩‍👧‍👦 Gruplar</a></li>
+                <li><a href="streak.html">🔥 Streak</a></li>
+                <li><a href="achievements.html">🏆 Başarılar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>🔥 Streak Sıralaması</h1>
+                <p style="color: var(--warm-brown); margin-top: 0.5rem;">Her gün en az 10 soru çöz ve streakini koru!</p>
+            </div>
+            <div id="streakRanking">
+                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Yükleniyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) window.location.href = 'index.html';
+
+        function loadStreakRanking() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const streaks = [];
+
+            users.forEach(user => {
+                const streak = parseInt(localStorage.getItem('streak_' + user.name) || '0');
+                if (streak > 0) {
+                    streaks.push({ name: user.name, streak: streak });
+                }
+            });
+
+            streaks.sort((a, b) => b.streak - a.streak);
+
+            const container = document.getElementById('streakRanking');
+            
+            if (streaks.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz streak verisi yok.</p>';
+                return;
+            }
+
+            const medals = ['🥇', '🥈', '🥉'];
+            let html = '';
+
+            streaks.forEach((item, index) => {
+                const medal = index < 3 ? medals[index] : `${index + 1}.`;
+                const isMe = item.name === currentUser;
+
+                html += `
+                    <div class="rank-item ${isMe ? 'me' : ''}">
+                        <span class="rank-medal">${medal}</span>
+                        <div class="rank-info">
+                            <div class="avatar">${item.name.charAt(0).toUpperCase()}</div>
+                            <strong>${item.name}</strong>
+                        </div>
+                        <div class="streak-badge">🔥 ${item.streak} gün</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        loadStreakRanking();
+    </script>
+</body>
+</html>

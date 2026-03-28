@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Başarılar - KPSS Günlüğüm</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
+        header { background: rgba(61, 50, 40, 0.95); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); cursor: pointer; }
+        .logo::before { content: "📚"; font-size: 1.8rem; margin-right: 0.5rem; }
+        .nav-menu { display: flex; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .card-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
+        .achievement-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+        .achievement-card { background: var(--warm-light); padding: 2rem; border-radius: 15px; text-align: center; transition: transform 0.3s; }
+        .achievement-card:hover { transform: translateY(-5px); }
+        .achievement-card.locked { opacity: 0.4; }
+        .achievement-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .achievement-title { font-weight: bold; color: var(--warm-dark); margin-bottom: 0.5rem; }
+        .achievement-desc { font-size: 0.9rem; color: var(--warm-brown); }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" onclick="location.href='dashboard.html'">KPSS Günlüğüm</div>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="friends.html">👥 Arkadaşlar</a></li>
+                <li><a href="groups.html">👨‍👩‍👧‍👦 Gruplar</a></li>
+                <li><a href="streak.html">🔥 Streak</a></li>
+                <li><a href="achievements.html">🏆 Başarılar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1>🏆 Başarılar ve Rozetler</h1>
+                <p style="color: var(--warm-brown); margin-top: 0.5rem;">Çalışma hedeflerine ulaş, rozetleri topla!</p>
+            </div>
+            <div class="achievement-grid">
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🔒</div>
+                    <div class="achievement-title">İlk Adım</div>
+                    <div class="achievement-desc">100 soru çöz</div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🔒</div>
+                    <div class="achievement-title">Azimli</div>
+                    <div class="achievement-desc">1000 soru çöz</div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🔒</div>
+                    <div class="achievement-title">Devamlılık</div>
+                    <div class="achievement-desc">7 günlük streak</div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🔒</div>
+                    <div class="achievement-title">Ateş Topu</div>
+                    <div class="achievement-desc">30 günlük streak</div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🔒</div>
+                    <div class="achievement-title">İlk Deneme</div>
+                    <div class="achievement-desc">1 deneme çöz</div>
+                </div>
+                <div class="achievement-card locked">
+                    <div class="achievement-icon">🔒</div>
+                    <div class="achievement-title">Deneme Ustası</div>
+                    <div class="achievement-desc">50 deneme çöz</div>
+                </div>
+            </div>
+            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--warm-light); border-radius: 10px; text-align: center;">
+                <p style="color: var(--warm-brown);"><strong>🚧 Yakında!</strong> Rozetler sistemi şu anda geliştirilme aşamasında. Çalışmaya devam edin, rozetleriniz kaydediliyor!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) window.location.href = 'index.html';
+    </script>
+</body>
+</html>
