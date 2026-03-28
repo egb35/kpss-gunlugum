@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="KPSS sınavına hazırlananlar için günlük soru takibi, deneme analizi, streak sistemi ve çalışma grubu. Motivasyonlu çalışma için ücretsiz platform.">
-    <meta name="keywords" content="KPSS, KPSS hazırlık, soru takibi, deneme analizi, çalışma takibi, KPSS grubu, streak sistemi">
-    <meta name="author" content="KPSS Günlüğüm">
+    <meta name="description" content="YKS sınavına hazırlananlar için günlük soru takibi, deneme analizi, streak sistemi ve çalışma grubu. Motivasyonlu çalışma için ücretsiz platform.">
+    <meta name="keywords" content="YKS, YKS hazırlık, soru takibi, deneme analizi, çalışma takibi, YKS grubu, streak sistemi">
+    <meta name="author" content="YKS Günlüğüm">
     <meta name="robots" content="noindex, nofollow">
-    <meta property="og:title" content="KPSS Günlüğüm - Çalışma Takip Dashboard">
-    <meta property="og:description" content="KPSS sınavına hazırlananlar için günlük soru takibi ve deneme analizi platformu">
+    <meta property="og:title" content="YKS Günlüğüm - Çalışma Takip Dashboard">
+    <meta property="og:description" content="YKS sınavına hazırlananlar için günlük soru takibi ve deneme analizi platformu">
     <meta property="og:type" content="website">
-    <title>KPSS Çalışma Takibi | Günlük Soru Analizi - KPSS Günlüğüm</title>
+    <title>YKS Çalışma Takibi | Günlük Soru Analizi - YKS Günlüğüm</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -57,12 +57,18 @@
         .container { max-width: 1400px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
         .main-content { min-width: 0; }
         .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
-        .tab { padding: 0.8rem 1.5rem; background: transparent; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
-        .tab.mini { font-size: 0.85rem; padding: 0.6rem 1rem; }
-        .tab.active { background: var(--warm-orange); color: white; box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3); }
-        .tab:hover:not(.active) { background: var(--warm-light); }
+        .main-tab { padding: 0.8rem 1.5rem; background: transparent; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
+        .main-tab.mini { font-size: 0.85rem; padding: 0.6rem 1rem; }
+        .main-tab.active { background: var(--warm-orange); color: white; box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3); }
+        .main-tab:hover:not(.active) { background: var(--warm-light); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .main-panel { display: none; }
+        .main-panel.active { display: block; }
+        .deneme-sub-tab { padding: 0.7rem 1.4rem; background: transparent; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
+        .deneme-sub-tab.active { background: var(--warm-orange); color: white; }
+        .deneme-sub-panel { display: none; }
+        .deneme-sub-panel.active { display: block; }
         .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 2rem; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
         .card-title { font-size: 1.5rem; color: var(--warm-dark); display: flex; align-items: center; gap: 0.5rem; }
@@ -110,17 +116,13 @@
         .stat-name { color: var(--warm-brown); font-weight: 600; font-size: 0.9rem; }
         .stat-value { color: var(--warm-orange); font-weight: bold; }
         .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; animation: slideInRight 0.3s; }
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .notification.success { border-left: 5px solid #2ecc71; }
         .notification.error { border-left: 5px solid #e74c3c; }
         .notification.hide { animation: slideOutRight 0.3s; }
         @keyframes slideOutRight { to { opacity: 0; transform: translateX(100px); } }
-        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10001; align-items: center; justify-content: center; }
         .modal.active { display: flex; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; animation: slideUp 0.3s; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
         .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1rem; }
@@ -133,7 +135,6 @@
         .avatar-lock { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; }
         .avatar-use-btn { margin-top: 0.5rem; padding: 0.4rem 1rem; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; width: 100%; }
         .avatar-use-btn:disabled { background: #ccc; cursor: not-allowed; }
-        
         /* Onboarding */
         .onboarding-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 20000; align-items: center; justify-content: center; animation: fadeIn 0.4s; }
         .onboarding-overlay.active { display: flex; }
@@ -153,8 +154,8 @@
         .onboarding-skip { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: var(--warm-tan); font-size: 0.85rem; cursor: pointer; }
         .onboarding-skip:hover { color: var(--warm-brown); }
         @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
-        @media (max-width: 768px) { 
-            .question-entry, .deneme-entry { grid-template-columns: 1fr; } 
+        @media (max-width: 768px) {
+            .question-entry, .deneme-entry { grid-template-columns: 1fr; }
             .button-group { flex-direction: column; }
             nav { flex-direction: column; gap: 1rem; padding: 1rem; }
             .nav-menu { flex-direction: column; gap: 0.5rem; width: 100%; }
@@ -164,7 +165,7 @@
             .card { padding: 1rem; }
             .card-header { flex-direction: column; gap: 1rem; align-items: flex-start; }
             .tabs { flex-wrap: wrap; padding: 0.5rem; }
-            .tab { font-size: 0.85rem; padding: 0.6rem 1rem; }
+            .main-tab { font-size: 0.85rem; padding: 0.6rem 1rem; }
             .subject-filter { justify-content: center; }
             .filter-chip { font-size: 0.85rem; padding: 0.4rem 0.8rem; }
             .date-selector { flex-direction: column; gap: 0.5rem; width: 100%; }
@@ -172,7 +173,6 @@
             .monthly-total .total-number { font-size: 2rem; }
             .stopwatch-display { font-size: 2rem; }
             .stopwatch-buttons { flex-direction: column; }
-            .deneme-entry { grid-template-columns: 1fr; }
             .sidebar { margin-top: 1rem; }
             .profile-popup { right: 0; left: 0; margin: 0 1rem; min-width: auto; }
             .chart-container { height: 300px; }
@@ -199,7 +199,7 @@
 
     <header>
         <nav>
-            <a onclick="goHome()" class="logo">KPSS Günlüğüm</a>
+            <a onclick="goHome()" class="logo">YKS Günlüğüm</a>
             <ul class="nav-menu">
                 <li><a href="friends.html">👥 Arkadaşlar</a></li>
                 <li><a href="groups.html">👨‍👩‍👧‍👦 Gruplar</a></li>
@@ -228,12 +228,13 @@
     <div class="container">
         <div class="main-content">
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('soru')">📊 Soru Takibi</button>
-                <button class="tab" onclick="switchTab('deneme')">📝 Deneme Takibi</button>
-                <button class="tab mini" onclick="switchTab('kronometre')">⏱️ Kronometre</button>
+                <button class="main-tab active" onclick="switchMainTab('tyt', event)">📖 TYT</button>
+                <button class="main-tab" onclick="switchMainTab('ayt', event)">🎯 AYT</button>
+                <button class="main-tab" onclick="switchMainTab('deneme', event)">📝 Deneme</button>
+                <button class="main-tab mini" onclick="switchMainTab('kronometre', event)">⏱️ Kronometre</button>
             </div>
 
-            <div id="kronometre-tab" class="tab-content">
+            <div id="kronometre-panel" class="main-panel">
                 <div class="stopwatch">
                     <h2>⏱️ Kronometre</h2>
                     <div class="stopwatch-display" id="stopwatchDisplay">00:00:00</div>
@@ -245,79 +246,152 @@
                 </div>
             </div>
 
-            <div id="soru-tab" class="tab-content active">
+            <div id="tyt-panel" class="main-panel active">
                 <div class="card">
-                    <div class="card-header"><h2 class="card-title">📝 Bugün Çözdüğüm Sorular</h2></div>
+                    <div class="card-header"><h2 class="card-title">📖 TYT — Bugün Çözdüğüm Sorular</h2></div>
                     <div class="question-entry">
-                        <div class="subject-input"><label>Türkçe</label><input type="number" id="turkce" placeholder="0" min="0"></div>
-                        <div class="subject-input"><label>Matematik</label><input type="number" id="matematik" placeholder="0" min="0"></div>
-                        <div class="subject-input"><label>Tarih</label><input type="number" id="tarih" placeholder="0" min="0"></div>
-                        <div class="subject-input"><label>Coğrafya</label><input type="number" id="cografya" placeholder="0" min="0"></div>
-                        <div class="subject-input"><label>Vatandaşlık</label><input type="number" id="vatandaslik" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Türkçe</label><input type="number" id="tyt_turkce" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Matematik</label><input type="number" id="tyt_mat" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Tarih</label><input type="number" id="tyt_tarih" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Coğrafya</label><input type="number" id="tyt_cografya" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Felsefe</label><input type="number" id="tyt_felsefe" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Din Kültürü</label><input type="number" id="tyt_din" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Fizik</label><input type="number" id="tyt_fizik" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Kimya</label><input type="number" id="tyt_kimya" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Biyoloji</label><input type="number" id="tyt_biyoloji" placeholder="0" min="0"></div>
                     </div>
                     <div class="button-group">
-                        <button class="btn btn-primary btn-full" onclick="saveQuestions()">💾 Ekle (Toplama Yapar)</button>
-                        <button class="btn btn-danger btn-full" onclick="clearTodayQuestions()">🗑️ Bugünü Temizle</button>
+                        <button class="btn btn-primary btn-full" onclick="saveTYT()">💾 TYT Ekle (Toplama Yapar)</button>
+                        <button class="btn btn-danger btn-full" onclick="clearTodayTYT()">🗑️ TYT Bugünü Temizle</button>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="card-header">
-                        <h2 class="card-title">📈 Aylık İlerleme</h2>
+                        <h2 class="card-title">📈 TYT Aylık İlerleme</h2>
                         <div class="date-selector">
-                            <select id="monthSelect" onchange="updateChart()">
+                            <select id="tytMonthSelect" onchange="updateTYTChart()">
                                 <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option><option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option><option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option><option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
                             </select>
-                            <select id="yearSelect" onchange="updateChart()">
+                            <select id="tytYearSelect" onchange="updateTYTChart()">
                                 <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
                             </select>
                         </div>
                     </div>
-                    <div class="monthly-total"><h3>Bu Ay Toplam</h3><div class="total-number" id="monthlyTotal">0</div><p style="margin-top: 0.5rem; opacity: 0.9;">soru çözüldü</p></div>
-                    <div class="subject-filter">
-                        <button class="filter-chip active" onclick="filterSubject('all')">Tümü</button>
-                        <button class="filter-chip" onclick="filterSubject('turkce')">Türkçe</button>
-                        <button class="filter-chip" onclick="filterSubject('matematik')">Matematik</button>
-                        <button class="filter-chip" onclick="filterSubject('tarih')">Tarih</button>
-                        <button class="filter-chip" onclick="filterSubject('cografya')">Coğrafya</button>
-                        <button class="filter-chip" onclick="filterSubject('vatandaslik')">Vatandaşlık</button>
-                    </div>
-                    <div class="chart-container"><canvas id="questionsChart"></canvas></div>
+                    <div class="monthly-total"><h3>Bu Ay TYT Toplam</h3><div class="total-number" id="tytMonthlyTotal">0</div><p style="margin-top:0.5rem;opacity:0.9;">soru çözüldü</p></div>
+                    <div class="subject-filter" id="tytFilterChips"></div>
+                    <div class="chart-container"><canvas id="tytChart"></canvas></div>
                 </div>
             </div>
 
-            <div id="deneme-tab" class="tab-content">
-                <div class="card">
-                    <div class="card-header"><h2 class="card-title">📝 Deneme Sonucu Ekle</h2></div>
-                    <div class="deneme-entry">
-                        <div class="input-group"><label>✅ Doğru Sayısı</label><input type="number" id="dogru" placeholder="0" min="0" max="120" oninput="calculateNet()"></div>
-                        <div class="input-group"><label>❌ Yanlış Sayısı</label><input type="number" id="yanlis" placeholder="0" min="0" max="120" oninput="calculateNet()"></div>
+            <div id="ayt-panel" class="main-panel">
+                <div class="card" id="aytTypeCard">
+                    <div class="card-header"><h2 class="card-title">🎯 Alan Seçimi</h2></div>
+                    <p style="color:var(--warm-brown);margin-bottom:1.5rem;">Hangi alanı hazırlıyorsunuz?</p>
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                        <button class="btn btn-primary" onclick="setAytType('sayisal')">🔢 Sayısal</button>
+                        <button class="btn btn-primary" onclick="setAytType('esit_agirlik')">⚖️ Eşit Ağırlık</button>
+                        <button class="btn btn-primary" onclick="setAytType('sozel')">📚 Sözel</button>
                     </div>
-                    <div class="results-display" id="denemeResults">
-                        <div class="result-item"><span>Boş Bırakılan:</span><span class="result-value" id="bosResult">0</span></div>
-                        <div class="result-item"><span>📊 Net Sayısı:</span><span class="result-value" id="netResult">0.00</span></div>
-                    </div>
-                    <button class="btn btn-primary btn-full" onclick="saveDeneme()" style="margin-top: 1.5rem;">💾 Denemeyi Kaydet</button>
                 </div>
-
-                <div class="card">
+                <div class="card" id="aytInputCard" style="display:none;">
                     <div class="card-header">
-                        <h2 class="card-title">📊 Net Grafiği</h2>
+                        <h2 class="card-title" id="aytInputTitle">🎯 AYT</h2>
+                        <button class="btn" style="padding:0.5rem 1rem;font-size:0.85rem;" onclick="changeAytType()">Alan Değiştir</button>
+                    </div>
+                    <div class="question-entry" id="aytInputs"></div>
+                    <div class="button-group">
+                        <button class="btn btn-primary btn-full" onclick="saveAYT()">💾 AYT Ekle (Toplama Yapar)</button>
+                        <button class="btn btn-danger btn-full" onclick="clearTodayAYT()">🗑️ AYT Bugünü Temizle</button>
+                    </div>
+                </div>
+                <div class="card" id="aytChartCard" style="display:none;">
+                    <div class="card-header">
+                        <h2 class="card-title">📈 AYT Aylık İlerleme</h2>
                         <div class="date-selector">
-                            <select id="denemeMonthSelect" onchange="updateDenemeChart()">
+                            <select id="aytMonthSelect" onchange="updateAYTChart()">
                                 <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option><option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option><option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option><option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
                             </select>
-                            <select id="denemeYearSelect" onchange="updateDenemeChart()">
+                            <select id="aytYearSelect" onchange="updateAYTChart()">
                                 <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
                             </select>
                         </div>
                     </div>
-                    <div class="chart-container"><canvas id="denemeChart"></canvas></div>
+                    <div class="monthly-total"><h3>Bu Ay AYT Toplam</h3><div class="total-number" id="aytMonthlyTotal">0</div><p style="margin-top:0.5rem;opacity:0.9;">soru çözüldü</p></div>
+                    <div class="subject-filter" id="aytFilterChips"></div>
+                    <div class="chart-container"><canvas id="aytChart"></canvas></div>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div class="card-header"><h2 class="card-title">📚 Deneme Geçmişi</h2></div>
-                    <div id="denemeHistory"><p style="text-align: center; color: var(--warm-brown); padding: 2rem;">Henüz deneme kaydı yok.</p></div>
+            <div id="deneme-panel" class="main-panel">
+                <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;background:white;padding:0.8rem;border-radius:12px;box-shadow:0 3px 15px rgba(0,0,0,0.06);">
+                    <button class="deneme-sub-tab active" onclick="switchDenemeTab('tyt-deneme', event)">📖 TYT Deneme</button>
+                    <button class="deneme-sub-tab" onclick="switchDenemeTab('ayt-deneme', event)">🎯 AYT Deneme</button>
+                </div>
+                <div id="tyt-deneme-panel" class="deneme-sub-panel active">
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title">📖 TYT Deneme Sonucu Ekle</h2></div>
+                        <p style="color:var(--warm-brown);font-size:0.9rem;margin-bottom:1rem;">TYT toplam soru sayısı: 120</p>
+                        <div class="deneme-entry">
+                            <div class="input-group"><label>✅ Doğru</label><input type="number" id="tyt-dogru" placeholder="0" min="0" max="120" oninput="calculateTYTNet()"></div>
+                            <div class="input-group"><label>❌ Yanlış</label><input type="number" id="tyt-yanlis" placeholder="0" min="0" max="120" oninput="calculateTYTNet()"></div>
+                        </div>
+                        <div class="results-display" id="tytDenemeResults">
+                            <div class="result-item"><span>Boş:</span><span class="result-value" id="tyt-bos-result">0</span></div>
+                            <div class="result-item"><span>📊 Net:</span><span class="result-value" id="tyt-net-result">0.00</span></div>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="saveTYTDeneme()" style="margin-top:1.5rem;">💾 TYT Denemeyi Kaydet</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📊 TYT Net Grafiği</h2>
+                            <div class="date-selector">
+                                <select id="tytDenemeMonthSelect" onchange="updateTYTDenemeChart()">
+                                    <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option><option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option><option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option><option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
+                                </select>
+                                <select id="tytDenemeYearSelect" onchange="updateTYTDenemeChart()">
+                                    <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="tytDenemeChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title">📚 TYT Deneme Geçmişi</h2></div>
+                        <div id="tytDenemeHistory"></div>
+                    </div>
+                </div>
+                <div id="ayt-deneme-panel" class="deneme-sub-panel">
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title">🎯 AYT Deneme Sonucu Ekle</h2></div>
+                        <p style="color:var(--warm-brown);font-size:0.9rem;margin-bottom:1rem;">AYT toplam soru sayısı: 80</p>
+                        <div class="deneme-entry">
+                            <div class="input-group"><label>✅ Doğru</label><input type="number" id="ayt-dogru" placeholder="0" min="0" max="80" oninput="calculateAYTNet()"></div>
+                            <div class="input-group"><label>❌ Yanlış</label><input type="number" id="ayt-yanlis" placeholder="0" min="0" max="80" oninput="calculateAYTNet()"></div>
+                        </div>
+                        <div class="results-display" id="aytDenemeResults">
+                            <div class="result-item"><span>Boş:</span><span class="result-value" id="ayt-bos-result">0</span></div>
+                            <div class="result-item"><span>📊 Net:</span><span class="result-value" id="ayt-net-result">0.00</span></div>
+                        </div>
+                        <button class="btn btn-primary btn-full" onclick="saveAYTDeneme()" style="margin-top:1.5rem;">💾 AYT Denemeyi Kaydet</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">📊 AYT Net Grafiği</h2>
+                            <div class="date-selector">
+                                <select id="aytDenemeMonthSelect" onchange="updateAYTDenemeChart()">
+                                    <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option><option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option><option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option><option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
+                                </select>
+                                <select id="aytDenemeYearSelect" onchange="updateAYTDenemeChart()">
+                                    <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="aytDenemeChart"></canvas></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h2 class="card-title">📚 AYT Deneme Geçmişi</h2></div>
+                        <div id="aytDenemeHistory"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -326,11 +400,9 @@
             <div class="sidebar-ad" id="sideAd1"></div>
             <div class="stats-card">
                 <h3>📊 Bugünün Özeti</h3>
-                <div class="stat-row"><span class="stat-name">Türkçe</span><span class="stat-value" id="today-turkce">0</span></div>
-                <div class="stat-row"><span class="stat-name">Matematik</span><span class="stat-value" id="today-matematik">0</span></div>
-                <div class="stat-row"><span class="stat-name">Tarih</span><span class="stat-value" id="today-tarih">0</span></div>
-                <div class="stat-row"><span class="stat-name">Coğrafya</span><span class="stat-value" id="today-cografya">0</span></div>
-                <div class="stat-row"><span class="stat-name">Vatandaşlık</span><span class="stat-value" id="today-vatandaslik">0</span></div>
+                <div class="stat-row"><span class="stat-name">TYT Toplam</span><span class="stat-value" id="today-tyt">0</span></div>
+                <div class="stat-row"><span class="stat-name">AYT Toplam</span><span class="stat-value" id="today-ayt">0</span></div>
+                <div class="stat-row"><span class="stat-name">Genel Toplam</span><span class="stat-value" id="today-total">0</span></div>
             </div>
             <div class="sidebar-ad" id="sideAd2"></div>
         </aside>
@@ -358,28 +430,62 @@
 
         let questionsData = JSON.parse(localStorage.getItem('questionsData_' + currentUser)) || {};
         let denemeData = JSON.parse(localStorage.getItem('denemeData_' + currentUser)) || [];
-        let currentFilter = 'all';
-        let chart = null, denemeChart = null;
+        let tytChart = null, aytChart = null, tytDenemeChart = null, aytDenemeChart = null;
+        let tytCurrentFilter = 'all', aytCurrentFilter = 'all';
         let stopwatchInterval = null, stopwatchTime = 0, isRunning = false;
 
         const clickSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
         function playClick() { clickSound.currentTime = 0; clickSound.play().catch(() => {}); }
+
+        // ---- AYT Config ----
+        const AYT_CFG = {
+            sayisal: [
+                {key:'ayt_mat', label:'Matematik'},
+                {key:'ayt_fizik', label:'Fizik'},
+                {key:'ayt_kimya', label:'Kimya'},
+                {key:'ayt_biyoloji', label:'Biyoloji'}
+            ],
+            esit_agirlik: [
+                {key:'ayt_mat', label:'Matematik'},
+                {key:'ayt_edebiyat', label:'Edebiyat'},
+                {key:'ayt_tarih', label:'Tarih'},
+                {key:'ayt_cografya', label:'Coğrafya'}
+            ],
+            sozel: [
+                {key:'ayt_edebiyat', label:'Edebiyat'},
+                {key:'ayt_tarih1', label:'Tarih-1'},
+                {key:'ayt_cografya1', label:'Coğrafya-1'},
+                {key:'ayt_tarih2', label:'Tarih-2'},
+                {key:'ayt_cografya2', label:'Coğrafya-2'},
+                {key:'ayt_felsefe', label:'Felsefe'},
+                {key:'ayt_din', label:'Din Kültürü'}
+            ]
+        };
+
+        function calcDayTYT(dayData) {
+            return ['tyt_turkce','tyt_mat','tyt_tarih','tyt_cografya','tyt_felsefe','tyt_din','tyt_fizik','tyt_kimya','tyt_biyoloji']
+                .reduce((s,k) => s + (dayData[k]||0), 0);
+        }
+        function calcDayAYT(dayData, aytType) {
+            if (!aytType || !AYT_CFG[aytType]) return 0;
+            return AYT_CFG[aytType].reduce((s,c) => s + (dayData[c.key]||0), 0);
+        }
+        function calcDayTotal(dayData, aytType) {
+            return calcDayTYT(dayData) + calcDayAYT(dayData, aytType);
+        }
 
         function loadUserProfilePicture() {
             const savedPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
             const avatar = document.getElementById('userAvatar');
             const allPics = JSON.parse(localStorage.getItem('profilePictures')) || [];
             const pic = allPics.find(p => p.id === savedPic);
-            
             if (pic && pic.image) {
                 avatar.className = 'user-avatar';
                 avatar.innerHTML = `<img src="${pic.image}" alt="${currentUser} profil resmi">`;
             } else {
                 avatar.className = 'user-avatar text-only';
                 avatar.textContent = currentUser.charAt(0).toUpperCase();
-                if (savedPic !== 'default') {
-                    localStorage.setItem('profilePicture_' + currentUser, 'default');
-                }
+                if (savedPic !== 'default') localStorage.setItem('profilePicture_' + currentUser, 'default');
             }
         }
 
@@ -393,29 +499,20 @@
             const allPics = JSON.parse(localStorage.getItem('profilePictures')) || [];
             const ownedPics = JSON.parse(localStorage.getItem('ownedProfilePictures_' + currentUser)) || ['default'];
             const currentPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
-            
             if (allPics.length === 0) {
                 grid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz profil resmi yok.</p>';
                 document.getElementById('profilePictureModal').classList.add('active');
                 return;
             }
-            
             let html = '';
-            
             html += `<div style="text-align: center;">
-                <div class="avatar-option text-avatar owned">
-                    ${currentUser.charAt(0).toUpperCase()}
-                </div>
-                <button class="avatar-use-btn" ${currentPic === 'default' ? 'disabled' : ''} onclick="useProfilePicture('default')">
-                    ${currentPic === 'default' ? 'Kullanılıyor' : 'Kullan'}
-                </button>
+                <div class="avatar-option text-avatar owned">${currentUser.charAt(0).toUpperCase()}</div>
+                <button class="avatar-use-btn" ${currentPic === 'default' ? 'disabled' : ''} onclick="useProfilePicture('default')">${currentPic === 'default' ? 'Kullanılıyor' : 'Kullan'}</button>
             </div>`;
-            
             allPics.forEach(pic => {
                 const isOwned = ownedPics.includes(pic.id);
                 const isCurrent = pic.id === currentPic;
                 const lockClass = isOwned ? 'owned' : 'locked';
-                
                 html += `<div style="text-align: center;">
                     <div class="avatar-option ${lockClass}" ${!isOwned ? 'onclick="showUnlockInfo(\'' + pic.id + '\')"' : ''}>
                         ${isOwned ? '<img src="' + pic.image + '" alt="' + pic.name + ' profil resmi">' : '<span class="avatar-lock">🔒</span>'}
@@ -425,35 +522,27 @@
                     </button>
                 </div>`;
             });
-            
             grid.innerHTML = html;
             document.getElementById('profilePictureModal').classList.add('active');
         }
 
-        function closeProfilePicture() {
-            document.getElementById('profilePictureModal').classList.remove('active');
-        }
-
+        function closeProfilePicture() { document.getElementById('profilePictureModal').classList.remove('active'); }
         function useProfilePicture(picId) {
             localStorage.setItem('profilePicture_' + currentUser, picId);
             loadUserProfilePicture();
             closeProfilePicture();
             showNotification('Profil resmi değiştirildi!', 'success');
         }
-
         function showUnlockInfo(picId) {
             const allPics = JSON.parse(localStorage.getItem('profilePictures')) || [];
             const pic = allPics.find(p => p.id === picId);
-            if (pic) {
-                showNotification(pic.name + ' kilitli. Nasıl açılacağı için yöneticiye danışın.', 'warning');
-            }
+            if (pic) showNotification(pic.name + ' kilitli. Nasıl açılacağı için yöneticiye danışın.', 'warning');
         }
 
         function loadAdSettings() {
             const topEnabled = localStorage.getItem('adEnabled_top') !== 'false';
             const side1Enabled = localStorage.getItem('adEnabled_side1') !== 'false';
             const side2Enabled = localStorage.getItem('adEnabled_side2') !== 'false';
-
             if (topEnabled) {
                 document.getElementById('topAd').classList.add('show');
                 const topBanner = localStorage.getItem('adBanner_top');
@@ -477,29 +566,21 @@
 
         function goHome() { window.location.href = 'index.html'; }
         function logout() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
-        function showNotification(message, type = 'success') {
-            const notif = document.createElement('div');
-            notif.className = `notification ${type}`;
-            notif.innerHTML = `<strong>${type === 'success' ? '✅' : '❌'}</strong> ${message}`;
-            document.body.appendChild(notif);
-            setTimeout(() => { notif.classList.add('hide'); setTimeout(() => notif.remove(), 300); }, 3000);
-        }
 
-        function updateStreak() {
-            const today = new Date().toISOString().split('T')[0];
-            const lastActivity = localStorage.getItem('lastStreakActivity_' + currentUser);
-            const streak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
-            const todayData = questionsData[today] || {};
-            const totalToday = (todayData.turkce||0) + (todayData.matematik||0) + (todayData.tarih||0) + (todayData.cografya||0) + (todayData.vatandaslik||0);
-
-            if (totalToday >= 10 && lastActivity !== today) {
-                const newStreak = streak + 1;
-                localStorage.setItem('streak_' + currentUser, newStreak.toString());
-                localStorage.setItem('lastStreakActivity_' + currentUser, today);
-                document.getElementById('streakCount').textContent = newStreak;
-            } else {
-                document.getElementById('streakCount').textContent = streak;
-            }
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            notification.innerHTML = `
+                <div class="notification-modal-header">
+                    <span class="notification-modal-title">${icons[type]} Bildirim</span>
+                    <button class="notification-modal-close" onclick="this.closest('.notification-modal').remove()">&times;</button>
+                </div>
+                <p style="color: var(--warm-brown); margin: 0;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.opacity = '0'; setTimeout(() => notification.remove(), 300); }, 3000);
         }
 
         function startStopwatch() {
@@ -518,239 +599,397 @@
         function pauseStopwatch() { playClick(); isRunning = false; clearInterval(stopwatchInterval); }
         function resetStopwatch() { playClick(); pauseStopwatch(); stopwatchTime = 0; document.getElementById('stopwatchDisplay').textContent = '00:00:00'; }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tabName + '-tab').classList.add('active');
+        // ---- Tab switching ----
+        function switchMainTab(tabName, e) {
+            document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.main-panel').forEach(p => p.classList.remove('active'));
+            if (e && e.target) e.target.classList.add('active');
+            document.getElementById(tabName + '-panel').classList.add('active');
+            if (tabName === 'tyt') { updateTYTChart(); }
+            if (tabName === 'ayt') { initAytUI(); }
+            if (tabName === 'deneme') { updateTYTDenemeChart(); updateAYTDenemeChart(); loadTYTDenemeHistory(); loadAYTDenemeHistory(); }
         }
 
-        function saveQuestions() {
-            const today = new Date().toISOString().split('T')[0];
-            const turkce = parseInt(document.getElementById('turkce').value) || 0;
-            const matematik = parseInt(document.getElementById('matematik').value) || 0;
-            const tarih = parseInt(document.getElementById('tarih').value) || 0;
-            const cografya = parseInt(document.getElementById('cografya').value) || 0;
-            const vatandaslik = parseInt(document.getElementById('vatandaslik').value) || 0;
+        function switchDenemeTab(tabName, e) {
+            document.querySelectorAll('.deneme-sub-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.deneme-sub-panel').forEach(p => p.classList.remove('active'));
+            if (e && e.target) e.target.classList.add('active');
+            document.getElementById(tabName + '-panel').classList.add('active');
+        }
 
-            const newTotal = turkce + matematik + tarih + cografya + vatandaslik;
-            const existing = questionsData[today] || {turkce:0, matematik:0, tarih:0, cografya:0, vatandaslik:0};
-            const currentTotal = existing.turkce + existing.matematik + existing.tarih + existing.cografya + existing.vatandaslik;
-            
-            if (currentTotal + newTotal > 2000) {
-                showNotification(`Günlük maksimum 2000 soru girebilirsiniz! (Şu an: ${currentTotal})`, 'warning');
-                return;
+        // ---- AYT UI ----
+        function initAytUI() {
+            const aytType = localStorage.getItem('aytType_' + currentUser);
+            if (!aytType) {
+                document.getElementById('aytTypeCard').style.display = 'block';
+                document.getElementById('aytInputCard').style.display = 'none';
+                document.getElementById('aytChartCard').style.display = 'none';
+            } else {
+                document.getElementById('aytTypeCard').style.display = 'none';
+                document.getElementById('aytInputCard').style.display = 'block';
+                document.getElementById('aytChartCard').style.display = 'block';
+                renderAYTInputs(aytType);
+                const typeNames = {sayisal:'Sayısal', esit_agirlik:'Eşit Ağırlık', sozel:'Sözel'};
+                document.getElementById('aytInputTitle').textContent = '🎯 AYT — ' + (typeNames[aytType]||aytType);
+                renderAYTFilterChips(aytType);
+                updateAYTChart();
             }
+        }
 
-            questionsData[today] = {
-                turkce: existing.turkce + turkce,
-                matematik: existing.matematik + matematik,
-                tarih: existing.tarih + tarih,
-                cografya: existing.cografya + cografya,
-                vatandaslik: existing.vatandaslik + vatandaslik
-            };
+        function setAytType(type) {
+            localStorage.setItem('aytType_' + currentUser, type);
+            initAytUI();
+        }
 
+        function changeAytType() {
+            localStorage.removeItem('aytType_' + currentUser);
+            initAytUI();
+        }
+
+        function renderAYTInputs(aytType) {
+            const cfg = AYT_CFG[aytType] || [];
+            const container = document.getElementById('aytInputs');
+            container.innerHTML = cfg.map(c =>
+                `<div class="subject-input"><label>${c.label}</label><input type="number" id="${c.key}" placeholder="0" min="0"></div>`
+            ).join('');
+        }
+
+        function renderAYTFilterChips(aytType) {
+            const cfg = AYT_CFG[aytType] || [];
+            const container = document.getElementById('aytFilterChips');
+            container.innerHTML = `<button class="filter-chip active" onclick="filterAYTSubject('all',event)">Tümü</button>` +
+                cfg.map(c => `<button class="filter-chip" onclick="filterAYTSubject('${c.key}',event)">${c.label}</button>`).join('');
+        }
+
+        // ---- TYT Save ----
+        function saveTYT() {
+            const today = new Date().toISOString().split('T')[0];
+            const keys = ['tyt_turkce','tyt_mat','tyt_tarih','tyt_cografya','tyt_felsefe','tyt_din','tyt_fizik','tyt_kimya','tyt_biyoloji'];
+            const vals = {};
+            let newTotal = 0;
+            keys.forEach(k => { vals[k] = parseInt(document.getElementById(k)?.value) || 0; newTotal += vals[k]; });
+            const existing = questionsData[today] || {};
+            const currentTYT = keys.reduce((s,k) => s + (existing[k]||0), 0);
+            if (currentTYT + newTotal > 2000) { showNotification('Günlük maksimum 2000 TYT sorusu girebilirsiniz!', 'warning'); return; }
+            keys.forEach(k => { existing[k] = (existing[k]||0) + vals[k]; });
+            questionsData[today] = existing;
             localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
             localStorage.setItem('lastActivity_' + currentUser, today);
-            
-            showNotification('Sorular başarıyla eklendi!', 'success');
-            updateChart();
+            showNotification('TYT soruları eklendi!', 'success');
+            updateTYTChart();
             loadTodayStats();
             updateStreak();
-            
-            document.getElementById('turkce').value = '';
-            document.getElementById('matematik').value = '';
-            document.getElementById('tarih').value = '';
-            document.getElementById('cografya').value = '';
-            document.getElementById('vatandaslik').value = '';
+            keys.forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = ''; });
         }
 
-        function clearTodayQuestions() {
-            if (!confirm('⚠️ Bugünün tüm soru verilerini silmek istediğinizden emin misiniz?')) return;
+        function clearTodayTYT() {
+            if (!confirm('TYT sorularını temizlemek istediğinizden emin misiniz?')) return;
             const today = new Date().toISOString().split('T')[0];
-            delete questionsData[today];
+            const existing = questionsData[today] || {};
+            ['tyt_turkce','tyt_mat','tyt_tarih','tyt_cografya','tyt_felsefe','tyt_din','tyt_fizik','tyt_kimya','tyt_biyoloji'].forEach(k => delete existing[k]);
+            questionsData[today] = existing;
             localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
-            showNotification('Bugünün verileri temizlendi!', 'success');
-            updateChart();
-            loadTodayStats();
+            showNotification('TYT verileri temizlendi!', 'success');
+            updateTYTChart(); loadTodayStats();
         }
 
+        // ---- AYT Save ----
+        function saveAYT() {
+            const aytType = localStorage.getItem('aytType_' + currentUser);
+            if (!aytType) { showNotification('Önce alan seçiniz!', 'warning'); return; }
+            const today = new Date().toISOString().split('T')[0];
+            const cfg = AYT_CFG[aytType];
+            const vals = {};
+            let newTotal = 0;
+            cfg.forEach(c => { vals[c.key] = parseInt(document.getElementById(c.key)?.value) || 0; newTotal += vals[c.key]; });
+            const existing = questionsData[today] || {};
+            const currentAYT = cfg.reduce((s,c) => s + (existing[c.key]||0), 0);
+            if (currentAYT + newTotal > 2000) { showNotification('Günlük maksimum 2000 AYT sorusu girebilirsiniz!', 'warning'); return; }
+            cfg.forEach(c => { existing[c.key] = (existing[c.key]||0) + vals[c.key]; });
+            questionsData[today] = existing;
+            localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
+            localStorage.setItem('lastActivity_' + currentUser, today);
+            showNotification('AYT soruları eklendi!', 'success');
+            updateAYTChart(); loadTodayStats(); updateStreak();
+            cfg.forEach(c => { if(document.getElementById(c.key)) document.getElementById(c.key).value = ''; });
+        }
+
+        function clearTodayAYT() {
+            const aytType = localStorage.getItem('aytType_' + currentUser);
+            if (!confirm('AYT sorularını temizlemek istediğinizden emin misiniz?')) return;
+            const today = new Date().toISOString().split('T')[0];
+            const existing = questionsData[today] || {};
+            if (aytType && AYT_CFG[aytType]) AYT_CFG[aytType].forEach(c => delete existing[c.key]);
+            questionsData[today] = existing;
+            localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
+            showNotification('AYT verileri temizlendi!', 'success');
+            updateAYTChart(); loadTodayStats();
+        }
+
+        // ---- Stats ----
         function loadTodayStats() {
             const today = new Date().toISOString().split('T')[0];
-            const todayData = questionsData[today] || {turkce:0, matematik:0, tarih:0, cografya:0, vatandaslik:0};
-            document.getElementById('today-turkce').textContent = todayData.turkce;
-            document.getElementById('today-matematik').textContent = todayData.matematik;
-            document.getElementById('today-tarih').textContent = todayData.tarih;
-            document.getElementById('today-cografya').textContent = todayData.cografya;
-            document.getElementById('today-vatandaslik').textContent = todayData.vatandaslik;
+            const td = questionsData[today] || {};
+            const aytType = localStorage.getItem('aytType_' + currentUser);
+            const tytTotal = calcDayTYT(td);
+            const aytTotal = calcDayAYT(td, aytType);
+            document.getElementById('today-tyt').textContent = tytTotal;
+            document.getElementById('today-ayt').textContent = aytTotal;
+            document.getElementById('today-total').textContent = tytTotal + aytTotal;
         }
 
-        function filterSubject(subject) {
-            currentFilter = subject;
-            document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
-            event.target.classList.add('active');
-            updateChart();
+        function updateStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastActivity = localStorage.getItem('lastStreakActivity_' + currentUser);
+            const streak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
+            const todayData = questionsData[today] || {};
+            const aytType = localStorage.getItem('aytType_' + currentUser);
+            const totalToday = calcDayTotal(todayData, aytType);
+            if (totalToday >= 10 && lastActivity !== today) {
+                const newStreak = streak + 1;
+                localStorage.setItem('streak_' + currentUser, newStreak.toString());
+                localStorage.setItem('lastStreakActivity_' + currentUser, today);
+                document.getElementById('streakCount').textContent = newStreak;
+            } else {
+                document.getElementById('streakCount').textContent = streak;
+            }
         }
 
-        function updateChart() {
-            const month = parseInt(document.getElementById('monthSelect').value);
-            const year = parseInt(document.getElementById('yearSelect').value);
+        // ---- TYT Chart ----
+        function initTYTFilterChips() {
+            const container = document.getElementById('tytFilterChips');
+            if (!container) return;
+            const TYT_SUBJECTS = [
+                {key:'tyt_turkce',label:'Türkçe'},{key:'tyt_mat',label:'Matematik'},{key:'tyt_tarih',label:'Tarih'},
+                {key:'tyt_cografya',label:'Coğrafya'},{key:'tyt_felsefe',label:'Felsefe'},{key:'tyt_din',label:'Din'},
+                {key:'tyt_fizik',label:'Fizik'},{key:'tyt_kimya',label:'Kimya'},{key:'tyt_biyoloji',label:'Biyoloji'}
+            ];
+            container.innerHTML = `<button class="filter-chip active" onclick="filterTYTSubject('all',event)">Tümü</button>` +
+                TYT_SUBJECTS.map(s => `<button class="filter-chip" onclick="filterTYTSubject('${s.key}',event)">${s.label}</button>`).join('');
+        }
+
+        function filterTYTSubject(subject, e) {
+            tytCurrentFilter = subject;
+            document.querySelectorAll('#tytFilterChips .filter-chip').forEach(c => c.classList.remove('active'));
+            if (e && e.target) e.target.classList.add('active');
+            updateTYTChart();
+        }
+        function filterAYTSubject(subject, e) {
+            aytCurrentFilter = subject;
+            document.querySelectorAll('#aytFilterChips .filter-chip').forEach(c => c.classList.remove('active'));
+            if (e && e.target) e.target.classList.add('active');
+            updateAYTChart();
+        }
+
+        function updateTYTChart() {
+            const month = parseInt(document.getElementById('tytMonthSelect')?.value || new Date().getMonth());
+            const year = parseInt(document.getElementById('tytYearSelect')?.value || new Date().getFullYear());
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
-            const datasets = [];
+            const TYT_KEYS = ['tyt_turkce','tyt_mat','tyt_tarih','tyt_cografya','tyt_felsefe','tyt_din','tyt_fizik','tyt_kimya','tyt_biyoloji'];
+            const TYT_NAMES = {tyt_turkce:'Türkçe', tyt_mat:'Matematik', tyt_tarih:'Tarih', tyt_cografya:'Coğrafya', tyt_felsefe:'Felsefe', tyt_din:'Din', tyt_fizik:'Fizik', tyt_kimya:'Kimya', tyt_biyoloji:'Biyoloji'};
+            const TYT_COLORS = {tyt_turkce:'#e74c3c', tyt_mat:'#3498db', tyt_tarih:'#f39c12', tyt_cografya:'#2ecc71', tyt_felsefe:'#9b59b6', tyt_din:'#1abc9c', tyt_fizik:'#e67e22', tyt_kimya:'#16a085', tyt_biyoloji:'#8e44ad'};
             let monthlyTotal = 0;
-
-            if (currentFilter === 'all') {
+            const datasets = [];
+            if (tytCurrentFilter === 'all') {
                 const data = labels.map(day => {
-                    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const dayData = questionsData[date] || {};
-                    const total = (dayData.turkce||0) + (dayData.matematik||0) + (dayData.tarih||0) + (dayData.cografya||0) + (dayData.vatandaslik||0);
-                    monthlyTotal += total;
-                    return total;
+                    const date = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const dd = questionsData[date] || {};
+                    const t = calcDayTYT(dd); monthlyTotal += t; return t;
                 });
-
-                datasets.push({
-                    label: 'Toplam Soru',
-                    data: data,
-                    borderColor: '#d97449',
-                    backgroundColor: 'transparent',
-                    tension: 0.4,
-                    fill: false,
-                    borderWidth: 3
-                });
+                datasets.push({label:'TYT Toplam',data,borderColor:'#d97449',backgroundColor:'transparent',tension:0.4,fill:false,borderWidth:3});
             } else {
-                const colors = {turkce: '#e74c3c', matematik: '#3498db', tarih: '#f39c12', cografya: '#2ecc71', vatandaslik: '#9b59b6'};
-                const names = {turkce: 'Türkçe', matematik: 'Matematik', tarih: 'Tarih', cografya: 'Coğrafya', vatandaslik: 'Vatandaşlık'};
                 const data = labels.map(day => {
-                    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const value = questionsData[date]?.[currentFilter] || 0;
-                    monthlyTotal += value;
-                    return value;
+                    const date = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const v = questionsData[date]?.[tytCurrentFilter] || 0; monthlyTotal += v; return v;
                 });
-
-                datasets.push({
-                    label: names[currentFilter],
-                    data: data,
-                    borderColor: colors[currentFilter],
-                    backgroundColor: 'transparent',
-                    tension: 0.4,
-                    fill: false
-                });
+                datasets.push({label:TYT_NAMES[tytCurrentFilter]||tytCurrentFilter,data,borderColor:TYT_COLORS[tytCurrentFilter]||'#d97449',backgroundColor:'transparent',tension:0.4,fill:false});
             }
-
-            document.getElementById('monthlyTotal').textContent = monthlyTotal;
-            if (chart) chart.destroy();
-            const ctx = document.getElementById('questionsChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {labels: labels, datasets: datasets},
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {legend: {display: true, position: 'top'}},
-                    scales: {y: {beginAtZero: true, ticks: {stepSize: 5}}}
-                }
-            });
+            document.getElementById('tytMonthlyTotal').textContent = monthlyTotal;
+            if (tytChart) tytChart.destroy();
+            const ctx = document.getElementById('tytChart')?.getContext('2d');
+            if (!ctx) return;
+            tytChart = new Chart(ctx, {type:'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'}},scales:{y:{beginAtZero:true,ticks:{stepSize:5}}}}});
         }
 
-        function calculateNet() {
-            const dogru = parseInt(document.getElementById('dogru').value) || 0;
-            const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
-            if (dogru + yanlis > 120) { showNotification('Toplam soru sayısı 120\'yi geçemez!', 'warning'); return; }
-            const bos = 120 - dogru - yanlis;
-            const net = (dogru - (yanlis * 0.25)).toFixed(2);
-            document.getElementById('bosResult').textContent = bos;
-            document.getElementById('netResult').textContent = net;
-            document.getElementById('denemeResults').classList.add('show');
+        function updateAYTChart() {
+            const aytType = localStorage.getItem('aytType_' + currentUser);
+            if (!aytType) return;
+            const month = parseInt(document.getElementById('aytMonthSelect')?.value || new Date().getMonth());
+            const year = parseInt(document.getElementById('aytYearSelect')?.value || new Date().getFullYear());
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+            let monthlyTotal = 0;
+            const datasets = [];
+            if (aytCurrentFilter === 'all') {
+                const data = labels.map(day => {
+                    const date = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const dd = questionsData[date] || {};
+                    const t = calcDayAYT(dd, aytType); monthlyTotal += t; return t;
+                });
+                datasets.push({label:'AYT Toplam',data,borderColor:'#9b59b6',backgroundColor:'transparent',tension:0.4,fill:false,borderWidth:3});
+            } else {
+                const data = labels.map(day => {
+                    const date = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+                    const v = questionsData[date]?.[aytCurrentFilter] || 0; monthlyTotal += v; return v;
+                });
+                datasets.push({label:aytCurrentFilter,data,borderColor:'#9b59b6',backgroundColor:'transparent',tension:0.4,fill:false});
+            }
+            document.getElementById('aytMonthlyTotal').textContent = monthlyTotal;
+            if (aytChart) aytChart.destroy();
+            const ctx = document.getElementById('aytChart')?.getContext('2d');
+            if (!ctx) return;
+            aytChart = new Chart(ctx, {type:'line',data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'}},scales:{y:{beginAtZero:true,ticks:{stepSize:5}}}}});
         }
 
-        function saveDeneme() {
+        // ---- Deneme ----
+        function calculateTYTNet() {
+            const d = parseInt(document.getElementById('tyt-dogru').value) || 0;
+            const y = parseInt(document.getElementById('tyt-yanlis').value) || 0;
+            if (d + y > 120) { showNotification('TYT toplam 120 soruyu geçemez!', 'warning'); return; }
+            document.getElementById('tyt-bos-result').textContent = 120 - d - y;
+            document.getElementById('tyt-net-result').textContent = (d - y * 0.25).toFixed(2);
+            document.getElementById('tytDenemeResults').classList.add('show');
+        }
+
+        function calculateAYTNet() {
+            const d = parseInt(document.getElementById('ayt-dogru').value) || 0;
+            const y = parseInt(document.getElementById('ayt-yanlis').value) || 0;
+            if (d + y > 80) { showNotification('AYT toplam 80 soruyu geçemez!', 'warning'); return; }
+            document.getElementById('ayt-bos-result').textContent = 80 - d - y;
+            document.getElementById('ayt-net-result').textContent = (d - y * 0.25).toFixed(2);
+            document.getElementById('aytDenemeResults').classList.add('show');
+        }
+
+        function saveTYTDeneme() {
             const today = new Date().toLocaleDateString('tr-TR');
-            const todayDenemeler = denemeData.filter(d => d.date === today);
-            
-            if (todayDenemeler.length >= 10) {
-                showNotification('Günlük maksimum 10 deneme girebilirsiniz!', 'warning');
-                return;
-            }
-            
-            const dogru = parseInt(document.getElementById('dogru').value) || 0;
-            const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
-            if (dogru + yanlis > 120) { showNotification('Toplam soru sayısı 120\'yi geçemez!', 'warning'); return; }
-            if (dogru === 0 && yanlis === 0) { showNotification('Lütfen doğru ve yanlış sayısını girin!', 'warning'); return; }
-            const bos = 120 - dogru - yanlis;
-            const net = (dogru - (yanlis * 0.25)).toFixed(2);
-            denemeData.unshift({date: today, dogru: dogru, yanlis: yanlis, bos: bos, net: net});
+            const d = parseInt(document.getElementById('tyt-dogru').value) || 0;
+            const y = parseInt(document.getElementById('tyt-yanlis').value) || 0;
+            if (d + y > 120) { showNotification('TYT toplam 120 soruyu geçemez!', 'warning'); return; }
+            if (d === 0 && y === 0) { showNotification('Lütfen doğru/yanlış girin!', 'warning'); return; }
+            const b = 120 - d - y;
+            const net = (d - y * 0.25).toFixed(2);
+            denemeData.unshift({date: today, dogru: d, yanlis: y, bos: b, net, type: 'tyt'});
             localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
-            showNotification('Deneme başarıyla kaydedildi!', 'success');
-            updateDenemeChart();
-            loadDenemeHistory();
-            document.getElementById('dogru').value = '';
-            document.getElementById('yanlis').value = '';
-            document.getElementById('denemeResults').classList.remove('show');
+            showNotification('TYT deneme kaydedildi!', 'success');
+            updateTYTDenemeChart(); loadTYTDenemeHistory();
+            document.getElementById('tyt-dogru').value = '';
+            document.getElementById('tyt-yanlis').value = '';
+            document.getElementById('tytDenemeResults').classList.remove('show');
         }
 
-        function updateDenemeChart() {
-            const month = parseInt(document.getElementById('denemeMonthSelect').value);
-            const year = parseInt(document.getElementById('denemeYearSelect').value);
+        function saveAYTDeneme() {
+            const today = new Date().toLocaleDateString('tr-TR');
+            const d = parseInt(document.getElementById('ayt-dogru').value) || 0;
+            const y = parseInt(document.getElementById('ayt-yanlis').value) || 0;
+            if (d + y > 80) { showNotification('AYT toplam 80 soruyu geçemez!', 'warning'); return; }
+            if (d === 0 && y === 0) { showNotification('Lütfen doğru/yanlış girin!', 'warning'); return; }
+            const b = 80 - d - y;
+            const net = (d - y * 0.25).toFixed(2);
+            denemeData.unshift({date: today, dogru: d, yanlis: y, bos: b, net, type: 'ayt'});
+            localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
+            showNotification('AYT deneme kaydedildi!', 'success');
+            updateAYTDenemeChart(); loadAYTDenemeHistory();
+            document.getElementById('ayt-dogru').value = '';
+            document.getElementById('ayt-yanlis').value = '';
+            document.getElementById('aytDenemeResults').classList.remove('show');
+        }
+
+        function updateTYTDenemeChart() {
+            const month = parseInt(document.getElementById('tytDenemeMonthSelect')?.value || new Date().getMonth());
+            const year = parseInt(document.getElementById('tytDenemeYearSelect')?.value || new Date().getFullYear());
             const monthStart = new Date(year, month, 1);
             const monthEnd = new Date(year, month + 1, 0);
-            const filteredDenemeler = denemeData.filter(deneme => {
-                const parts = deneme.date.split('.');
-                const denemeDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                return denemeDate >= monthStart && denemeDate <= monthEnd;
+            const filtered = denemeData.filter(d => d.type === 'tyt' || !d.type).filter(d => {
+                const parts = d.date.split('.');
+                const dd = new Date(parts[2], parts[1]-1, parts[0]);
+                return dd >= monthStart && dd <= monthEnd;
             }).reverse();
-            const labels = filteredDenemeler.map((d, i) => `Deneme ${i + 1}`);
-            const netData = filteredDenemeler.map(d => parseFloat(d.net));
-            if (denemeChart) denemeChart.destroy();
-            const ctx = document.getElementById('denemeChart').getContext('2d');
-            denemeChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels.length > 0 ? labels : ['Veri Yok'],
-                    datasets: [{label: 'Net Sayısı', data: netData.length > 0 ? netData : [0], borderColor: '#d97449', backgroundColor: 'transparent', tension: 0.4, fill: false, pointRadius: 5}]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {legend: {display: true, position: 'top'}},
-                    scales: {y: {beginAtZero: true, max: 120, ticks: {stepSize: 10}}}
-                }
-            });
+            const labels = filtered.map((d, i) => `TYT-${i+1}`);
+            const netData = filtered.map(d => parseFloat(d.net));
+            if (tytDenemeChart) tytDenemeChart.destroy();
+            const ctx = document.getElementById('tytDenemeChart')?.getContext('2d');
+            if (!ctx) return;
+            tytDenemeChart = new Chart(ctx, {type:'line',data:{labels:labels.length?labels:['Veri Yok'],datasets:[{label:'TYT Net',data:netData.length?netData:[0],borderColor:'#d97449',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'}},scales:{y:{beginAtZero:true,max:120,ticks:{stepSize:10}}}}});
         }
 
-        function loadDenemeHistory() {
-            const container = document.getElementById('denemeHistory');
-            if (denemeData.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--warm-brown); padding: 2rem;">Henüz deneme kaydı yok.</p>';
-                return;
-            }
-            let html = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
-            denemeData.forEach((deneme, index) => {
-                html += `<div style="background: var(--warm-light); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--warm-orange);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+        function updateAYTDenemeChart() {
+            const month = parseInt(document.getElementById('aytDenemeMonthSelect')?.value || new Date().getMonth());
+            const year = parseInt(document.getElementById('aytDenemeYearSelect')?.value || new Date().getFullYear());
+            const monthStart = new Date(year, month, 1);
+            const monthEnd = new Date(year, month + 1, 0);
+            const filtered = denemeData.filter(d => d.type === 'ayt').filter(d => {
+                const parts = d.date.split('.');
+                const dd = new Date(parts[2], parts[1]-1, parts[0]);
+                return dd >= monthStart && dd <= monthEnd;
+            }).reverse();
+            const labels = filtered.map((d, i) => `AYT-${i+1}`);
+            const netData = filtered.map(d => parseFloat(d.net));
+            if (aytDenemeChart) aytDenemeChart.destroy();
+            const ctx = document.getElementById('aytDenemeChart')?.getContext('2d');
+            if (!ctx) return;
+            aytDenemeChart = new Chart(ctx, {type:'line',data:{labels:labels.length?labels:['Veri Yok'],datasets:[{label:'AYT Net',data:netData.length?netData:[0],borderColor:'#9b59b6',backgroundColor:'transparent',tension:0.4,fill:false,pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'top'}},scales:{y:{beginAtZero:true,max:80,ticks:{stepSize:10}}}}});
+        }
+
+        function loadTYTDenemeHistory() {
+            const container = document.getElementById('tytDenemeHistory');
+            if (!container) return;
+            const tytList = denemeData.filter(d => d.type === 'tyt' || !d.type);
+            if (tytList.length === 0) { container.innerHTML = '<p style="text-align:center;color:var(--warm-brown);padding:2rem;">Henüz TYT deneme kaydı yok.</p>'; return; }
+            container.innerHTML = '<div style="display:flex;flex-direction:column;gap:1rem;">' + tytList.map((deneme) => `
+                <div style="background:var(--warm-light);padding:1.5rem;border-radius:10px;border-left:4px solid var(--warm-orange);">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
                         <strong>📅 ${deneme.date}</strong>
-                        <button onclick="deleteDeneme(${index})" style="background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer;">🗑️</button>
+                        <button onclick="deleteTYTDeneme(${denemeData.indexOf(deneme)})" style="background:#e74c3c;color:white;border:none;padding:0.4rem 0.8rem;border-radius:5px;cursor:pointer;">🗑️</button>
                     </div>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
-                        <div><div style="color: var(--warm-tan); font-size: 0.9rem;">Doğru</div><div style="color: #2ecc71; font-weight: bold; font-size: 1.3rem;">${deneme.dogru}</div></div>
-                        <div><div style="color: var(--warm-tan); font-size: 0.9rem;">Yanlış</div><div style="color: #e74c3c; font-weight: bold; font-size: 1.3rem;">${deneme.yanlis}</div></div>
-                        <div><div style="color: var(--warm-tan); font-size: 0.9rem;">Boş</div><div style="color: var(--warm-brown); font-weight: bold; font-size: 1.3rem;">${deneme.bos}</div></div>
-                        <div style="background: var(--warm-orange); color: white; padding: 0.5rem; border-radius: 8px;"><div style="font-size: 0.9rem;">Net</div><div style="font-weight: bold; font-size: 1.5rem;">${deneme.net}</div></div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
+                        <div><div style="color:var(--warm-tan);font-size:0.9rem;">Doğru</div><div style="color:#2ecc71;font-weight:bold;font-size:1.3rem;">${deneme.dogru}</div></div>
+                        <div><div style="color:var(--warm-tan);font-size:0.9rem;">Yanlış</div><div style="color:#e74c3c;font-weight:bold;font-size:1.3rem;">${deneme.yanlis}</div></div>
+                        <div><div style="color:var(--warm-tan);font-size:0.9rem;">Boş</div><div style="color:var(--warm-brown);font-weight:bold;font-size:1.3rem;">${deneme.bos}</div></div>
+                        <div style="background:var(--warm-orange);color:white;padding:0.5rem;border-radius:8px;"><div style="font-size:0.9rem;">Net</div><div style="font-weight:bold;font-size:1.5rem;">${deneme.net}</div></div>
                     </div>
-                </div>`;
-            });
-            container.innerHTML = html + '</div>';
+                </div>
+            `).join('') + '</div>';
         }
 
-        function deleteDeneme(index) {
-            if (confirm('Bu denemeyi silmek istediğinizden emin misiniz?')) {
+        function loadAYTDenemeHistory() {
+            const container = document.getElementById('aytDenemeHistory');
+            if (!container) return;
+            const aytList = denemeData.filter(d => d.type === 'ayt');
+            if (aytList.length === 0) { container.innerHTML = '<p style="text-align:center;color:var(--warm-brown);padding:2rem;">Henüz AYT deneme kaydı yok.</p>'; return; }
+            container.innerHTML = '<div style="display:flex;flex-direction:column;gap:1rem;">' + aytList.map((deneme) => `
+                <div style="background:var(--warm-light);padding:1.5rem;border-radius:10px;border-left:4px solid #9b59b6;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:1rem;">
+                        <strong>📅 ${deneme.date}</strong>
+                        <button onclick="deleteAYTDeneme(${denemeData.indexOf(deneme)})" style="background:#e74c3c;color:white;border:none;padding:0.4rem 0.8rem;border-radius:5px;cursor:pointer;">🗑️</button>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
+                        <div><div style="color:var(--warm-tan);font-size:0.9rem;">Doğru</div><div style="color:#2ecc71;font-weight:bold;font-size:1.3rem;">${deneme.dogru}</div></div>
+                        <div><div style="color:var(--warm-tan);font-size:0.9rem;">Yanlış</div><div style="color:#e74c3c;font-weight:bold;font-size:1.3rem;">${deneme.yanlis}</div></div>
+                        <div><div style="color:var(--warm-tan);font-size:0.9rem;">Boş</div><div style="color:var(--warm-brown);font-weight:bold;font-size:1.3rem;">${deneme.bos}</div></div>
+                        <div style="background:#9b59b6;color:white;padding:0.5rem;border-radius:8px;"><div style="font-size:0.9rem;">Net</div><div style="font-weight:bold;font-size:1.5rem;">${deneme.net}</div></div>
+                    </div>
+                </div>
+            `).join('') + '</div>';
+        }
+
+        function deleteTYTDeneme(index) {
+            if (confirm('Bu TYT denemeyi silmek istediğinizden emin misiniz?')) {
                 denemeData.splice(index, 1);
                 localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
-                updateDenemeChart();
-                loadDenemeHistory();
+                updateTYTDenemeChart(); loadTYTDenemeHistory();
             }
         }
 
+        function deleteAYTDeneme(index) {
+            if (confirm('Bu AYT denemeyi silmek istediğinizden emin misiniz?')) {
+                denemeData.splice(index, 1);
+                localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
+                updateAYTDenemeChart(); loadAYTDenemeHistory();
+            }
+        }
+
+        // ---- Referral / Name Change ----
         function showReferral() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
             const user = users.find(u => u.name === currentUser);
@@ -773,29 +1012,17 @@
             document.getElementById('profilePopup').classList.remove('active');
         }
 
-        function closeNameChangeModal() {
-            document.getElementById('nameChangeModal').classList.remove('active');
-        }
+        function closeNameChangeModal() { document.getElementById('nameChangeModal').classList.remove('active'); }
 
         function saveNewName() {
             const newName = document.getElementById('newNameInput').value.trim();
-            
-            if (!newName) {
-                showNotification('Lütfen yeni isim girin!', 'warning');
-                return;
-            }
-            
-            if (newName === currentUser) {
-                showNotification('Yeni isim mevcut isminizle aynı!', 'warning');
-                return;
-            }
-            
+            if (!newName) { showNotification('Lütfen yeni isim girin!', 'warning'); return; }
+            if (newName === currentUser) { showNotification('Yeni isim mevcut isminizle aynı!', 'warning'); return; }
             const lastNameChange = localStorage.getItem('lastNameChange_' + currentUser);
             if (lastNameChange) {
                 const now = Date.now();
                 const timeDiff = now - parseInt(lastNameChange);
                 const hoursPassed = timeDiff / (1000 * 60 * 60);
-                
                 if (hoursPassed < 24) {
                     const hoursLeft = Math.ceil(24 - hoursPassed);
                     const minutesLeft = Math.ceil((24 - hoursPassed - Math.floor(24 - hoursPassed)) * 60);
@@ -803,47 +1030,29 @@
                     return;
                 }
             }
-            
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            
-            if (users.find(u => u.name === newName)) {
-                showNotification('Bu isim zaten kullanılıyor!', 'error');
-                return;
-            }
-            
+            if (users.find(u => u.name === newName)) { showNotification('Bu isim zaten kullanılıyor!', 'error'); return; }
             const userIndex = users.findIndex(u => u.name === currentUser);
             if (userIndex === -1) return;
-            
             const oldName = currentUser;
             users[userIndex].name = newName;
-            
             const keysToMove = [
                 'streak_', 'lastActivity_', 'lastStreakActivity_', 'lastStreakCheck_',
                 'questionsData_', 'denemeData_', 'profilePicture_', 'ownedProfilePictures_',
                 'friends_', 'friendRequests_', 'rejectedRequests_', 'deletedMessages_', 'lastNameChange_'
             ];
-            
             keysToMove.forEach(prefix => {
                 const value = localStorage.getItem(prefix + oldName);
-                if (value) {
-                    localStorage.setItem(prefix + newName, value);
-                    localStorage.removeItem(prefix + oldName);
-                }
+                if (value) { localStorage.setItem(prefix + newName, value); localStorage.removeItem(prefix + oldName); }
             });
-            
             localStorage.setItem('lastNameChange_' + newName, Date.now().toString());
-            
             const groups = JSON.parse(localStorage.getItem('groups')) || [];
             groups.forEach(group => {
                 if (group.founder === oldName) group.founder = newName;
                 if (group.leader === oldName) group.leader = newName;
-                if (group.members.includes(oldName)) {
-                    const index = group.members.indexOf(oldName);
-                    group.members[index] = newName;
-                }
+                if (group.members.includes(oldName)) { const index = group.members.indexOf(oldName); group.members[index] = newName; }
             });
             localStorage.setItem('groups', JSON.stringify(groups));
-            
             users.forEach(user => {
                 const friends = JSON.parse(localStorage.getItem('friends_' + user.name)) || [];
                 if (friends.includes(oldName)) {
@@ -852,57 +1061,20 @@
                     localStorage.setItem('friends_' + user.name, JSON.stringify(friends));
                 }
             });
-            
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('currentUser', newName);
-            
             showNotification('✅ İsminiz başarıyla değiştirildi!', 'success');
             closeNameChangeModal();
             setTimeout(() => location.reload(), 1500);
         }
 
-        function showNotification(message, type = 'info') {
-            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
-            
-            const notification = document.createElement('div');
-            notification.className = `notification-modal ${type}`;
-            
-            const icons = {
-                success: '✅',
-                error: '❌',
-                warning: '⚠️',
-                info: 'ℹ️'
-            };
-            
-            notification.innerHTML = `
-                <div class="notification-modal-header">
-                    <span class="notification-modal-title">${icons[type]} Bildirim</span>
-                    <button class="notification-modal-close" onclick="this.closest('.notification-modal').remove()">&times;</button>
-                </div>
-                <p style="color: var(--warm-brown); margin: 0;">${message}</p>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        function openNameChange() {
-            openNameChangeModal();
-        }
+        function openNameChange() { openNameChangeModal(); }
 
         document.addEventListener('click', function(event) {
             const popup = document.getElementById('profilePopup');
             const avatar = document.getElementById('userAvatar');
-            if (!avatar.contains(event.target) && !popup.contains(event.target)) {
-                popup.classList.remove('active');
-            }
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('active');
-            }
+            if (!avatar.contains(event.target) && !popup.contains(event.target)) popup.classList.remove('active');
+            if (event.target.classList.contains('modal')) event.target.classList.remove('active');
         });
 
         function ensureFriendCode() {
@@ -935,38 +1107,42 @@
             if (el) el.innerHTML = `${currentUser}<br><small style="font-family:monospace;background:var(--warm-light);padding:0.15rem 0.5rem;border-radius:6px;font-size:0.75rem;font-weight:normal;color:var(--warm-brown);letter-spacing:1px;">📎 ${code}</small>`;
         }
 
+        // ---- DOMContentLoaded ----
         document.addEventListener('DOMContentLoaded', function() {
             const now = new Date();
-            document.getElementById('monthSelect').value = now.getMonth();
-            document.getElementById('yearSelect').value = now.getFullYear();
-            document.getElementById('denemeMonthSelect').value = now.getMonth();
-            document.getElementById('denemeYearSelect').value = now.getFullYear();
+            if(document.getElementById('tytMonthSelect')) document.getElementById('tytMonthSelect').value = now.getMonth();
+            if(document.getElementById('tytYearSelect')) document.getElementById('tytYearSelect').value = now.getFullYear();
+            if(document.getElementById('tytDenemeMonthSelect')) document.getElementById('tytDenemeMonthSelect').value = now.getMonth();
+            if(document.getElementById('tytDenemeYearSelect')) document.getElementById('tytDenemeYearSelect').value = now.getFullYear();
+            if(document.getElementById('aytMonthSelect')) document.getElementById('aytMonthSelect').value = now.getMonth();
+            if(document.getElementById('aytYearSelect')) document.getElementById('aytYearSelect').value = now.getFullYear();
+            if(document.getElementById('aytDenemeMonthSelect')) document.getElementById('aytDenemeMonthSelect').value = now.getMonth();
+            if(document.getElementById('aytDenemeYearSelect')) document.getElementById('aytDenemeYearSelect').value = now.getFullYear();
             loadAdSettings();
             loadUserProfilePicture();
-            updateChart();
-            updateDenemeChart();
+            initTYTFilterChips();
+            updateTYTChart();
             loadTodayStats();
             showFriendCodeInPopup();
             applyTeacherNav();
-            loadDenemeHistory();
+            loadTYTDenemeHistory();
+            loadAYTDenemeHistory();
             updateStreak();
-            
             if (!localStorage.getItem('ownedProfilePictures_' + currentUser)) {
                 localStorage.setItem('ownedProfilePictures_' + currentUser, JSON.stringify(['default']));
             }
-            
             checkStreakLoss();
             startOnboarding();
         });
 
-        // ---------- ONBOARDING ----------
+        // ---- ONBOARDING ----
         const ONBOARDING_STEPS = [
-            { icon: '👋', title: 'Hoş Geldin!', desc: 'KPSS Günlüğüm\'e hoş geldin! Bu kısa tur sana platformu tanıtacak. Hazırsan başlayalım.' },
-            { icon: '📊', title: 'Günlük Soru Takibi', desc: 'Her gün çözdüğün soruları buraya gir: Türkçe, Matematik, Tarih, Coğrafya ve Vatandaşlık. Kaydet butonuna basınca streak\'in artar!' },
-            { icon: '📝', title: 'Deneme Ekle', desc: '"Deneme Ekle" sekmesinden deneme sınavı sonuçlarını kaydet. Net sayıların grafiğe işlenir ve gelişimini takip edebilirsin.' },
+            { icon: '👋', title: 'Hoş Geldin!', desc: 'YKS Günlüğüm\'e hoş geldin! Bu kısa tur sana platformu tanıtacak. Hazırsan başlayalım.' },
+            { icon: '📖', title: 'TYT Soru Takibi', desc: 'TYT sekmesinden her gün çözdüğün soruları gir: Türkçe, Matematik, Fen ve Sosyal dersleri. Kaydet butonuna basınca streak\'in artar!' },
+            { icon: '🎯', title: 'AYT Soru Takibi', desc: 'AYT sekmesinden alan seç (Sayısal/EA/Sözel) ve o alana ait günlük sorularını kaydet.' },
+            { icon: '📝', title: 'Deneme Ekle', desc: '"Deneme" sekmesinden TYT ve AYT deneme sonuçlarını ayrı ayrı kaydet. Netlerini grafik üzerinde takip et.' },
             { icon: '🔥', title: 'Streak Sistemi', desc: 'Her gün giriş yapıp soru kaydedersen streak\'in artar. Streak\'ini kırmamak için her gün birkaç soru bile olsa gir!' },
-            { icon: '👥', title: 'Arkadaşlar & Gruplar', desc: 'Üst menüden Arkadaşlar sayfasına giderek arkadaş kodunu paylaş. Gruplar kurarak haftalık sıralamada yarış!' },
-            { icon: '✅', title: 'Hazırsın!', desc: 'Artık her şeyi biliyorsun. Başarılar! Sormak istediğin bir şey olursa ayarlardan bize ulaşabilirsin.' }
+            { icon: '✅', title: 'Hazırsın!', desc: 'Artık her şeyi biliyorsun. YKS\'ye hazırlıkta başarılar! Arkadaşlar ve Gruplar sayfalarını da keşfetmeyi unutma.' }
         ];
         let onboardingStep = 0;
 
@@ -982,12 +1158,10 @@
             document.getElementById('onboardingIcon').textContent = step.icon;
             document.getElementById('onboardingTitle').textContent = step.title;
             document.getElementById('onboardingDesc').textContent = step.desc;
-
             const dotsEl = document.getElementById('onboardingDots');
             dotsEl.innerHTML = ONBOARDING_STEPS.map((_, i) =>
                 `<div class="onboarding-dot ${i === onboardingStep ? 'active' : ''}"></div>`
             ).join('');
-
             const backBtn = document.getElementById('onboardingBack');
             const nextBtn = document.getElementById('onboardingNext');
             backBtn.style.display = onboardingStep === 0 ? 'none' : 'inline-block';
@@ -1005,36 +1179,29 @@
         }
 
         function onboardingPrev() {
-            if (onboardingStep > 0) {
-                onboardingStep--;
-                renderOnboardingStep();
-            }
+            if (onboardingStep > 0) { onboardingStep--; renderOnboardingStep(); }
         }
 
         function finishOnboarding() {
             localStorage.setItem('onboardingDone_' + currentUser, '1');
             document.getElementById('onboardingOverlay').classList.remove('active');
         }
-        // ---------- /ONBOARDING ----------
+        // ---- /ONBOARDING ----
 
         function checkStreakLoss() {
             const today = new Date().toISOString().split('T')[0];
             const lastCheck = localStorage.getItem('lastStreakCheck_' + currentUser);
             const lastActivity = localStorage.getItem('lastStreakActivity_' + currentUser);
             const currentStreak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
-            
             if (lastCheck === today) return;
-            
             if (lastActivity && currentStreak > 0) {
                 const lastDate = new Date(lastActivity);
                 const todayDate = new Date(today);
                 const daysDiff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
-                
                 if (daysDiff > 1) {
                     const lostStreak = currentStreak;
                     localStorage.setItem('streak_' + currentUser, '0');
                     localStorage.setItem('lastStreakCheck_' + currentUser, today);
-                    
                     const modal = document.createElement('div');
                     modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;';
                     modal.innerHTML = `
@@ -1046,7 +1213,7 @@
                         </div>
                     `;
                     document.body.appendChild(modal);
-                    updateStreakDisplay();
+                    updateStreak();
                 } else {
                     localStorage.setItem('lastStreakCheck_' + currentUser, today);
                 }
