@@ -33,6 +33,18 @@
         .profile-popup h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.1rem; }
         .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; color: var(--warm-dark); font-weight: 500; }
         .profile-item:hover { background: var(--warm-orange); color: white; }
+        .name-change-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; }
+        .name-change-modal.active { display: flex; }
+        .name-change-modal-content { background: white; padding: 2.5rem; border-radius: 20px; max-width: 450px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .notification-modal { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; max-width: 400px; animation: slideInRight 0.3s; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        .notification-modal.success { border-left: 5px solid #2ecc71; }
+        .notification-modal.error { border-left: 5px solid #e74c3c; }
+        .notification-modal.warning { border-left: 5px solid #f39c12; }
+        .notification-modal.info { border-left: 5px solid #3498db; }
+        .notification-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .notification-modal-title { font-weight: bold; color: var(--warm-dark); }
+        .notification-modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--warm-brown); }
         .nav-menu { display: flex; gap: 2rem; list-style: none; }
         .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; transition: color 0.3s; }
         .nav-menu a:hover { color: var(--warm-peach); }
@@ -164,7 +176,8 @@
                 <div class="profile-popup" id="profilePopup">
                     <h3 id="profileName">Kullanıcı</h3>
                     <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
-                    <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="openNameChangeModal()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="location.href='premium.html'">⭐ Premium</div>
                     <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
                 </div>
@@ -697,29 +710,116 @@
             }
         }
 
-        function openNameChange() {
-            const lastChange = localStorage.getItem('lastNameChange_' + currentUser);
-            const now = Date.now();
-            if (lastChange && (now - parseInt(lastChange)) < 86400000) {
-                const remaining = 86400000 - (now - parseInt(lastChange));
-                const hours = Math.floor(remaining / 3600000);
-                const minutes = Math.floor((remaining % 3600000) / 60000);
-                showNotification(`İsim değiştirmek için ${hours} saat ${minutes} dakika beklemelisiniz.`, 'error');
+        function openNameChangeModal() {
+            document.getElementById('currentNameDisplay').textContent = currentUser;
+            document.getElementById('newNameInput').value = '';
+            document.getElementById('nameChangeModal').classList.add('active');
+            document.getElementById('profilePopup').classList.remove('active');
+        }
+
+        function closeNameChangeModal() {
+            document.getElementById('nameChangeModal').classList.remove('active');
+        }
+
+        function saveNewName() {
+            const newName = document.getElementById('newNameInput').value.trim();
+            
+            if (!newName) {
+                showNotification('⚠️ Lütfen yeni isim girin!', 'warning');
                 return;
             }
-            const newName = prompt('Yeni isminizi girin:', currentUser);
-            if (newName && newName.trim()) {
-                const users = JSON.parse(localStorage.getItem('users')) || [];
-                const userIndex = users.findIndex(u => u.name === currentUser);
-                if (userIndex !== -1) {
-                    users[userIndex].name = newName.trim();
-                    localStorage.setItem('users', JSON.stringify(users));
-                    localStorage.setItem('currentUser', newName.trim());
-                    localStorage.setItem('lastNameChange_' + newName.trim(), now.toString());
-                    showNotification('İsim başarıyla değiştirildi!', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                }
+            
+            if (newName === currentUser) {
+                showNotification('⚠️ Yeni isim mevcut isminizle aynı!', 'warning');
+                return;
             }
+            
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            if (users.find(u => u.name === newName)) {
+                showNotification('❌ Bu isim zaten kullanılıyor!', 'error');
+                return;
+            }
+            
+            const userIndex = users.findIndex(u => u.name === currentUser);
+            if (userIndex === -1) return;
+            
+            const oldName = currentUser;
+            users[userIndex].name = newName;
+            
+            const keysToMove = [
+                'streak_', 'lastActivity_', 'lastStreakActivity_', 'lastStreakCheck_',
+                'questionsData_', 'denemeler_', 'profilePicture_', 'ownedProfilePictures_',
+                'friends_', 'friendRequests_', 'rejectedRequests_', 'deletedMessages_'
+            ];
+            
+            keysToMove.forEach(prefix => {
+                const value = localStorage.getItem(prefix + oldName);
+                if (value) {
+                    localStorage.setItem(prefix + newName, value);
+                    localStorage.removeItem(prefix + oldName);
+                }
+            });
+            
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            groups.forEach(group => {
+                if (group.founder === oldName) group.founder = newName;
+                if (group.leader === oldName) group.leader = newName;
+                if (group.members.includes(oldName)) {
+                    const index = group.members.indexOf(oldName);
+                    group.members[index] = newName;
+                }
+            });
+            localStorage.setItem('groups', JSON.stringify(groups));
+            
+            users.forEach(user => {
+                const friends = JSON.parse(localStorage.getItem('friends_' + user.name)) || [];
+                if (friends.includes(oldName)) {
+                    const index = friends.indexOf(oldName);
+                    friends[index] = newName;
+                    localStorage.setItem('friends_' + user.name, JSON.stringify(friends));
+                }
+            });
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', newName);
+            
+            showNotification('✅ İsminiz başarıyla değiştirildi!', 'success');
+            closeNameChangeModal();
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            notification.innerHTML = `
+                <div class="notification-modal-header">
+                    <span class="notification-modal-title">${icons[type]} Bildirim</span>
+                    <button class="notification-modal-close" onclick="this.closest('.notification-modal').remove()">&times;</button>
+                </div>
+                <p style="color: var(--warm-brown); margin: 0;">${message}</p>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function openNameChange() {
+            openNameChangeModal();
         }
 
         document.addEventListener('click', function(event) {
@@ -750,7 +850,61 @@
             if (!localStorage.getItem('ownedProfilePictures_' + currentUser)) {
                 localStorage.setItem('ownedProfilePictures_' + currentUser, JSON.stringify(['default']));
             }
+            
+            checkStreakLoss();
         });
+
+        function checkStreakLoss() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastCheck = localStorage.getItem('lastStreakCheck_' + currentUser);
+            const lastActivity = localStorage.getItem('lastStreakActivity_' + currentUser);
+            const currentStreak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
+            
+            if (lastCheck === today) return;
+            
+            if (lastActivity && currentStreak > 0) {
+                const lastDate = new Date(lastActivity);
+                const todayDate = new Date(today);
+                const daysDiff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff > 1) {
+                    const lostStreak = currentStreak;
+                    localStorage.setItem('streak_' + currentUser, '0');
+                    localStorage.setItem('lastStreakCheck_' + currentUser, today);
+                    
+                    const modal = document.createElement('div');
+                    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:10000;';
+                    modal.innerHTML = `
+                        <div style="background:white;padding:2.5rem;border-radius:20px;max-width:450px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
+                            <h2 style="color:#e74c3c;margin-bottom:1rem;font-size:2rem;">🔥 Streak Kaybedildi!</h2>
+                            <p style="font-size:1.3rem;margin-bottom:1rem;color:#3d3228;"><strong>${lostStreak}</strong> günlük streak'iniz sona erdi.</p>
+                            <p style="color:#7d5a3f;margin-bottom:2rem;font-size:1.1rem;">${daysDiff} gün boyunca giriş yapmadınız. Yeniden başlayın!</p>
+                            <button onclick="this.closest('div').parentElement.remove()" style="width:100%;padding:1rem;background:#d97449;color:white;border:none;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;">Anladım, Devam Edelim! 💪</button>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    updateStreakDisplay();
+                } else {
+                    localStorage.setItem('lastStreakCheck_' + currentUser, today);
+                }
+            } else {
+                localStorage.setItem('lastStreakCheck_' + currentUser, today);
+            }
+        }
     </script>
+    <!-- İsim Değiştir Modal -->
+    <div id="nameChangeModal" class="name-change-modal">
+        <div class="name-change-modal-content">
+            <h2 style="color: var(--warm-dark); margin-bottom: 1.5rem; text-align: center;">✏️ İsim Değiştir</h2>
+            <p style="color: var(--warm-brown); margin-bottom: 1rem; text-align: center;">Mevcut isminiz: <strong id="currentNameDisplay"></strong></p>
+            <div class="form-group">
+                <label>Yeni İsim</label>
+                <input type="text" id="newNameInput" placeholder="Yeni isminizi girin" style="width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem;">
+            </div>
+            <button onclick="saveNewName()" style="width: 100%; padding: 1rem; background: var(--warm-orange); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">Kaydet</button>
+            <button onclick="closeNameChangeModal()" style="width: 100%; padding: 1rem; background: #95a5a6; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">İptal</button>
+        </div>
+    </div>
+
 </body>
 </html>
