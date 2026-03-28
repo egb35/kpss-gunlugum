@@ -68,7 +68,18 @@
         .form-group input:focus { outline: none; border-color: var(--warm-orange); }
         .form-footer { text-align: center; margin-top: 1.5rem; color: #666; }
         .form-footer a { color: var(--warm-orange); text-decoration: none; font-weight: 600; cursor: pointer; }
-        @media (max-width: 768px) { .hero { grid-template-columns: 1fr; } .hero-content h1 { font-size: 2rem; } .nav-links { display: none; } }
+        @media (max-width: 768px) { 
+            .hero { grid-template-columns: 1fr; padding: 2rem 1rem; } 
+            .hero-content h1 { font-size: 2rem; } 
+            .hero-content p { font-size: 1rem; }
+            .nav-links { display: none; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .stat-item h3 { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1rem; }
+            .feature-card { padding: 1.5rem; }
+            .auth-card { padding: 1.5rem; }
+            .modal-content { width: 95%; padding: 1.5rem; }
+        }
     </style>
 </head>
 <body>
