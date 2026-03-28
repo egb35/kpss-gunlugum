@@ -167,8 +167,8 @@
         }
 
         function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
-        function openProfilePicture() { alert('Profil resmi değiştirmek için Dashboard sayfasına gidin.'); }
-        function openNameChange() { alert('İsim değiştirmek için Dashboard sayfasına gidin.'); }
+        function openProfilePicture() { showNotification('Profil resmi değiştirmek için Dashboard sayfasına gidin.', 'info'); }
+        function openNameChange() { showNotification('İsim değiştirmek için Dashboard sayfasına gidin.', 'info'); }
         function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
 
         document.addEventListener('click', function(e) {
@@ -261,7 +261,7 @@
                 const daysDiff = Math.floor((today - rejectedDate) / (1000 * 60 * 60 * 24));
                 
                 if (daysDiff < 7) {
-                    alert(`⚠️ ${friendName} kullanıcısına ${7 - daysDiff} gün boyunca istek gönderemezsiniz.`);
+                    showNotification(`${friendName} kullanıcısına ${7 - daysDiff} gün boyunca istek gönderemezsiniz.`, 'warning');
                     return;
                 } else {
                     delete rejected[friendName];
@@ -318,7 +318,7 @@
             requests = requests.filter(r => r.from !== fromUser);
             localStorage.setItem('friendRequests_' + currentUser, JSON.stringify(requests));
             
-            alert('❌ İstek reddedildi. Bu kullanıcı 7 gün boyunca size istek gönderemeyecek.');
+            showNotification('İstek reddedildi. Bu kullanıcı 7 gün boyunca size istek gönderemeyecek.', 'error');
             loadFriendRequests();
         }
 
@@ -384,7 +384,7 @@
                 navigator.clipboard.writeText(refLink).then(() => {
                     showNotification('Referans linki kopyalandı!');
                 }).catch(() => {
-                    alert('Kopyalama başarısız. Link: ' + refLink);
+                    showNotification('Kopyalama başarısız. Link: ' + refLink, 'error');
                 });
             }
             

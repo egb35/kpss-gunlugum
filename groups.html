@@ -205,20 +205,20 @@
 
         function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
         function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
-        function openProfilePicture() { alert('Profil resmi değiştirmek için Dashboard sayfasına gidin.'); }
-        function openNameChange() { alert('İsim değiştirmek için Dashboard sayfasına gidin.'); }
+        function openProfilePicture() { showNotification('Profil resmi değiştirmek için Dashboard sayfasına gidin.', 'info'); }
+        function openNameChange() { showNotification('İsim değiştirmek için Dashboard sayfasına gidin.', 'info'); }
         function showReferral() {
             const user = users.find(u => u.name === currentUser);
             if (user && user.referralCode) {
                 const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
-                navigator.clipboard.writeText(refLink).then(() => alert('✅ Referans linki kopyalandı!')).catch(() => {
+                navigator.clipboard.writeText(refLink).then(() => showNotification('Referans linki kopyalandı!', 'success')).catch(() => {
                     const textarea = document.createElement('textarea');
                     textarea.value = refLink;
                     document.body.appendChild(textarea);
                     textarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
-                    alert('✅ Referans linki kopyalandı!');
+                    showNotification('Referans linki kopyalandı!', 'success');
                 });
             }
         }
@@ -406,7 +406,7 @@
             groups[groupIndex].members = groups[groupIndex].members.filter(m => m !== memberName);
             localStorage.setItem('groups', JSON.stringify(groups));
             
-            alert('✅ Üye çıkarıldı!');
+            showNotification('Üye çıkarıldı!', 'success');
             closeModal('members');
             loadGroups();
         }
@@ -416,7 +416,7 @@
             const group = groups.find(g => g.id === groupId);
             
             if (group.founder === currentUser) {
-                alert('⚠️ Kurucu olarak gruptan çıkamazsınız. Grubu dağıtmalısınız.');
+                showNotification('Kurucu olarak gruptan çıkamazsınız. Grubu dağıtmalısınız.', 'warning');
                 return;
             }
 
@@ -426,7 +426,7 @@
             groups[groupIndex].members = groups[groupIndex].members.filter(m => m !== currentUser);
             localStorage.setItem('groups', JSON.stringify(groups));
             
-            alert('✅ Gruptan çıktınız!');
+            showNotification('Gruptan çıktınız!', 'success');
             loadGroups();
         }
 
@@ -437,7 +437,7 @@
             const updatedGroups = groups.filter(g => g.id !== groupId);
             localStorage.setItem('groups', JSON.stringify(updatedGroups));
             
-            alert('✅ Grup dağıtıldı!');
+            showNotification('Grup dağıtıldı!', 'success');
             loadGroups();
         }
 
@@ -447,7 +447,7 @@
             const maxGroups = isPremium ? 4 : 1;
             
             if (myGroups.length >= maxGroups) {
-                alert(isPremium ? '⚠️ Maksimum 4 grupta bulunabilirsiniz!' : '⚠️ Ücretsiz kullanıcılar sadece 1 grupta bulunabilir. Premium olun!');
+                showNotification(isPremium ? 'Maksimum 4 grupta bulunabilirsiniz!' : 'Ücretsiz kullanıcılar sadece 1 grupta bulunabilir. Premium olun!', 'warning');
                 return;
             }
             
@@ -456,7 +456,7 @@
         }
 
         function selectSize(size) {
-            if (size === 10 && !isPremium) { alert('10 kişilik grup için Premium gerekli!'); return; }
+            if (size === 10 && !isPremium) { showNotification('10 kişilik grup için Premium gerekli!', 'warning'); return; }
             selectedSize = size;
             document.getElementById('size3').classList.remove('selected');
             document.getElementById('size10').classList.remove('selected');

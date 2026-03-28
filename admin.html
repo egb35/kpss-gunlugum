@@ -84,6 +84,12 @@
         .password-modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 450px; width: 90%; }
         .password-info-box { background: var(--warm-light); padding: 1rem; border-radius: 10px; margin: 1rem 0; }
         .password-display { font-family: monospace; background: white; padding: 0.5rem; border-radius: 5px; display: inline-block; margin-top: 0.3rem; }
+        .notification-modal { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; max-width: 400px; animation: slideInRight 0.3s; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        .notification-modal.success { border-left: 5px solid #2ecc71; }
+        .notification-modal.error { border-left: 5px solid #e74c3c; }
+        .notification-modal.warning { border-left: 5px solid #f39c12; }
+        .notification-modal.info { border-left: 5px solid #3498db; }
         
         .crop-container { position: relative; width: 100%; max-width: 400px; height: 400px; margin: 1rem auto; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
         .crop-container img { max-width: 100%; max-height: 100%; }
@@ -316,7 +322,7 @@
     <script>
         const isAdmin = localStorage.getItem('isAdmin');
         if (isAdmin !== 'true') {
-            alert('⚠️ Bu sayfaya erişim yetkiniz yok!');
+            showNotification('Bu sayfaya erişim yetkiniz yok!', 'error');
             window.location.href = 'index.html';
         }
 
@@ -444,7 +450,7 @@
             localStorage.removeItem('ownedProfilePictures_' + username);
             localStorage.removeItem('profilePicture_' + username);
 
-            alert('✅ Kullanıcı başarıyla silindi!');
+            showNotification('Kullanıcı başarıyla silindi!', 'success');
             loadAdminData();
         }
 
@@ -477,21 +483,21 @@
             const userIndex = users.findIndex(u => u.name === currentGiftUser);
             
             if (userIndex === -1) {
-                alert('❌ Kullanıcı bulunamadı!');
+                showNotification('Kullanıcı bulunamadı!', 'error');
                 return;
             }
 
             if (type === 'premium') {
                 users[userIndex].isPremium = true;
                 localStorage.setItem('users', JSON.stringify(users));
-                alert(`✅ ${currentGiftUser} kullanıcısına Premium üyelik hediye edildi!`);
+                showNotification(`${currentGiftUser} kullanıcısına Premium üyelik hediye edildi!`, 'success');
             } else if (type === 'picture' && pictureId) {
                 const ownedPics = JSON.parse(localStorage.getItem('ownedProfilePictures_' + currentGiftUser)) || ['default'];
                 if (!ownedPics.includes(pictureId)) {
                     ownedPics.push(pictureId);
                     localStorage.setItem('ownedProfilePictures_' + currentGiftUser, JSON.stringify(ownedPics));
                     const picName = (JSON.parse(localStorage.getItem('profilePictures')) || []).find(p => p.id === pictureId)?.name || 'Profil Resmi';
-                    alert(`✅ ${currentGiftUser} kullanıcısına "${picName}" hediye edildi!`);
+                    showNotification(`${currentGiftUser} kullanıcısına "${picName}" hediye edildi!`, 'success');
                 }
             }
 
@@ -677,7 +683,7 @@
         function saveProfilePicture() {
             const name = document.getElementById('pictureName').value.trim();
             if (!name) {
-                alert('❌ Lütfen profil resmi adı girin!');
+                showNotification('Lütfen profil resmi adı girin!', 'warning');
                 return;
             }
 
@@ -709,7 +715,7 @@
             pictures.push(newPic);
             localStorage.setItem('profilePictures', JSON.stringify(pictures));
 
-            alert('✅ Profil resmi başarıyla eklendi!');
+            showNotification('Profil resmi başarıyla eklendi!', 'success');
             closeModal('addProfilePic');
             loadProfilePictures();
         }
@@ -732,7 +738,7 @@
                 localStorage.setItem('ownedProfilePictures_' + user.name, JSON.stringify(updatedOwned));
             });
 
-            alert('✅ Profil resmi silindi! Kullanan kullanıcılar varsayılana döndü.');
+            showNotification('Profil resmi silindi! Kullanan kullanıcılar varsayılana döndü.', 'success');
             loadProfilePictures();
         }
 
@@ -781,12 +787,12 @@
             const file = document.getElementById('adImageFile').files[0];
             
             if (!name) {
-                alert('❌ Lütfen reklam adı girin!');
+                showNotification('Lütfen reklam adı girin!', 'warning');
                 return;
             }
             
             if (!file) {
-                alert('❌ Lütfen görsel seçin!');
+                showNotification('Lütfen görsel seçin!', 'warning');
                 return;
             }
 
@@ -804,7 +810,7 @@
                 images.push(newImage);
                 localStorage.setItem('adImages', JSON.stringify(images));
 
-                alert('✅ Reklam görseli başarıyla eklendi!');
+                showNotification('Reklam görseli başarıyla eklendi!', 'success');
                 document.getElementById('adImageName').value = '';
                 document.getElementById('adImageUrl').value = '';
                 document.getElementById('adImageFile').value = '';
@@ -823,7 +829,7 @@
             const updatedImages = images.filter(i => i.id !== imgId);
             localStorage.setItem('adImages', JSON.stringify(updatedImages));
 
-            alert('✅ Reklam görseli silindi!');
+            showNotification('Reklam görseli silindi!', 'success');
             loadAdImages();
             populateBannerSelects();
         }
@@ -859,7 +865,7 @@
             if (!selectedId) {
                 localStorage.removeItem('adBanner_' + location);
                 localStorage.removeItem('selectedBanner_' + location);
-                alert('✅ Banner kaldırıldı!');
+                showNotification('Banner kaldırıldı!', 'success');
                 return;
             }
 
@@ -867,7 +873,7 @@
             const selectedImage = images.find(i => i.id === selectedId);
 
             if (!selectedImage) {
-                alert('❌ Görsel bulunamadı!');
+                showNotification('Görsel bulunamadı!', 'error');
                 return;
             }
 
@@ -884,14 +890,14 @@
             localStorage.setItem('adBanner_' + location, content);
             localStorage.setItem('selectedBanner_' + location, selectedId);
 
-            alert(`✅ ${selectedImage.name} bannera atandı!`);
+            showNotification(`${selectedImage.name} bannera atandı!`, 'success');
         }
 
         function toggleAd(location) {
             const checkboxId = location === 'top' ? 'adTop' : (location === 'side1' ? 'adSide1' : 'adSide2');
             const isEnabled = document.getElementById(checkboxId).checked;
             localStorage.setItem('adEnabled_' + location, isEnabled.toString());
-            alert(`Banner ${isEnabled ? 'gösteriliyor' : 'gizleniyor'}!`);
+            showNotification(`Banner ${isEnabled ? 'gösteriliyor' : 'gizleniyor'}!`, 'info');
         }
 
         function closeModal(type) {
@@ -950,12 +956,12 @@
             const newPassword = document.getElementById('newPassword').value.trim();
             
             if (!newPassword) {
-                alert('⚠️ Lütfen yeni şifre girin!');
+                showNotification('Lütfen yeni şifre girin!', 'warning');
                 return;
             }
             
             if (newPassword.length < 6) {
-                alert('⚠️ Şifre en az 6 karakter olmalıdır!');
+                showNotification('Şifre en az 6 karakter olmalıdır!', 'warning');
                 return;
             }
             
@@ -967,9 +973,25 @@
             users[userIndex].password = newPassword;
             localStorage.setItem('users', JSON.stringify(users));
             
-            alert('✅ Şifre başarıyla değiştirildi!');
+            showNotification('Şifre başarıyla değiştirildi!', 'success');
             document.getElementById('currentPassword').textContent = newPassword;
             loadUsers();
+        }
+
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            notification.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:bold;color:var(--warm-dark);">${icons[type]}</span>
+                    <button onclick="this.closest('.notification-modal').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+                </div>
+                <p style="color:var(--warm-brown);margin:0;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.opacity = '0'; setTimeout(() => notification.remove(), 300); }, 3000);
         }
     </script>
     <!-- Şifre Yönetimi Modal -->
