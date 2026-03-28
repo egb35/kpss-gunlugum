@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arkadaşlar - KPSS Günlüğüm</title>
+    <meta name="description" content="KPSS çalışma arkadaşları ekleyin, referans linki paylaşın. Arkadaşlarınızla birlikte KPSS'ye hazırlanın ve motivasyonunuzu artırın.">
+    <meta name="keywords" content="KPSS arkadaş, çalışma arkadaşı, KPSS referans, birlikte çalışma, KPSS arkadaşlık">
+    <meta name="author" content="KPSS Günlüğüm">
+    <meta property="og:title" content="KPSS Arkadaşlar - KPSS Günlüğüm">
+    <meta property="og:description" content="Arkadaşlarınızı ekleyin ve birlikte KPSS'ye hazırlanın">
+    <meta property="og:type" content="website">
+    <title>KPSS Arkadaşlarım | Referans Sistemi - KPSS Günlüğüm</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -106,7 +112,7 @@
             const pic = allPics.find(p => p.id === savedPic);
             if (pic && pic.image) {
                 avatar.className = 'user-avatar';
-                avatar.innerHTML = `<img src="${pic.image}">`;
+                avatar.innerHTML = `<img src="${pic.image}" alt="${currentUser} profil resmi">`;
             } else {
                 avatar.className = 'user-avatar text-only';
                 avatar.textContent = currentUser.charAt(0).toUpperCase();

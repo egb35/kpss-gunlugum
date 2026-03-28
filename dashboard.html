@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - KPSS Günlüğüm</title>
+    <meta name="description" content="KPSS sınavına hazırlananlar için günlük soru takibi, deneme analizi, streak sistemi ve çalışma grubu. Motivasyonlu çalışma için ücretsiz platform.">
+    <meta name="keywords" content="KPSS, KPSS hazırlık, soru takibi, deneme analizi, çalışma takibi, KPSS grubu, streak sistemi">
+    <meta name="author" content="KPSS Günlüğüm">
+    <meta property="og:title" content="KPSS Günlüğüm - Çalışma Takip Dashboard">
+    <meta property="og:description" content="KPSS sınavına hazırlananlar için günlük soru takibi ve deneme analizi platformu">
+    <meta property="og:type" content="website">
+    <title>KPSS Çalışma Takibi | Günlük Soru Analizi - KPSS Günlüğüm</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -289,7 +295,7 @@
             
             if (pic && pic.image) {
                 avatar.className = 'user-avatar';
-                avatar.innerHTML = `<img src="${pic.image}" alt="Profil">`;
+                avatar.innerHTML = `<img src="${pic.image}" alt="${currentUser} profil resmi">`;
             } else {
                 avatar.className = 'user-avatar text-only';
                 avatar.textContent = currentUser.charAt(0).toUpperCase();
@@ -334,7 +340,7 @@
                 
                 html += `<div style="text-align: center;">
                     <div class="avatar-option ${lockClass}" ${!isOwned ? 'onclick="showUnlockInfo(\'' + pic.id + '\')"' : ''}>
-                        ${isOwned ? '<img src="' + pic.image + '" alt="' + pic.name + '">' : '<span class="avatar-lock">🔒</span>'}
+                        ${isOwned ? '<img src="' + pic.image + '" alt="' + pic.name + ' profil resmi">' : '<span class="avatar-lock">🔒</span>'}
                     </div>
                     <button class="avatar-use-btn" ${!isOwned || isCurrent ? 'disabled' : ''} onclick="useProfilePicture('${pic.id}')">
                         ${isCurrent ? 'Kullanılıyor' : (isOwned ? 'Kullan' : '🔒 Kilitli')}
