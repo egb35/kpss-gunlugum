@@ -14,21 +14,26 @@
         .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); cursor: pointer; }
         .logo::before { content: "📚"; font-size: 1.8rem; margin-right: 0.5rem; }
         .user-info { display: flex; align-items: center; gap: 1rem; color: var(--warm-cream); position: relative; }
+        .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.4rem 0.8rem; border-radius: 15px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.2); overflow: hidden; background: var(--warm-orange); }
         .user-avatar img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
         .user-avatar.text-only { font-weight: bold; color: white; font-size: 1rem; }
         .user-avatar:hover { transform: scale(1.1); }
-        .profile-popup { display: none; position: absolute; top: 50px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 200px; z-index: 10000; }
+        .profile-popup { display: none; position: absolute; top: 50px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 220px; z-index: 10000; }
         .profile-popup.active { display: block; }
-        .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .profile-popup h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.1rem; }
+        .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; color: var(--warm-dark); font-weight: 500; }
         .profile-item:hover { background: var(--warm-orange); color: white; }
         .nav-menu { display: flex; gap: 2rem; list-style: none; }
         .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; }
         .container { max-width: 1200px; margin: 2rem auto; padding: 2rem; }
         .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 2rem; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
-        .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; }
+        .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; font-size: 0.9rem; }
         .btn:hover { transform: translateY(-2px); }
+        .btn-danger { background: #e74c3c; }
+        .btn-warning { background: #f39c12; }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.85rem; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 500px; width: 90%; }
@@ -37,12 +42,17 @@
         .group-header:hover { background: var(--warm-cream); }
         .group-header.active { background: var(--warm-orange); color: white; }
         .group-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-        .group-body.open { max-height: 1000px; }
+        .group-body.open { max-height: 2000px; }
         .group-body-content { padding: 1.5rem; }
         .tabs { display: flex; gap: 1rem; margin-bottom: 1rem; }
         .tab { padding: 0.8rem 1.5rem; background: var(--warm-light); border: none; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--warm-brown); }
         .tab.active { background: var(--warm-orange); color: white; }
-        .rank-item { background: var(--warm-light); padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .rank-item { background: var(--warm-light); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; }
+        .rank-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .rank-details { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; font-size: 0.75rem; color: var(--warm-brown); }
+        .rank-details div { text-align: center; }
+        .group-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .member-item { background: var(--warm-light); padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
         input { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; margin-bottom: 1rem; }
         .size-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
         .size-option { padding: 1.5rem; border: 2px solid var(--warm-cream); border-radius: 10px; text-align: center; cursor: pointer; }
@@ -61,10 +71,14 @@
                 <li><a href="achievements.html">🏆 Başarılar</a></li>
             </ul>
             <div class="user-info">
-                <span id="userName">Kullanıcı</span>
+                <div class="streak-badge">🔥 <span id="streakCount">0</span> gün</div>
+                <span>Hoş geldin, <strong id="userName">Kullanıcı</strong></span>
                 <div class="user-avatar text-only" id="userAvatar" onclick="toggleProfilePopup(event)">K</div>
                 <div class="profile-popup" id="profilePopup">
-                    <div class="profile-item" onclick="location.href='dashboard.html'">📊 Dashboard</div>
+                    <h3 id="profileName">Kullanıcı</h3>
+                    <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
+                    <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
                 </div>
             </div>
@@ -100,16 +114,25 @@
         </div>
     </div>
 
+    <div id="membersModal" class="modal">
+        <div class="modal-content">
+            <h2>Grup Üyeleri</h2>
+            <div id="membersList"></div>
+            <button class="btn" onclick="closeModal('members')" style="width: 100%; background: #95a5a6; margin-top: 1rem;">Kapat</button>
+        </div>
+    </div>
+
     <script>
         const currentUser = localStorage.getItem('currentUser');
         if (!currentUser) window.location.href = 'index.html';
         document.getElementById('userName').textContent = currentUser;
-        document.getElementById('userAvatar').textContent = currentUser.charAt(0).toUpperCase();
+        document.getElementById('profileName').textContent = currentUser;
 
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const currentUserData = users.find(u => u.name === currentUser);
         const isPremium = currentUserData?.isPremium || false;
         let selectedSize = 3;
+        let currentGroupId = null;
 
         function loadUserProfile() {
             const savedPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
@@ -125,8 +148,30 @@
             }
         }
 
+        function updateStreak() {
+            const streak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
+            document.getElementById('streakCount').textContent = streak;
+        }
+
         function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
         function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
+        function openProfilePicture() { alert('Profil resmi değiştirmek için Dashboard sayfasına gidin.'); }
+        function openNameChange() { alert('İsim değiştirmek için Dashboard sayfasına gidin.'); }
+        function showReferral() {
+            const user = users.find(u => u.name === currentUser);
+            if (user && user.referralCode) {
+                const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
+                navigator.clipboard.writeText(refLink).then(() => alert('✅ Referans linki kopyalandı!')).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = refLink;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('✅ Referans linki kopyalandı!');
+                });
+            }
+        }
 
         function loadGroups() {
             const groups = JSON.parse(localStorage.getItem('groups')) || [];
@@ -140,6 +185,7 @@
 
             let html = '';
             myGroups.forEach((group, index) => {
+                const isFounder = group.founder === currentUser;
                 html += `
                     <div class="group-accordion">
                         <div class="group-header" onclick="toggleGroup(${index})">
@@ -154,6 +200,11 @@
                                 </div>
                                 <div id="weekly-${index}">${generateRanking(calculateWeeklyScores(group.members), group.leader)}</div>
                                 <div id="total-${index}" style="display:none;">${generateRanking(calculateTotalScores(group.members))}</div>
+                                <div class="group-actions">
+                                    ${isFounder ? `<button class="btn btn-small" onclick="showMembers('${group.id}')">👥 Üyeleri Yönet</button>` : ''}
+                                    <button class="btn btn-small btn-warning" onclick="leaveGroup('${group.id}')">🚪 Gruptan Çık</button>
+                                    ${isFounder ? `<button class="btn btn-small btn-danger" onclick="deleteGroup('${group.id}')">🗑️ Grubu Dağıt</button>` : ''}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -204,14 +255,19 @@
             const scores = [];
             members.forEach(member => {
                 const questionsData = JSON.parse(localStorage.getItem('questionsData_' + member)) || {};
-                let total = 0;
+                let total = 0, turkce = 0, matematik = 0, tarih = 0, cografya = 0, vatandaslik = 0;
                 Object.entries(questionsData).forEach(([date, data]) => {
                     const dateObj = new Date(date);
                     if (dateObj >= weekStart) {
-                        total += (data.turkce||0) + (data.matematik||0) + (data.tarih||0) + (data.cografya||0) + (data.vatandaslik||0);
+                        turkce += data.turkce || 0;
+                        matematik += data.matematik || 0;
+                        tarih += data.tarih || 0;
+                        cografya += data.cografya || 0;
+                        vatandaslik += data.vatandaslik || 0;
                     }
                 });
-                scores.push({ name: member, score: total });
+                total = turkce + matematik + tarih + cografya + vatandaslik;
+                scores.push({ name: member, score: total, turkce, matematik, tarih, cografya, vatandaslik });
             });
             return scores.sort((a, b) => b.score - a.score);
         }
@@ -220,11 +276,16 @@
             const scores = [];
             members.forEach(member => {
                 const questionsData = JSON.parse(localStorage.getItem('questionsData_' + member)) || {};
-                let total = 0;
+                let total = 0, turkce = 0, matematik = 0, tarih = 0, cografya = 0, vatandaslik = 0;
                 Object.values(questionsData).forEach(data => {
-                    total += (data.turkce||0) + (data.matematik||0) + (data.tarih||0) + (data.cografya||0) + (data.vatandaslik||0);
+                    turkce += data.turkce || 0;
+                    matematik += data.matematik || 0;
+                    tarih += data.tarih || 0;
+                    cografya += data.cografya || 0;
+                    vatandaslik += data.vatandaslik || 0;
                 });
-                scores.push({ name: member, score: total });
+                total = turkce + matematik + tarih + cografya + vatandaslik;
+                scores.push({ name: member, score: total, turkce, matematik, tarih, cografya, vatandaslik });
             });
             return scores.sort((a, b) => b.score - a.score);
         }
@@ -238,16 +299,96 @@
                 const isLeader = leader && item.name === leader;
                 html += `
                     <div class="rank-item">
-                        <span style="font-size: 1.5rem; margin-right: 1rem;">${medal}</span>
-                        <div style="flex: 1;">
-                            <strong>${item.name}</strong>
-                            ${isLeader ? '<span style="background: gold; color: #333; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem; margin-left: 0.5rem;">👑 Lider</span>' : ''}
+                        <div class="rank-header">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <span style="font-size: 1.5rem;">${medal}</span>
+                                <div>
+                                    <strong>${item.name}</strong>
+                                    ${isLeader ? '<span style="background: gold; color: #333; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem; margin-left: 0.5rem;">👑 Lider</span>' : ''}
+                                </div>
+                            </div>
+                            <strong style="font-size: 1.3rem; color: var(--warm-orange);">${item.score}</strong>
                         </div>
-                        <strong style="font-size: 1.3rem; color: var(--warm-orange);">${item.score}</strong>
+                        <div class="rank-details">
+                            <div><strong>Türkçe</strong><br>${item.turkce}</div>
+                            <div><strong>Mat</strong><br>${item.matematik}</div>
+                            <div><strong>Tarih</strong><br>${item.tarih}</div>
+                            <div><strong>Coğ</strong><br>${item.cografya}</div>
+                            <div><strong>Vat</strong><br>${item.vatandaslik}</div>
+                        </div>
                     </div>
                 `;
             });
             return html;
+        }
+
+        function showMembers(groupId) {
+            currentGroupId = groupId;
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const group = groups.find(g => g.id === groupId);
+            if (!group) return;
+
+            let html = '';
+            group.members.forEach(member => {
+                const isFounder = member === group.founder;
+                html += `
+                    <div class="member-item">
+                        <div>
+                            <strong>${member}</strong>
+                            ${isFounder ? '<span style="background: var(--warm-orange); color: white; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem; margin-left: 0.5rem;">Kurucu</span>' : ''}
+                        </div>
+                        ${!isFounder ? `<button class="btn btn-small btn-danger" onclick="removeMember('${member}')">🗑️ Çıkar</button>` : ''}
+                    </div>
+                `;
+            });
+
+            document.getElementById('membersList').innerHTML = html;
+            document.getElementById('membersModal').classList.add('active');
+        }
+
+        function removeMember(memberName) {
+            if (!confirm(`${memberName} kullanıcısını gruptan çıkarmak istediğinizden emin misiniz?`)) return;
+            
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const groupIndex = groups.findIndex(g => g.id === currentGroupId);
+            if (groupIndex === -1) return;
+
+            groups[groupIndex].members = groups[groupIndex].members.filter(m => m !== memberName);
+            localStorage.setItem('groups', JSON.stringify(groups));
+            
+            alert('✅ Üye çıkarıldı!');
+            closeModal('members');
+            loadGroups();
+        }
+
+        function leaveGroup(groupId) {
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const group = groups.find(g => g.id === groupId);
+            
+            if (group.founder === currentUser) {
+                alert('⚠️ Kurucu olarak gruptan çıkamazsınız. Grubu dağıtmalısınız.');
+                return;
+            }
+
+            if (!confirm('Gruptan çıkmak istediğinizden emin misiniz?')) return;
+
+            const groupIndex = groups.findIndex(g => g.id === groupId);
+            groups[groupIndex].members = groups[groupIndex].members.filter(m => m !== currentUser);
+            localStorage.setItem('groups', JSON.stringify(groups));
+            
+            alert('✅ Gruptan çıktınız!');
+            loadGroups();
+        }
+
+        function deleteGroup(groupId) {
+            if (!confirm('⚠️ Grubu tamamen dağıtmak istediğinizden emin misiniz?\n\nBu işlem geri alınamaz!')) return;
+
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const updatedGroups = groups.filter(g => g.id !== groupId);
+            localStorage.setItem('groups', JSON.stringify(updatedGroups));
+            
+            alert('✅ Grup dağıtıldı!');
+            loadGroups();
         }
 
         function showCreateGroup() {
@@ -291,6 +432,7 @@
             localStorage.setItem('groups', JSON.stringify(groups));
             closeModal('createGroup');
             alert('Grup başarıyla oluşturuldu!');
+            document.getElementById('groupName').value = '';
             loadGroups();
         }
 
@@ -301,9 +443,13 @@
             if (!document.getElementById('userAvatar').contains(e.target) && !popup.contains(e.target)) {
                 popup.classList.remove('active');
             }
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+            }
         });
 
         loadUserProfile();
+        updateStreak();
         loadGroups();
     </script>
 </body>

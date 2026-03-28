@@ -13,18 +13,31 @@
         nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); cursor: pointer; }
         .logo::before { content: "📚"; font-size: 1.8rem; margin-right: 0.5rem; }
+        .user-info { display: flex; align-items: center; gap: 1rem; color: var(--warm-cream); position: relative; }
+        .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.4rem 0.8rem; border-radius: 15px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.2); overflow: hidden; background: var(--warm-orange); }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .user-avatar.text-only { font-weight: bold; color: white; font-size: 1rem; }
+        .user-avatar:hover { transform: scale(1.1); }
+        .profile-popup { display: none; position: absolute; top: 50px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 220px; z-index: 10000; }
+        .profile-popup.active { display: block; }
+        .profile-popup h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.1rem; }
+        .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; color: var(--warm-dark); font-weight: 500; }
+        .profile-item:hover { background: var(--warm-orange); color: white; }
         .nav-menu { display: flex; gap: 2rem; list-style: none; }
         .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; }
-        .container { max-width: 1000px; margin: 2rem auto; padding: 2rem; }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 2rem; display: grid; grid-template-columns: 1fr 350px; gap: 2rem; }
         .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
-        .card-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
-        .rank-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; transition: transform 0.3s; }
-        .rank-item:hover { transform: translateX(5px); }
-        .rank-item.me { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; }
+        .card-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
+        .rank-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .rank-item.highlight { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; }
         .rank-medal { font-size: 2rem; margin-right: 1rem; }
         .rank-info { flex: 1; display: flex; align-items: center; gap: 1rem; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--warm-orange); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-        .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: bold; font-size: 1.2rem; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        .my-rank-card { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; }
+        .my-rank-number { font-size: 4rem; font-weight: bold; margin: 1rem 0; }
+        .my-streak { font-size: 3rem; font-weight: bold; margin: 1rem 0; }
+        @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -38,68 +51,146 @@
                 <li><a href="streak.html">🔥 Streak</a></li>
                 <li><a href="achievements.html">🏆 Başarılar</a></li>
             </ul>
+            <div class="user-info">
+                <div class="streak-badge">🔥 <span id="streakCount">0</span> gün</div>
+                <span>Hoş geldin, <strong id="userName">Kullanıcı</strong></span>
+                <div class="user-avatar text-only" id="userAvatar" onclick="toggleProfilePopup(event)">K</div>
+                <div class="profile-popup" id="profilePopup">
+                    <h3 id="profileName">Kullanıcı</h3>
+                    <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
+                    <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
+                    <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
+                </div>
+            </div>
         </nav>
     </header>
 
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h1>🔥 Streak Sıralaması</h1>
-                <p style="color: var(--warm-brown); margin-top: 0.5rem;">Her gün en az 10 soru çöz ve streakini koru!</p>
+                <h2>🔥 Streak Liderleri</h2>
+                <p style="color: var(--warm-brown); margin-top: 0.5rem;">En uzun streak'e sahip ilk 20 kullanıcı</p>
             </div>
-            <div id="streakRanking">
-                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Yükleniyor...</p>
-            </div>
+            <div id="leaderboard"></div>
         </div>
+
+        <aside class="sidebar">
+            <div class="my-rank-card">
+                <h3 style="opacity: 0.9;">Senin Sıralaman</h3>
+                <div class="my-rank-number" id="myRank">#-</div>
+                <div style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 0.5rem;">Streak'in</div>
+                <div class="my-streak">🔥 <span id="myStreak">0</span></div>
+                <p style="opacity: 0.9; margin-top: 1rem;">Harika gidiyorsun! 💪</p>
+            </div>
+        </aside>
     </div>
 
     <script>
         const currentUser = localStorage.getItem('currentUser');
         if (!currentUser) window.location.href = 'index.html';
+        document.getElementById('userName').textContent = currentUser;
+        document.getElementById('profileName').textContent = currentUser;
 
-        function loadStreakRanking() {
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const streaks = [];
+        const users = JSON.parse(localStorage.getItem('users')) || [];
 
+        function loadUserProfile() {
+            const savedPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
+            const avatar = document.getElementById('userAvatar');
+            const allPics = JSON.parse(localStorage.getItem('profilePictures')) || [];
+            const pic = allPics.find(p => p.id === savedPic);
+            if (pic && pic.image) {
+                avatar.className = 'user-avatar';
+                avatar.innerHTML = `<img src="${pic.image}">`;
+            } else {
+                avatar.className = 'user-avatar text-only';
+                avatar.textContent = currentUser.charAt(0).toUpperCase();
+            }
+        }
+
+        function updateStreak() {
+            const streak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
+            document.getElementById('streakCount').textContent = streak;
+            document.getElementById('myStreak').textContent = streak;
+        }
+
+        function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
+        function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
+        function openProfilePicture() { alert('Profil resmi değiştirmek için Dashboard sayfasına gidin.'); }
+        function openNameChange() { alert('İsim değiştirmek için Dashboard sayfasına gidin.'); }
+        function showReferral() {
+            const user = users.find(u => u.name === currentUser);
+            if (user && user.referralCode) {
+                const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
+                navigator.clipboard.writeText(refLink).then(() => alert('✅ Referans linki kopyalandı!')).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = refLink;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('✅ Referans linki kopyalandı!');
+                });
+            }
+        }
+
+        function loadLeaderboard() {
+            const streakData = [];
             users.forEach(user => {
                 const streak = parseInt(localStorage.getItem('streak_' + user.name) || '0');
-                if (streak > 0) {
-                    streaks.push({ name: user.name, streak: streak });
-                }
+                streakData.push({ name: user.name, streak: streak });
             });
 
-            streaks.sort((a, b) => b.streak - a.streak);
+            streakData.sort((a, b) => b.streak - a.streak);
 
-            const container = document.getElementById('streakRanking');
-            
-            if (streaks.length === 0) {
-                container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz streak verisi yok.</p>';
+            const myRankIndex = streakData.findIndex(u => u.name === currentUser);
+            const myRank = myRankIndex + 1;
+            document.getElementById('myRank').textContent = `#${myRank}`;
+
+            const top20 = streakData.slice(0, 20);
+            const leaderboard = document.getElementById('leaderboard');
+
+            if (top20.length === 0) {
+                leaderboard.innerHTML = '<p style="text-align: center; padding: 2rem;">Henüz veri yok.</p>';
                 return;
             }
 
             const medals = ['🥇', '🥈', '🥉'];
             let html = '';
 
-            streaks.forEach((item, index) => {
-                const medal = index < 3 ? medals[index] : `${index + 1}.`;
-                const isMe = item.name === currentUser;
-
+            top20.forEach((item, index) => {
+                const rankNumber = index + 1;
+                const medal = index < 3 ? medals[index] : `${rankNumber}.`;
+                const isCurrentUser = item.name === currentUser;
+                
                 html += `
-                    <div class="rank-item ${isMe ? 'me' : ''}">
-                        <span class="rank-medal">${medal}</span>
+                    <div class="rank-item ${isCurrentUser ? 'highlight' : ''}">
                         <div class="rank-info">
-                            <div class="avatar">${item.name.charAt(0).toUpperCase()}</div>
-                            <strong>${item.name}</strong>
+                            <span class="rank-medal">${medal}</span>
+                            <strong style="font-size: 1.1rem;">${item.name}</strong>
+                            ${isCurrentUser ? '<span style="margin-left: 0.5rem; opacity: 0.9;">(Sen)</span>' : ''}
                         </div>
-                        <div class="streak-badge">🔥 ${item.streak} gün</div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 2rem;">🔥</div>
+                            <strong style="font-size: 1.5rem;">${item.streak}</strong>
+                        </div>
                     </div>
                 `;
             });
 
-            container.innerHTML = html;
+            leaderboard.innerHTML = html;
         }
 
-        loadStreakRanking();
+        document.addEventListener('click', function(e) {
+            const popup = document.getElementById('profilePopup');
+            if (!document.getElementById('userAvatar').contains(e.target) && !popup.contains(e.target)) {
+                popup.classList.remove('active');
+            }
+        });
+
+        loadUserProfile();
+        updateStreak();
+        loadLeaderboard();
     </script>
 </body>
 </html>
