@@ -406,7 +406,7 @@
             const allPics = JSON.parse(localStorage.getItem('profilePictures')) || [];
             const pic = allPics.find(p => p.id === picId);
             if (pic) {
-                alert('🔒 ' + pic.name + '\n\nBu profil resmi kilitli. Nasıl açılacağı hakkında bilgi için yöneticiye danışın.');
+                showNotification(pic.name + ' kilitli. Nasıl açılacağı için yöneticiye danışın.', 'warning');
             }
         }
 
@@ -617,7 +617,7 @@
         function calculateNet() {
             const dogru = parseInt(document.getElementById('dogru').value) || 0;
             const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
-            if (dogru + yanlis > 120) { alert('⚠️ Toplam soru sayısı 120\'yi geçemez!'); return; }
+            if (dogru + yanlis > 120) { showNotification('Toplam soru sayısı 120\'yi geçemez!', 'warning'); return; }
             const bos = 120 - dogru - yanlis;
             const net = (dogru - (yanlis * 0.25)).toFixed(2);
             document.getElementById('bosResult').textContent = bos;
@@ -780,7 +780,7 @@
             
             const keysToMove = [
                 'streak_', 'lastActivity_', 'lastStreakActivity_', 'lastStreakCheck_',
-                'questionsData_', 'denemeler_', 'profilePicture_', 'ownedProfilePictures_',
+                'questionsData_', 'denemeData_', 'profilePicture_', 'ownedProfilePictures_',
                 'friends_', 'friendRequests_', 'rejectedRequests_', 'deletedMessages_', 'lastNameChange_'
             ];
             

@@ -127,10 +127,10 @@
 
     <div class="container">
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('ana')">📊 Ana Sayfa</button>
-            <button class="tab" onclick="switchTab('kullanici')">👥 Kullanıcı Yönetimi</button>
-            <button class="tab" onclick="switchTab('profil')">🖼️ Profil Resimleri</button>
-            <button class="tab" onclick="switchTab('reklam')">📢 Reklam Yönetimi</button>
+            <button class="tab active" onclick="switchTab('ana', event)">📊 Ana Sayfa</button>
+            <button class="tab" onclick="switchTab('kullanici', event)">👥 Kullanıcı Yönetimi</button>
+            <button class="tab" onclick="switchTab('profil', event)">🖼️ Profil Resimleri</button>
+            <button class="tab" onclick="switchTab('reklam', event)">📢 Reklam Yönetimi</button>
         </div>
 
         <!-- ANA SAYFA -->
@@ -331,10 +331,10 @@
         let isDragging = false, dragStartX, dragStartY;
         let currentGiftUser = null;
 
-        function switchTab(tabName) {
+        function switchTab(tabName, e) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            event.target.classList.add('active');
+            (e || event).target.classList.add('active');
             document.getElementById(tabName + '-tab').classList.add('active');
         }
 

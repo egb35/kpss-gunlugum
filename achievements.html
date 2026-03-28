@@ -77,6 +77,7 @@
                     <h3 id="profileName">Kullanıcı</h3>
                     <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
                     <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="location.href='premium.html'">⭐ Premium</div>
                     <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
                 </div>
@@ -90,41 +91,7 @@
                 <h1>🏆 Başarılar ve Rozetler</h1>
                 <p style="color: var(--warm-brown); margin-top: 0.5rem;">Çalışma hedeflerine ulaş, rozetleri topla!</p>
             </div>
-            <div class="achievement-grid">
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🔒</div>
-                    <div class="achievement-title">İlk Adım</div>
-                    <div class="achievement-desc">100 soru çöz</div>
-                </div>
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🔒</div>
-                    <div class="achievement-title">Azimli</div>
-                    <div class="achievement-desc">1000 soru çöz</div>
-                </div>
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🔒</div>
-                    <div class="achievement-title">Devamlılık</div>
-                    <div class="achievement-desc">7 günlük streak</div>
-                </div>
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🔒</div>
-                    <div class="achievement-title">Ateş Topu</div>
-                    <div class="achievement-desc">30 günlük streak</div>
-                </div>
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🔒</div>
-                    <div class="achievement-title">İlk Deneme</div>
-                    <div class="achievement-desc">1 deneme çöz</div>
-                </div>
-                <div class="achievement-card locked">
-                    <div class="achievement-icon">🔒</div>
-                    <div class="achievement-title">Deneme Ustası</div>
-                    <div class="achievement-desc">50 deneme çöz</div>
-                </div>
-            </div>
-            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--warm-light); border-radius: 10px; text-align: center;">
-                <p style="color: var(--warm-brown);"><strong>🚧 Yakında!</strong> Rozetler sistemi şu anda geliştirilme aşamasında. Çalışmaya devam edin, rozetleriniz kaydediliyor!</p>
-            </div>
+            <div class="achievement-grid"></div>
         </div>
     </div>
 
@@ -157,9 +124,69 @@
         }
 
         function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
-        function openProfilePicture() { alert('Profil resmi değiştirmek için Dashboard sayfasına gidin.'); }
-        function openNameChange() { alert('İsim değiştirmek için Dashboard sayfasına gidin.'); }
+        function openProfilePicture() { showNotification('Profil resmi değiştirmek için Dashboard sayfasına gidin.', 'info'); }
+        function openNameChange() { showNotification('İsim değiştirmek için Dashboard sayfasına gidin.', 'info'); }
         function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
+        function showReferral() {
+            const user = users.find(u => u.name === currentUser);
+            if (user && user.referralCode) {
+                const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
+                navigator.clipboard.writeText(refLink).then(() => showNotification('Referans linki kopyalandı!', 'success')).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = refLink;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showNotification('Referans linki kopyalandı!', 'success');
+                });
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            notification.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:bold;color:var(--warm-dark);">${icons[type]}</span>
+                    <button onclick="this.closest('.notification-modal').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+                </div>
+                <p style="color:var(--warm-brown);margin:0;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.opacity = '0'; setTimeout(() => notification.remove(), 300); }, 3000);
+        }
+
+        function loadAchievements() {
+            const questionsData = JSON.parse(localStorage.getItem('questionsData_' + currentUser)) || {};
+            const denemeData = JSON.parse(localStorage.getItem('denemeData_' + currentUser)) || [];
+            const streak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
+
+            let totalQuestions = 0;
+            Object.values(questionsData).forEach(day => {
+                totalQuestions += (day.turkce||0) + (day.matematik||0) + (day.tarih||0) + (day.cografya||0) + (day.vatandaslik||0);
+            });
+
+            const achievements = [
+                { id: 'ilk_adim', icon: '🌟', title: 'İlk Adım', desc: '100 soru çöz', unlocked: totalQuestions >= 100 },
+                { id: 'azimli', icon: '💪', title: 'Azimli', desc: '1000 soru çöz', unlocked: totalQuestions >= 1000 },
+                { id: 'devamlılık', icon: '🔥', title: 'Devamlılık', desc: '7 günlük streak', unlocked: streak >= 7 },
+                { id: 'ates_topu', icon: '🌋', title: 'Ateş Topu', desc: '30 günlük streak', unlocked: streak >= 30 },
+                { id: 'ilk_deneme', icon: '📝', title: 'İlk Deneme', desc: '1 deneme çöz', unlocked: denemeData.length >= 1 },
+                { id: 'deneme_ustasi', icon: '🏆', title: 'Deneme Ustası', desc: '50 deneme çöz', unlocked: denemeData.length >= 50 },
+            ];
+
+            const grid = document.querySelector('.achievement-grid');
+            grid.innerHTML = achievements.map(a => `
+                <div class="achievement-card ${a.unlocked ? '' : 'locked'}">
+                    <div class="achievement-icon">${a.unlocked ? a.icon : '🔒'}</div>
+                    <div class="achievement-title">${a.title}</div>
+                    <div class="achievement-desc">${a.desc}</div>
+                </div>
+            `).join('');
+        }
 
         document.addEventListener('click', function(e) {
             const popup = document.getElementById('profilePopup');
@@ -170,6 +197,7 @@
 
         loadUserProfile();
         updateStreak();
+        loadAchievements();
     </script>
 </body>
 </html>

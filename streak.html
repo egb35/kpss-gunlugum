@@ -81,6 +81,7 @@
                     <h3 id="profileName">Kullanıcı</h3>
                     <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
                     <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="location.href='premium.html'">⭐ Premium</div>
                     <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
                 </div>
@@ -138,22 +139,38 @@
 
         function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
         function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
-        function openProfilePicture() { alert('Profil resmi değiştirmek için Dashboard sayfasına gidin.'); }
-        function openNameChange() { alert('İsim değiştirmek için Dashboard sayfasına gidin.'); }
+        function openProfilePicture() { showNotification('Profil resmi değiştirmek için Dashboard sayfasına gidin.', 'info'); }
+        function openNameChange() { showNotification('İsim değiştirmek için Dashboard sayfasına gidin.', 'info'); }
         function showReferral() {
             const user = users.find(u => u.name === currentUser);
             if (user && user.referralCode) {
                 const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
-                navigator.clipboard.writeText(refLink).then(() => alert('✅ Referans linki kopyalandı!')).catch(() => {
+                navigator.clipboard.writeText(refLink).then(() => showNotification('Referans linki kopyalandı!', 'success')).catch(() => {
                     const textarea = document.createElement('textarea');
                     textarea.value = refLink;
                     document.body.appendChild(textarea);
                     textarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
-                    alert('✅ Referans linki kopyalandı!');
+                    showNotification('Referans linki kopyalandı!', 'success');
                 });
             }
+        }
+
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            notification.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:bold;color:var(--warm-dark);">${icons[type]}</span>
+                    <button onclick="this.closest('.notification-modal').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+                </div>
+                <p style="color:var(--warm-brown);margin:0;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.opacity = '0'; setTimeout(() => notification.remove(), 300); }, 3000);
         }
 
         function loadLeaderboard() {

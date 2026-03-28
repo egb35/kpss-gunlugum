@@ -216,8 +216,27 @@
             location.href = 'index.html'; 
         }
 
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            notification.style.cssText = 'position:fixed;top:20px;right:20px;background:white;padding:1.5rem;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.3);z-index:10000;min-width:300px;max-width:400px;';
+            const borderColors = { success: '#2ecc71', error: '#e74c3c', warning: '#f39c12', info: '#3498db' };
+            notification.style.borderLeft = `5px solid ${borderColors[type]}`;
+            notification.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:bold;color:var(--warm-dark);">${icons[type]}</span>
+                    <button onclick="this.closest('.notification-modal').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+                </div>
+                <p style="color:var(--warm-brown);margin:0;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.opacity = '0'; notification.style.transition = 'opacity 0.3s'; setTimeout(() => notification.remove(), 300); }, 3000);
+        }
+
         function buyPremium() {
-            alert('💳 Premium Satın Alma\n\n⚠️ Bu özellik henüz aktif değil.\n\nÇok yakında Premium üyelik sistemimiz aktif olacak!\n\nBilgi için: admin@kpss.com');
+            showNotification('Premium satın alma yakında aktif olacak! Bilgi için: admin@kpss.com', 'info');
         }
 
         document.addEventListener('click', function(e) {

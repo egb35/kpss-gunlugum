@@ -394,13 +394,6 @@
             document.body.removeChild(textarea);
         }
 
-        function showNotification(message) {
-            const notif = document.createElement('div');
-            notif.className = 'notification';
-            notif.innerHTML = `<strong>✅</strong> ${message}`;
-            document.body.appendChild(notif);
-            setTimeout(() => notif.remove(), 3000);
-        }
 
         function loadReferrals() {
             const count = parseInt(localStorage.getItem('referrals_' + currentUser) || '0');

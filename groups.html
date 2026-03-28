@@ -239,9 +239,9 @@
                         <div class="group-body" id="body-${index}">
                             <div class="group-body-content">
                                 <div class="tabs">
-                                    <button class="tab active" onclick="switchGroupTab(${index}, 'weekly')">📅 Haftalık</button>
-                                    <button class="tab" onclick="switchGroupTab(${index}, 'total')">📊 Genel</button>
-                                    <button class="tab" onclick="switchGroupTab(${index}, 'messages')">💬 Mesajlar</button>
+                                    <button class="tab active" onclick="switchGroupTab(${index}, 'weekly', event)">📅 Haftalık</button>
+                                    <button class="tab" onclick="switchGroupTab(${index}, 'total', event)">📊 Genel</button>
+                                    <button class="tab" onclick="switchGroupTab(${index}, 'messages', event)">💬 Mesajlar</button>
                                 </div>
                                 <div id="weekly-${index}">${generateRanking(calculateWeeklyScores(group.members), group.leader)}</div>
                                 <div id="total-${index}" style="display:none;">${generateRanking(calculateTotalScores(group.members))}</div>
@@ -285,14 +285,14 @@
             }
         }
 
-        function switchGroupTab(groupIndex, type) {
+        function switchGroupTab(groupIndex, type, e) {
             const weeklyDiv = document.getElementById(`weekly-${groupIndex}`);
             const totalDiv = document.getElementById(`total-${groupIndex}`);
             const messagesDiv = document.getElementById(`messages-${groupIndex}`);
             const tabs = document.querySelectorAll(`#body-${groupIndex} .tab`);
-            
+
             tabs.forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            (e || event).target.classList.add('active');
             
             weeklyDiv.style.display = 'none';
             totalDiv.style.display = 'none';
@@ -305,7 +305,8 @@
 
         function calculateWeeklyScores(members) {
             const today = new Date();
-            const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
             const scores = [];
             members.forEach(member => {
                 const questionsData = JSON.parse(localStorage.getItem('questionsData_' + member)) || {};
