@@ -167,12 +167,15 @@
             <div class="card">
                 <div class="card-header">
                     <h2>👥 Kullanıcı Yönetimi</h2>
-                    <select id="sortBy" onchange="loadUsers()">
-                        <option value="name">İsme Göre</option>
-                        <option value="questions">Soru Sayısına Göre</option>
-                        <option value="streak">Streak'e Göre</option>
-                        <option value="date">Kayıt Tarihine Göre</option>
-                    </select>
+                    <div style="display:flex;gap:0.8rem;align-items:center;flex-wrap:wrap;">
+                        <input type="text" id="userSearch" placeholder="🔍 Kullanıcı adı ara..." oninput="loadUsers()" style="padding:0.6rem 1rem;border:2px solid var(--warm-cream);border-radius:8px;font-size:0.9rem;width:200px;outline:none;" onfocus="this.style.borderColor='var(--warm-orange)'" onblur="this.style.borderColor='var(--warm-cream)'">
+                        <select id="sortBy" onchange="loadUsers()">
+                            <option value="name">İsme Göre</option>
+                            <option value="questions">Soru Sayısına Göre</option>
+                            <option value="streak">Streak'e Göre</option>
+                            <option value="date">Kayıt Tarihine Göre</option>
+                        </select>
+                    </div>
                 </div>
                 <table>
                     <thead>
@@ -387,7 +390,8 @@
                     totalQuestions: userTotalQuestions,
                     streak: streak,
                     isPremium: user.isPremium || false,
-                    isTeacher: user.isTeacher || false
+                    isTeacher: user.isTeacher || false,
+                    friendCode: user.friendCode || ''
                 });
             });
 
@@ -401,7 +405,9 @@
                 userData.sort((a, b) => a.name.localeCompare(b.name));
             }
 
-            renderUsersTable(userData);
+            const searchTerm = (document.getElementById('userSearch')?.value || '').trim().toLowerCase();
+            const filtered = searchTerm ? userData.filter(u => u.name.toLowerCase().includes(searchTerm)) : userData;
+            renderUsersTable(filtered);
         }
 
         function renderUsersTable(users) {
@@ -416,7 +422,10 @@
                 const createdDate = new Date(user.createdAt).toLocaleDateString('tr-TR');
                 html += `
                     <tr>
-                        <td><strong>${user.name}</strong> ${user.isPremium ? '<span style="color: gold;">⭐</span>' : ''} ${user.isTeacher ? '<span style="background:#3498db;color:white;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.75rem;margin-left:0.3rem;">👨‍🏫</span>' : ''}</td>
+                        <td>
+                            <strong>${user.name}</strong> ${user.isPremium ? '<span style="color:gold;">⭐</span>' : ''} ${user.isTeacher ? '<span style="background:#3498db;color:white;padding:0.1rem 0.4rem;border-radius:8px;font-size:0.75rem;margin-left:0.3rem;">👨‍🏫</span>' : ''}
+                            ${user.friendCode ? `<br><small style="font-family:monospace;color:#888;font-size:0.75rem;letter-spacing:1px;">📎 ${user.friendCode}</small>` : ''}
+                        </td>
                         <td>${user.email}</td>
                         <td><strong style="color: var(--warm-orange);">${user.totalQuestions.toLocaleString('tr-TR')}</strong></td>
                         <td>🔥 ${user.streak}</td>
