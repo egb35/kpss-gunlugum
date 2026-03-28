@@ -9,6 +9,7 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
+        html { scroll-behavior: smooth; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
         header { background: rgba(61, 50, 40, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
@@ -16,7 +17,9 @@
         .logo::before { content: "📚"; font-size: 1.8rem; }
         .user-info { display: flex; align-items: center; gap: 1rem; color: var(--warm-cream); position: relative; }
         .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.4rem 0.8rem; border-radius: 15px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--warm-orange); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; cursor: pointer; transition: transform 0.3s; }
+        .user-avatar { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.2); overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-avatar.text-only { background: var(--warm-orange); font-weight: bold; color: white; font-size: 1.2rem; }
         .user-avatar:hover { transform: scale(1.1); }
         .profile-popup { display: none; position: absolute; top: 60px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 250px; z-index: 1000; animation: slideDown 0.3s; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
@@ -91,6 +94,26 @@
         .notification.error { border-left: 5px solid #e74c3c; }
         .notification.hide { animation: slideOutRight 0.3s; }
         @keyframes slideOutRight { to { opacity: 0; transform: translateX(100px); } }
+        
+        /* Profile Picture Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #999; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1rem; }
+        .avatar-option { position: relative; width: 100px; height: 100px; border-radius: 50%; cursor: pointer; transition: all 0.3s; border: 3px solid var(--warm-cream); overflow: hidden; }
+        .avatar-option:hover { transform: scale(1.05); }
+        .avatar-option.owned { border-color: var(--warm-orange); }
+        .avatar-option.locked { opacity: 0.4; cursor: not-allowed; }
+        .avatar-option img { width: 100%; height: 100%; object-fit: cover; }
+        .avatar-option.text-avatar { display: flex; align-items: center; justify-content: center; background: var(--warm-orange); color: white; font-size: 2rem; font-weight: bold; }
+        .avatar-lock { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2rem; }
+        .avatar-use-btn { margin-top: 0.5rem; padding: 0.4rem 1rem; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; width: 100%; }
+        .avatar-use-btn:disabled { background: #ccc; cursor: not-allowed; }
+        
         @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .question-entry, .deneme-entry { grid-template-columns: 1fr; } .button-group { flex-direction: column; } }
     </style>
@@ -108,9 +131,10 @@
             <div class="user-info">
                 <div class="streak-badge">🔥 <span id="streakCount">0</span> gün</div>
                 <span>Hoş geldin, <strong id="userName">Kullanıcı</strong></span>
-                <div class="user-avatar" id="userAvatar" onclick="toggleProfilePopup()">K</div>
+                <div class="user-avatar text-only" id="userAvatar" onclick="toggleProfilePopup()">K</div>
                 <div class="profile-popup" id="profilePopup">
                     <h3 id="profileName">Kullanıcı</h3>
+                    <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
                     <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
                     <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
@@ -119,9 +143,7 @@
         </nav>
     </header>
 
-    <div class="top-ad" id="topAd">
-        <div class="ad-banner" id="topBanner"></div>
-    </div>
+    <div class="top-ad" id="topAd"><div class="ad-banner" id="topBanner"></div></div>
 
     <div class="container">
         <div class="main-content">
@@ -234,13 +256,30 @@
         </aside>
     </div>
 
+    <!-- Profile Picture Modal -->
+    <div id="profilePictureModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🖼️ Profil Resmi Seç</h2>
+                <button class="close-modal" onclick="closeProfilePicture()">&times;</button>
+            </div>
+            <div class="avatar-grid" id="avatarGrid"></div>
+        </div>
+    </div>
+
     <script>
         const currentUser = localStorage.getItem('currentUser');
         if (!currentUser) window.location.href = 'index.html';
 
+        // Profile Pictures Data
+        const PROFILE_PICTURES = [
+            { id: 'default', name: 'İlk Harf', type: 'text', unlocked: true },
+            { id: 'flower', name: 'Kırmızı Çiçek', src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23f5ede0"/><path d="M50 20 Q60 35 50 50 Q40 35 50 20 M70 35 Q80 50 70 65 Q60 50 70 35 M70 65 Q55 70 50 80 Q45 70 30 65 Q35 50 30 35 Q45 40 50 50 Q55 40 70 35" fill="%23dc143c"/><circle cx="50" cy="50" r="8" fill="%23ffd700"/></svg>', unlocked: true },
+            { id: 'mystery', name: '???', src: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23666"/><text x="50" y="65" font-size="40" text-anchor="middle" fill="white" font-weight="bold">?</text></svg>', unlocked: false, howToUnlock: 'Bu profil resmi şu anda üzerinde çalışılıyor. Yakında nasıl kazanılacağı açıklanacak!' }
+        ];
+
         document.getElementById('userName').textContent = currentUser;
         document.getElementById('profileName').textContent = currentUser;
-        document.getElementById('userAvatar').textContent = currentUser.charAt(0).toUpperCase();
 
         let questionsData = JSON.parse(localStorage.getItem('questionsData_' + currentUser)) || {};
         let denemeData = JSON.parse(localStorage.getItem('denemeData_' + currentUser)) || [];
@@ -248,7 +287,82 @@
         let chart = null, denemeChart = null;
         let stopwatchInterval = null, stopwatchTime = 0, isRunning = false;
 
-        // Load ad settings
+        // Audio for stopwatch
+        const clickSound = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
+
+        function playClick() {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(() => {});
+        }
+
+        function loadUserProfilePicture() {
+            const savedPic = localStorage.getItem('profilePicture_' + currentUser);
+            const avatar = document.getElementById('userAvatar');
+            
+            if (savedPic) {
+                const pic = PROFILE_PICTURES.find(p => p.id === savedPic);
+                if (pic && pic.type === 'text') {
+                    avatar.className = 'user-avatar text-only';
+                    avatar.textContent = currentUser.charAt(0).toUpperCase();
+                } else if (pic && pic.src) {
+                    avatar.className = 'user-avatar';
+                    avatar.innerHTML = `<img src="${pic.src}" alt="${pic.name}">`;
+                }
+            } else {
+                avatar.className = 'user-avatar text-only';
+                avatar.textContent = currentUser.charAt(0).toUpperCase();
+                localStorage.setItem('profilePicture_' + currentUser, 'default');
+            }
+        }
+
+        function openProfilePicture() {
+            const grid = document.getElementById('avatarGrid');
+            const ownedPics = JSON.parse(localStorage.getItem('ownedProfilePictures_' + currentUser)) || ['default', 'flower'];
+            const currentPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
+            
+            let html = '';
+            PROFILE_PICTURES.forEach(pic => {
+                const isOwned = ownedPics.includes(pic.id);
+                const isCurrent = pic.id === currentPic;
+                const lockClass = isOwned ? 'owned' : 'locked';
+                
+                html += `<div style="text-align: center;">`;
+                if (pic.type === 'text') {
+                    html += `<div class="avatar-option text-avatar ${lockClass}" ${!isOwned ? 'onclick="showUnlockInfo(\'' + pic.id + '\')"' : ''}>
+                        ${isOwned ? currentUser.charAt(0).toUpperCase() : '<span class="avatar-lock">🔒</span>'}
+                    </div>`;
+                } else {
+                    html += `<div class="avatar-option ${lockClass}" ${!isOwned ? 'onclick="showUnlockInfo(\'' + pic.id + '\')"' : ''}>
+                        ${isOwned ? '<img src="' + pic.src + '" alt="' + pic.name + '">' : '<span class="avatar-lock">🔒</span>'}
+                    </div>`;
+                }
+                html += `<button class="avatar-use-btn" ${!isOwned || isCurrent ? 'disabled' : ''} onclick="useProfilePicture('${pic.id}')">
+                    ${isCurrent ? 'Kullanılıyor' : (isOwned ? 'Kullan' : '🔒 Kilitli')}
+                </button></div>`;
+            });
+            
+            grid.innerHTML = html;
+            document.getElementById('profilePictureModal').classList.add('active');
+        }
+
+        function closeProfilePicture() {
+            document.getElementById('profilePictureModal').classList.remove('active');
+        }
+
+        function useProfilePicture(picId) {
+            localStorage.setItem('profilePicture_' + currentUser, picId);
+            loadUserProfilePicture();
+            closeProfilePicture();
+            showNotification('Profil resmi değiştirildi!', 'success');
+        }
+
+        function showUnlockInfo(picId) {
+            const pic = PROFILE_PICTURES.find(p => p.id === picId);
+            if (pic && pic.howToUnlock) {
+                alert('🔒 ' + pic.name + '\n\n' + pic.howToUnlock);
+            }
+        }
+
         function loadAdSettings() {
             const topEnabled = localStorage.getItem('adEnabled_top') !== 'false';
             const side1Enabled = localStorage.getItem('adEnabled_side1') !== 'false';
@@ -305,6 +419,7 @@
 
         function startStopwatch() {
             if (!isRunning) {
+                playClick();
                 isRunning = true;
                 stopwatchInterval = setInterval(() => {
                     stopwatchTime++;
@@ -315,8 +430,8 @@
                 }, 1000);
             }
         }
-        function pauseStopwatch() { isRunning = false; clearInterval(stopwatchInterval); }
-        function resetStopwatch() { pauseStopwatch(); stopwatchTime = 0; document.getElementById('stopwatchDisplay').textContent = '00:00:00'; }
+        function pauseStopwatch() { playClick(); isRunning = false; clearInterval(stopwatchInterval); }
+        function resetStopwatch() { playClick(); pauseStopwatch(); stopwatchTime = 0; document.getElementById('stopwatchDisplay').textContent = '00:00:00'; }
 
         function switchTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
@@ -393,7 +508,6 @@
             let monthlyTotal = 0;
 
             if (currentFilter === 'all') {
-                // TEK ÇİZGİ - TOPLAM
                 const data = labels.map(day => {
                     const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const dayData = questionsData[date] || {};
@@ -582,6 +696,9 @@
                 const popup = document.getElementById('profilePopup');
                 if (popup.classList.contains('active')) popup.classList.remove('active');
             }
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -591,11 +708,17 @@
             document.getElementById('denemeMonthSelect').value = now.getMonth();
             document.getElementById('denemeYearSelect').value = now.getFullYear();
             loadAdSettings();
+            loadUserProfilePicture();
             updateChart();
             updateDenemeChart();
             loadTodayStats();
             loadDenemeHistory();
             updateStreak();
+            
+            // Initialize owned profile pictures for new users
+            if (!localStorage.getItem('ownedProfilePictures_' + currentUser)) {
+                localStorage.setItem('ownedProfilePictures_' + currentUser, JSON.stringify(['default', 'flower']));
+            }
         });
     </script>
 </body>
