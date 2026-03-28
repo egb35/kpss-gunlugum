@@ -13,6 +13,15 @@
         nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); cursor: pointer; }
         .logo::before { content: "📚"; font-size: 1.8rem; margin-right: 0.5rem; }
+        .user-info { display: flex; align-items: center; gap: 1rem; color: var(--warm-cream); position: relative; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.2); overflow: hidden; background: var(--warm-orange); }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .user-avatar.text-only { font-weight: bold; color: white; font-size: 1rem; }
+        .user-avatar:hover { transform: scale(1.1); }
+        .profile-popup { display: none; position: absolute; top: 50px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 200px; z-index: 10000; }
+        .profile-popup.active { display: block; }
+        .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .profile-item:hover { background: var(--warm-orange); color: white; }
         .nav-menu { display: flex; gap: 2rem; list-style: none; }
         .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; }
         .container { max-width: 1200px; margin: 2rem auto; padding: 2rem; }
@@ -20,33 +29,24 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
         .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; }
         .btn:hover { transform: translateY(-2px); }
-        .btn-disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-premium { background: linear-gradient(135deg, #ffd700, #ffed4e); color: var(--warm-dark); position: relative; }
-        .btn-premium::after { content: "🔒"; margin-left: 0.5rem; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .modal.active { display: flex; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 500px; width: 90%; animation: slideUp 0.3s; }
-        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .member-list { display: grid; gap: 1rem; margin: 1rem 0; }
-        .member-item { background: var(--warm-light); padding: 1rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .rank-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .rank-medal { font-size: 2rem; margin-right: 1rem; }
-        .rank-info { flex: 1; display: flex; align-items: center; gap: 1rem; }
-        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--warm-orange); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-        .badge { background: var(--warm-orange); color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem; font-weight: 600; }
-        .badge-leader { background: linear-gradient(135deg, #ffd700, #ffed4e); color: var(--warm-dark); }
-        .badge-founder { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 2rem; border-radius: 15px; max-width: 500px; width: 90%; }
+        .group-accordion { margin-bottom: 1rem; border: 2px solid var(--warm-light); border-radius: 10px; overflow: hidden; }
+        .group-header { padding: 1.5rem; background: var(--warm-light); cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
+        .group-header:hover { background: var(--warm-cream); }
+        .group-header.active { background: var(--warm-orange); color: white; }
+        .group-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .group-body.open { max-height: 1000px; }
+        .group-body-content { padding: 1.5rem; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 1rem; }
         .tab { padding: 0.8rem 1.5rem; background: var(--warm-light); border: none; border-radius: 10px; cursor: pointer; font-weight: 600; color: var(--warm-brown); }
         .tab.active { background: var(--warm-orange); color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        input, select { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem; margin-bottom: 1rem; }
+        .rank-item { background: var(--warm-light); padding: 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        input { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; margin-bottom: 1rem; }
         .size-options { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-        .size-option { padding: 1.5rem; border: 2px solid var(--warm-cream); border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .size-option { padding: 1.5rem; border: 2px solid var(--warm-cream); border-radius: 10px; text-align: center; cursor: pointer; }
         .size-option.selected { border-color: var(--warm-orange); background: var(--warm-light); }
-        .size-option.locked { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -60,22 +60,27 @@
                 <li><a href="streak.html">🔥 Streak</a></li>
                 <li><a href="achievements.html">🏆 Başarılar</a></li>
             </ul>
+            <div class="user-info">
+                <span id="userName">Kullanıcı</span>
+                <div class="user-avatar text-only" id="userAvatar" onclick="toggleProfilePopup(event)">K</div>
+                <div class="profile-popup" id="profilePopup">
+                    <div class="profile-item" onclick="location.href='dashboard.html'">📊 Dashboard</div>
+                    <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
+                </div>
+            </div>
         </nav>
     </header>
 
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h2>👨‍👩‍👧‍👦 Çalışma Grubum</h2>
-                <button class="btn" onclick="showCreateGroup()" id="createGroupBtn">➕ Grup Kur</button>
+                <h2>👨‍👩‍👧‍👦 Gruplarım</h2>
+                <button class="btn" onclick="showCreateGroup()">➕ Grup Kur</button>
             </div>
-            <div id="groupContent">
-                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz bir grubunuz yok. Grup kurun veya bir gruba katılın!</p>
-            </div>
+            <div id="groupsContainer"></div>
         </div>
     </div>
 
-    <!-- Create Group Modal -->
     <div id="createGroupModal" class="modal">
         <div class="modal-content">
             <h2>Grup Kur</h2>
@@ -85,8 +90,8 @@
                     <h3>👥 3 Kişilik</h3>
                     <p>Ücretsiz</p>
                 </div>
-                <div class="size-option locked" onclick="selectSize(10)" id="size10">
-                    <h3>👨‍👩‍👧‍👦 10 Kişilik 🔒</h3>
+                <div class="size-option" onclick="selectSize(10)" id="size10">
+                    <h3>👨‍👩‍👧‍👦 10 Kişilik</h3>
                     <p>Premium</p>
                 </div>
             </div>
@@ -95,152 +100,172 @@
         </div>
     </div>
 
-    <!-- Premium Required Modal -->
-    <div id="premiumModal" class="modal">
-        <div class="modal-content" style="text-align: center;">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">😔</div>
-            <h2>Grubun Dolu!</h2>
-            <p style="margin: 1rem 0; color: var(--warm-brown);">Premium ile grubunu 10 kişiye çıkart ve rekabeti arttır!</p>
-            <button class="btn btn-premium" style="width: 100%; margin-bottom: 0.5rem;">⭐ Premium'a Geç</button>
-            <button class="btn" onclick="closeModal('premium')" style="width: 100%; background: #95a5a6;">Tamam</button>
-        </div>
-    </div>
-
     <script>
         const currentUser = localStorage.getItem('currentUser');
         if (!currentUser) window.location.href = 'index.html';
+        document.getElementById('userName').textContent = currentUser;
+        document.getElementById('userAvatar').textContent = currentUser.charAt(0).toUpperCase();
 
-        let selectedSize = 3;
         const users = JSON.parse(localStorage.getItem('users')) || [];
         const currentUserData = users.find(u => u.name === currentUser);
         const isPremium = currentUserData?.isPremium || false;
+        let selectedSize = 3;
 
-        function loadGroup() {
+        function loadUserProfile() {
+            const savedPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
+            const avatar = document.getElementById('userAvatar');
+            const allPics = JSON.parse(localStorage.getItem('profilePictures')) || [];
+            const pic = allPics.find(p => p.id === savedPic);
+            if (pic && pic.image) {
+                avatar.className = 'user-avatar';
+                avatar.innerHTML = `<img src="${pic.image}">`;
+            } else {
+                avatar.className = 'user-avatar text-only';
+                avatar.textContent = currentUser.charAt(0).toUpperCase();
+            }
+        }
+
+        function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
+        function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
+
+        function loadGroups() {
             const groups = JSON.parse(localStorage.getItem('groups')) || [];
-            const myGroup = groups.find(g => g.members.includes(currentUser));
+            const myGroups = groups.filter(g => g.members.includes(currentUser));
+            const container = document.getElementById('groupsContainer');
 
-            if (!myGroup) {
-                document.getElementById('groupContent').innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz bir grubunuz yok. Grup kurun!</p>';
+            if (myGroups.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz grubunuz yok.</p>';
                 return;
             }
 
-            const isFounder = myGroup.founder === currentUser;
-            const weeklyScores = calculateWeeklyScores(myGroup.members);
-            const totalScores = calculateTotalScores(myGroup.members);
+            let html = '';
+            myGroups.forEach((group, index) => {
+                html += `
+                    <div class="group-accordion">
+                        <div class="group-header" onclick="toggleGroup(${index})">
+                            <div><strong>${group.name}</strong> <span style="opacity: 0.7;">(${group.members.length}/${group.maxSize})</span></div>
+                            <span id="arrow-${index}">▼</span>
+                        </div>
+                        <div class="group-body" id="body-${index}">
+                            <div class="group-body-content">
+                                <div class="tabs">
+                                    <button class="tab active" onclick="switchGroupTab(${index}, 'weekly')">📅 Haftalık</button>
+                                    <button class="tab" onclick="switchGroupTab(${index}, 'total')">📊 Genel</button>
+                                </div>
+                                <div id="weekly-${index}">${generateRanking(calculateWeeklyScores(group.members), group.leader)}</div>
+                                <div id="total-${index}" style="display:none;">${generateRanking(calculateTotalScores(group.members))}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
 
-            let html = `
-                <div style="background: var(--warm-light); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem;">
-                    <h3>${myGroup.name}</h3>
-                    <p style="color: var(--warm-brown); margin-top: 0.5rem;">👥 ${myGroup.members.length}/${myGroup.maxSize} Üye</p>
-                </div>
+        function toggleGroup(index) {
+            const body = document.getElementById(`body-${index}`);
+            const arrow = document.getElementById(`arrow-${index}`);
+            const header = body.previousElementSibling;
+            
+            if (body.classList.contains('open')) {
+                body.classList.remove('open');
+                arrow.textContent = '▼';
+                header.classList.remove('active');
+            } else {
+                document.querySelectorAll('.group-body').forEach(b => b.classList.remove('open'));
+                document.querySelectorAll('.group-header').forEach(h => h.classList.remove('active'));
+                document.querySelectorAll('[id^="arrow-"]').forEach(a => a.textContent = '▼');
+                body.classList.add('open');
+                arrow.textContent = '▲';
+                header.classList.add('active');
+            }
+        }
 
-                <div class="tabs">
-                    <button class="tab active" onclick="switchGroupTab('weekly')">📅 Haftalık Sıralama</button>
-                    <button class="tab" onclick="switchGroupTab('total')">📊 Genel Sıralama</button>
-                </div>
-
-                <div id="weeklyTab" class="tab-content active">
-                    ${generateRanking(weeklyScores, myGroup.leader)}
-                </div>
-
-                <div id="totalTab" class="tab-content">
-                    ${generateRanking(totalScores)}
-                </div>
-
-                ${isFounder && myGroup.members.length < myGroup.maxSize ? `
-                    <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="inviteMember()">➕ Üye Ekle</button>
-                ` : ''}
-            `;
-
-            document.getElementById('groupContent').innerHTML = html;
+        function switchGroupTab(groupIndex, type) {
+            const weeklyDiv = document.getElementById(`weekly-${groupIndex}`);
+            const totalDiv = document.getElementById(`total-${groupIndex}`);
+            const tabs = document.querySelectorAll(`#body-${groupIndex} .tab`);
+            
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (type === 'weekly') {
+                weeklyDiv.style.display = 'block';
+                totalDiv.style.display = 'none';
+            } else {
+                weeklyDiv.style.display = 'none';
+                totalDiv.style.display = 'block';
+            }
         }
 
         function calculateWeeklyScores(members) {
             const today = new Date();
             const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
             const scores = [];
-
             members.forEach(member => {
                 const questionsData = JSON.parse(localStorage.getItem('questionsData_' + member)) || {};
                 let total = 0;
-
                 Object.entries(questionsData).forEach(([date, data]) => {
                     const dateObj = new Date(date);
                     if (dateObj >= weekStart) {
                         total += (data.turkce||0) + (data.matematik||0) + (data.tarih||0) + (data.cografya||0) + (data.vatandaslik||0);
                     }
                 });
-
                 scores.push({ name: member, score: total });
             });
-
             return scores.sort((a, b) => b.score - a.score);
         }
 
         function calculateTotalScores(members) {
             const scores = [];
-
             members.forEach(member => {
                 const questionsData = JSON.parse(localStorage.getItem('questionsData_' + member)) || {};
                 let total = 0;
-
                 Object.values(questionsData).forEach(data => {
                     total += (data.turkce||0) + (data.matematik||0) + (data.tarih||0) + (data.cografya||0) + (data.vatandaslik||0);
                 });
-
                 scores.push({ name: member, score: total });
             });
-
             return scores.sort((a, b) => b.score - a.score);
         }
 
         function generateRanking(scores, leader = null) {
-            if (scores.length === 0) return '<p style="text-align: center; padding: 2rem;">Henüz veri yok.</p>';
-
+            if (scores.length === 0) return '<p style="text-align: center; padding: 1rem;">Henüz veri yok.</p>';
             const medals = ['🥇', '🥈', '🥉'];
             let html = '';
-
             scores.forEach((item, index) => {
                 const medal = index < 3 ? medals[index] : `${index + 1}.`;
                 const isLeader = leader && item.name === leader;
-                
                 html += `
                     <div class="rank-item">
-                        <span class="rank-medal">${medal}</span>
-                        <div class="rank-info">
-                            <div class="avatar">${item.name.charAt(0).toUpperCase()}</div>
-                            <div>
-                                <strong>${item.name}</strong>
-                                ${isLeader ? '<span class="badge badge-leader">👑 Lider</span>' : ''}
-                            </div>
+                        <span style="font-size: 1.5rem; margin-right: 1rem;">${medal}</span>
+                        <div style="flex: 1;">
+                            <strong>${item.name}</strong>
+                            ${isLeader ? '<span style="background: gold; color: #333; padding: 0.2rem 0.5rem; border-radius: 10px; font-size: 0.8rem; margin-left: 0.5rem;">👑 Lider</span>' : ''}
                         </div>
-                        <strong style="font-size: 1.5rem; color: var(--warm-orange);">${item.score}</strong>
+                        <strong style="font-size: 1.3rem; color: var(--warm-orange);">${item.score}</strong>
                     </div>
                 `;
             });
-
             return html;
         }
 
-        function switchGroupTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tab + 'Tab').classList.add('active');
-        }
-
         function showCreateGroup() {
-            if (isPremium) {
-                document.getElementById('size10').classList.remove('locked');
+            const groups = JSON.parse(localStorage.getItem('groups')) || [];
+            const myGroups = groups.filter(g => g.members.includes(currentUser));
+            const maxGroups = isPremium ? 4 : 1;
+            
+            if (myGroups.length >= maxGroups) {
+                alert(isPremium ? '⚠️ Maksimum 4 grupta bulunabilirsiniz!' : '⚠️ Ücretsiz kullanıcılar sadece 1 grupta bulunabilir. Premium olun!');
+                return;
             }
+            
+            if (!isPremium) document.getElementById('size10').style.opacity = '0.5';
             document.getElementById('createGroupModal').classList.add('active');
         }
 
         function selectSize(size) {
-            if (size === 10 && !isPremium) {
-                document.getElementById('premiumModal').classList.add('active');
-                return;
-            }
+            if (size === 10 && !isPremium) { alert('10 kişilik grup için Premium gerekli!'); return; }
             selectedSize = size;
             document.getElementById('size3').classList.remove('selected');
             document.getElementById('size10').classList.remove('selected');
@@ -252,12 +277,6 @@
             if (!groupName) { alert('Lütfen grup adı girin!'); return; }
 
             const groups = JSON.parse(localStorage.getItem('groups')) || [];
-            
-            if (groups.find(g => g.members.includes(currentUser))) {
-                alert('Zaten bir grubunuz var!');
-                return;
-            }
-
             const newGroup = {
                 id: 'group_' + Date.now(),
                 name: groupName,
@@ -270,68 +289,22 @@
 
             groups.push(newGroup);
             localStorage.setItem('groups', JSON.stringify(groups));
-            
             closeModal('createGroup');
             alert('Grup başarıyla oluşturuldu!');
-            loadGroup();
+            loadGroups();
         }
 
-        function inviteMember() {
-            const groups = JSON.parse(localStorage.getItem('groups')) || [];
-            const myGroup = groups.find(g => g.members.includes(currentUser));
-            
-            if (myGroup.members.length >= myGroup.maxSize) {
-                if (!isPremium && myGroup.maxSize === 3) {
-                    document.getElementById('premiumModal').classList.add('active');
-                } else {
-                    alert('Grup dolu!');
-                }
-                return;
+        function closeModal(type) { document.getElementById(type + 'Modal').classList.remove('active'); }
+
+        document.addEventListener('click', function(e) {
+            const popup = document.getElementById('profilePopup');
+            if (!document.getElementById('userAvatar').contains(e.target) && !popup.contains(e.target)) {
+                popup.classList.remove('active');
             }
+        });
 
-            const friends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
-            if (friends.length === 0) {
-                alert('Arkadaş listeniz boş!');
-                return;
-            }
-
-            const available = friends.filter(f => !myGroup.members.includes(f));
-            if (available.length === 0) {
-                alert('Tüm arkadaşlarınız zaten grupta!');
-                return;
-            }
-
-            const friendName = prompt('Davet etmek istediğiniz arkadaşın adı:\n' + available.join(', '));
-            if (!friendName || !available.includes(friendName)) return;
-
-            myGroup.members.push(friendName);
-            localStorage.setItem('groups', JSON.stringify(groups));
-            alert('Üye eklendi!');
-            loadGroup();
-        }
-
-        function closeModal(type) {
-            document.getElementById(type + 'Modal').classList.remove('active');
-        }
-
-        // Haftalık lider güncelleme (her hafta sonu)
-        function updateWeeklyLeader() {
-            const groups = JSON.parse(localStorage.getItem('groups')) || [];
-            const today = new Date();
-            
-            if (today.getDay() === 0) { // Pazar günü
-                groups.forEach(group => {
-                    const weeklyScores = calculateWeeklyScores(group.members);
-                    if (weeklyScores.length > 0) {
-                        group.leader = weeklyScores[0].name;
-                    }
-                });
-                localStorage.setItem('groups', JSON.stringify(groups));
-            }
-        }
-
-        loadGroup();
-        updateWeeklyLeader();
+        loadUserProfile();
+        loadGroups();
     </script>
 </body>
 </html>

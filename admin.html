@@ -689,13 +689,24 @@
         }
 
         function deleteProfilePicture(picId) {
-            if (!confirm('Bu profil resmini silmek istediğinizden emin misiniz?')) return;
+            if (!confirm('Bu profil resmini silmek istediğinizden emin misiniz?\n\nBu resmi kullanan kullanıcılar varsayılan profile dönecek.')) return;
 
             const pictures = JSON.parse(localStorage.getItem('profilePictures')) || [];
             const updatedPics = pictures.filter(p => p.id !== picId);
             localStorage.setItem('profilePictures', JSON.stringify(updatedPics));
 
-            alert('✅ Profil resmi silindi!');
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            users.forEach(user => {
+                const userPic = localStorage.getItem('profilePicture_' + user.name);
+                if (userPic === picId) {
+                    localStorage.setItem('profilePicture_' + user.name, 'default');
+                }
+                const ownedPics = JSON.parse(localStorage.getItem('ownedProfilePictures_' + user.name)) || [];
+                const updatedOwned = ownedPics.filter(p => p !== picId);
+                localStorage.setItem('ownedProfilePictures_' + user.name, JSON.stringify(updatedOwned));
+            });
+
+            alert('✅ Profil resmi silindi! Kullanan kullanıcılar varsayılana döndü.');
             loadProfilePictures();
         }
 
