@@ -7,554 +7,114 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --warm-dark: #3d3228;
-            --warm-brown: #7d5a3f;
-            --warm-tan: #b8905f;
-            --warm-cream: #e6d4b8;
-            --warm-light: #f5ede0;
-            --warm-orange: #d97449;
-            --warm-peach: #e8a87c;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--warm-light) 0%, var(--warm-cream) 100%);
-            min-height: 100vh;
-        }
-
-        header {
-            background: rgba(61, 50, 40, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        nav {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--warm-peach);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-        }
-
-        .logo::before {
-            content: "📚";
-            font-size: 1.8rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            color: var(--warm-cream);
-        }
-
-        .user-name {
-            cursor: pointer;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            transition: background 0.3s;
-        }
-
-        .user-name:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--warm-orange);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-        }
-
-        .name-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .name-modal.active {
-            display: flex;
-        }
-
-        .name-modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
-        }
-
-        .top-ad {
-            background: rgba(255, 255, 255, 0.6);
-            padding: 1rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(125, 90, 63, 0.1);
-        }
-
-        .ad-placeholder {
-            background: linear-gradient(135deg, #f0e8dc 0%, #e6d4b8 100%);
-            border: 2px dashed var(--warm-tan);
-            border-radius: 8px;
-            padding: 1rem;
-            color: var(--warm-brown);
-            font-size: 0.9rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 1fr 300px;
-            gap: 2rem;
-        }
-
-        .main-content {
-            min-width: 0;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            background: white;
-            padding: 1rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .tab {
-            flex: 1;
-            padding: 1rem 2rem;
-            background: transparent;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--warm-brown);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            background: var(--warm-orange);
-            color: white;
-            box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3);
-        }
-
-        .tab:hover:not(.active) {
-            background: var(--warm-light);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--warm-light);
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            color: var(--warm-dark);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .date-selector {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .date-selector select {
-            padding: 0.6rem 1rem;
-            border: 2px solid var(--warm-cream);
-            border-radius: 8px;
-            font-size: 1rem;
-            color: var(--warm-brown);
-            background: white;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
-        .date-selector select:focus {
-            outline: none;
-            border-color: var(--warm-orange);
-        }
-
-        .question-entry {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .subject-input {
-            background: var(--warm-light);
-            padding: 1rem;
-            border-radius: 10px;
-            border-left: 4px solid var(--warm-orange);
-        }
-
-        .subject-input label {
-            display: block;
-            font-weight: 600;
-            color: var(--warm-brown);
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
-
-        .subject-input input {
-            width: 100%;
-            padding: 0.6rem;
-            border: 2px solid var(--warm-cream);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .subject-input input:focus {
-            outline: none;
-            border-color: var(--warm-orange);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.8rem 2rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: var(--warm-orange);
-            color: white;
-            box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3);
-        }
-
-        .btn-primary:hover {
-            background: #c25f35;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(217, 116, 73, 0.4);
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-            transform: translateY(-2px);
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin-top: 2rem;
-        }
-
-        .subject-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .filter-chip {
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--warm-cream);
-            border-radius: 20px;
-            background: white;
-            color: var(--warm-brown);
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .filter-chip:hover {
-            border-color: var(--warm-tan);
-        }
-
-        .filter-chip.active {
-            background: var(--warm-orange);
-            color: white;
-            border-color: var(--warm-orange);
-        }
-
-        .deneme-entry {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-        }
-
-        .input-group {
-            background: var(--warm-light);
-            padding: 1.5rem;
-            border-radius: 10px;
-        }
-
-        .input-group label {
-            display: block;
-            font-weight: 600;
-            color: var(--warm-brown);
-            margin-bottom: 0.5rem;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 2px solid var(--warm-cream);
-            border-radius: 8px;
-            font-size: 1.1rem;
-            transition: border-color 0.3s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--warm-orange);
-        }
-
-        .results-display {
-            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--warm-peach) 100%);
-            padding: 2rem;
-            border-radius: 15px;
-            color: white;
-            margin-top: 1.5rem;
-            display: none;
-        }
-
-        .results-display.show {
-            display: block;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .result-item:last-child {
-            margin-bottom: 0;
-            background: rgba(255, 255, 255, 0.3);
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .result-label {
-            font-weight: 600;
-        }
-
-        .result-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-        }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .sidebar-ad {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            text-align: center;
-        }
-
-        .stats-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .stats-card h3 {
-            color: var(--warm-dark);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.8rem;
-            background: var(--warm-light);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .stat-name {
-            color: var(--warm-brown);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .stat-value {
-            color: var(--warm-orange);
-            font-weight: bold;
-        }
-
-        .monthly-total {
-            background: linear-gradient(135deg, var(--warm-orange) 0%, var(--warm-peach) 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .monthly-total h3 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            opacity: 0.9;
-        }
-
-        .monthly-total .total-number {
-            font-size: 3rem;
-            font-weight: bold;
-        }
-
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                order: -1;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .question-entry {
-                grid-template-columns: 1fr;
-            }
-
-            .deneme-entry {
-                grid-template-columns: 1fr;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
-
-            .chart-container {
-                height: 300px;
-            }
-
-            .button-group {
-                flex-direction: column;
-            }
-        }
+            --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f;
+            --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, var(--warm-light) 0%, var(--warm-cream) 100%); min-height: 100vh; }
+        header { background: rgba(61, 50, 40, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); display: flex; align-items: center; gap: 0.5rem; text-decoration: none; cursor: pointer; }
+        .logo::before { content: "📚"; font-size: 1.8rem; }
+        .user-info { display: flex; align-items: center; gap: 1rem; color: var(--warm-cream); position: relative; }
+        .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.4rem 0.8rem; border-radius: 15px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--warm-orange); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; cursor: pointer; transition: transform 0.3s; }
+        .user-avatar:hover { transform: scale(1.1); }
+        .profile-popup { display: none; position: absolute; top: 60px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 250px; z-index: 1000; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .profile-popup.active { display: block; }
+        .profile-popup h3 { color: var(--warm-dark); margin-bottom: 1rem; }
+        .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .profile-item:hover { background: var(--warm-orange); color: white; }
+        .nav-menu { display: flex; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-menu a:hover { color: var(--warm-peach); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
+        .main-content { min-width: 0; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+        .tab { flex: 1; padding: 1rem 2rem; background: transparent; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
+        .tab.active { background: var(--warm-orange); color: white; box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3); }
+        .tab:hover:not(.active) { background: var(--warm-light); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
+        .card-title { font-size: 1.5rem; color: var(--warm-dark); display: flex; align-items: center; gap: 0.5rem; }
+        .stopwatch { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; padding: 2rem; border-radius: 15px; text-align: center; margin-bottom: 2rem; }
+        .stopwatch-display { font-size: 3rem; font-weight: bold; margin: 1rem 0; font-family: 'Courier New', monospace; }
+        .stopwatch-buttons { display: flex; gap: 1rem; justify-content: center; }
+        .stopwatch-btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: white; color: var(--warm-orange); transition: all 0.3s; }
+        .stopwatch-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .question-entry { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .subject-input { background: var(--warm-light); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--warm-orange); }
+        .subject-input label { display: block; font-weight: 600; color: var(--warm-brown); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .subject-input input { width: 100%; padding: 0.6rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
+        .subject-input input:focus { outline: none; border-color: var(--warm-orange); }
+        .button-group { display: flex; gap: 1rem; }
+        .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: var(--warm-orange); color: white; box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3); }
+        .btn-primary:hover { background: #c25f35; transform: translateY(-2px); }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; transform: translateY(-2px); }
+        .btn-full { width: 100%; }
+        .chart-container { position: relative; height: 400px; margin-top: 2rem; }
+        .subject-filter { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .filter-chip { padding: 0.5rem 1rem; border: 2px solid var(--warm-cream); border-radius: 20px; background: white; color: var(--warm-brown); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .filter-chip:hover { border-color: var(--warm-tan); }
+        .filter-chip.active { background: var(--warm-orange); color: white; border-color: var(--warm-orange); }
+        .monthly-total { background: linear-gradient(135deg, var(--warm-orange) 0%, var(--warm-peach) 100%); color: white; padding: 1.5rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem; }
+        .monthly-total h3 { font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9; }
+        .monthly-total .total-number { font-size: 3rem; font-weight: bold; }
+        .date-selector { display: flex; gap: 1rem; align-items: center; }
+        .date-selector select { padding: 0.6rem 1rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-size: 1rem; color: var(--warm-brown); background: white; cursor: pointer; }
+        .deneme-entry { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .input-group { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; }
+        .input-group label { display: block; font-weight: 600; color: var(--warm-brown); margin-bottom: 0.5rem; }
+        .input-group input { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-size: 1.1rem; }
+        .results-display { background: linear-gradient(135deg, var(--warm-orange) 0%, var(--warm-peach) 100%); padding: 2rem; border-radius: 15px; color: white; margin-top: 1.5rem; display: none; }
+        .results-display.show { display: block; }
+        .result-item { display: flex; justify-content: space-between; padding: 1rem; background: rgba(255, 255, 255, 0.2); border-radius: 10px; margin-bottom: 1rem; }
+        .result-value { font-size: 1.3rem; font-weight: bold; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        .stats-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+        .stats-card h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.1rem; }
+        .stat-row { display: flex; justify-content: space-between; padding: 0.8rem; background: var(--warm-light); border-radius: 8px; margin-bottom: 0.5rem; }
+        .stat-name { color: var(--warm-brown); font-weight: 600; font-size: 0.9rem; }
+        .stat-value { color: var(--warm-orange); font-weight: bold; }
+        .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; animation: slideInRight 0.3s ease; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        .notification.success { border-left: 5px solid #2ecc71; }
+        .notification.error { border-left: 5px solid #e74c3c; }
+        .notification.hide { animation: slideOutRight 0.3s ease; }
+        @keyframes slideOutRight { to { opacity: 0; transform: translateX(100px); } }
+        @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .question-entry, .deneme-entry { grid-template-columns: 1fr; } .button-group { flex-direction: column; } }
     </style>
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="logo">KPSS Günlüğüm</a>
+            <a onclick="goHome()" class="logo">KPSS Günlüğüm</a>
+            <ul class="nav-menu">
+                <li><a href="friends.html">👥 Arkadaşlar</a></li>
+                <li><a href="groups.html">👨‍👩‍👧‍👦 Gruplar</a></li>
+                <li><a href="streak.html">🔥 Streak</a></li>
+                <li><a href="achievements.html">🏆 Başarılar</a></li>
+            </ul>
             <div class="user-info">
-                <span class="user-name" onclick="openNameModal()">Hoş geldin, <strong id="userName">Kullanıcı</strong></span>
-                <div class="user-avatar" id="userAvatar">K</div>
+                <div class="streak-badge">🔥 <span id="streakCount">0</span> gün</div>
+                <span>Hoş geldin, <strong id="userName">Kullanıcı</strong></span>
+                <div class="user-avatar" id="userAvatar" onclick="toggleProfilePopup()">K</div>
+                <div class="profile-popup" id="profilePopup">
+                    <h3 id="profileName">Kullanıcı</h3>
+                    <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
+                    <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
+                </div>
             </div>
         </nav>
     </header>
-
-    <div class="top-ad">
-        <div class="ad-placeholder" style="height: 90px; display: flex; align-items: center; justify-content: center;">
-            <span>📢 Reklam Alanı (728x90) - Google AdSense</span>
-        </div>
-    </div>
-
-    <div id="nameModal" class="name-modal">
-        <div class="name-modal-content">
-            <h2 style="color: var(--warm-dark); margin-bottom: 1rem;">✏️ İsim Değiştir</h2>
-            <p style="color: var(--warm-brown); margin-bottom: 1.5rem; font-size: 0.9rem;" id="nameChangeMessage"></p>
-            <input type="text" id="newNameInput" placeholder="Yeni isminiz" style="width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; margin-bottom: 1rem; font-size: 1rem;">
-            <div style="display: flex; gap: 1rem;">
-                <button class="btn btn-primary" onclick="changeName()" style="flex: 1;">Kaydet</button>
-                <button class="btn btn-danger" onclick="closeNameModal()" style="flex: 1;">İptal</button>
-            </div>
-        </div>
-    </div>
 
     <div class="container">
         <div class="main-content">
@@ -564,31 +124,24 @@
             </div>
 
             <div id="soru-tab" class="tab-content active">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">📝 Bugün Çözdüğüm Sorular</h2>
+                <div class="stopwatch">
+                    <h2>⏱️ Kronometre</h2>
+                    <div class="stopwatch-display" id="stopwatchDisplay">00:00:00</div>
+                    <div class="stopwatch-buttons">
+                        <button class="stopwatch-btn" onclick="startStopwatch()">▶️ Başlat</button>
+                        <button class="stopwatch-btn" onclick="pauseStopwatch()">⏸️ Duraklat</button>
+                        <button class="stopwatch-btn" onclick="resetStopwatch()">🔄 Sıfırla</button>
                     </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><h2 class="card-title">📝 Bugün Çözdüğüm Sorular</h2></div>
                     <div class="question-entry">
-                        <div class="subject-input">
-                            <label>Türkçe</label>
-                            <input type="number" id="turkce" placeholder="0" min="0">
-                        </div>
-                        <div class="subject-input">
-                            <label>Matematik</label>
-                            <input type="number" id="matematik" placeholder="0" min="0">
-                        </div>
-                        <div class="subject-input">
-                            <label>Tarih</label>
-                            <input type="number" id="tarih" placeholder="0" min="0">
-                        </div>
-                        <div class="subject-input">
-                            <label>Coğrafya</label>
-                            <input type="number" id="cografya" placeholder="0" min="0">
-                        </div>
-                        <div class="subject-input">
-                            <label>Vatandaşlık</label>
-                            <input type="number" id="vatandaslik" placeholder="0" min="0">
-                        </div>
+                        <div class="subject-input"><label>Türkçe</label><input type="number" id="turkce" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Matematik</label><input type="number" id="matematik" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Tarih</label><input type="number" id="tarih" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Coğrafya</label><input type="number" id="cografya" placeholder="0" min="0"></div>
+                        <div class="subject-input"><label>Vatandaşlık</label><input type="number" id="vatandaslik" placeholder="0" min="0"></div>
                     </div>
                     <div class="button-group">
                         <button class="btn btn-primary btn-full" onclick="saveQuestions()">💾 Ekle (Toplama Yapar)</button>
@@ -601,33 +154,17 @@
                         <h2 class="card-title">📈 Aylık İlerleme</h2>
                         <div class="date-selector">
                             <select id="monthSelect" onchange="updateChart()">
-                                <option value="0">Ocak</option>
-                                <option value="1">Şubat</option>
-                                <option value="2">Mart</option>
-                                <option value="3">Nisan</option>
-                                <option value="4">Mayıs</option>
-                                <option value="5">Haziran</option>
-                                <option value="6">Temmuz</option>
-                                <option value="7">Ağustos</option>
-                                <option value="8">Eylül</option>
-                                <option value="9">Ekim</option>
-                                <option value="10">Kasım</option>
-                                <option value="11">Aralık</option>
+                                <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
+                                <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
+                                <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
+                                <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
                             </select>
                             <select id="yearSelect" onchange="updateChart()">
-                                <option value="2024">2024</option>
-                                <option value="2025" selected>2025</option>
-                                <option value="2026">2026</option>
+                                <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
                             </select>
                         </div>
                     </div>
-
-                    <div class="monthly-total">
-                        <h3>Bu Ay Toplam</h3>
-                        <div class="total-number" id="monthlyTotal">0</div>
-                        <p style="margin-top: 0.5rem; opacity: 0.9;">soru çözüldü</p>
-                    </div>
-
+                    <div class="monthly-total"><h3>Bu Ay Toplam</h3><div class="total-number" id="monthlyTotal">0</div><p style="margin-top: 0.5rem; opacity: 0.9;">soru çözüldü</p></div>
                     <div class="subject-filter">
                         <button class="filter-chip active" onclick="filterSubject('all')">Tümü</button>
                         <button class="filter-chip" onclick="filterSubject('turkce')">Türkçe</button>
@@ -636,41 +173,21 @@
                         <button class="filter-chip" onclick="filterSubject('cografya')">Coğrafya</button>
                         <button class="filter-chip" onclick="filterSubject('vatandaslik')">Vatandaşlık</button>
                     </div>
-
-                    <div class="chart-container">
-                        <canvas id="questionsChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="questionsChart"></canvas></div>
                 </div>
             </div>
 
             <div id="deneme-tab" class="tab-content">
                 <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">📝 Deneme Sonucu Ekle</h2>
-                    </div>
-                    
+                    <div class="card-header"><h2 class="card-title">📝 Deneme Sonucu Ekle</h2></div>
                     <div class="deneme-entry">
-                        <div class="input-group">
-                            <label>✅ Doğru Sayısı</label>
-                            <input type="number" id="dogru" placeholder="0" min="0" max="120" oninput="calculateNet()">
-                        </div>
-                        <div class="input-group">
-                            <label>❌ Yanlış Sayısı</label>
-                            <input type="number" id="yanlis" placeholder="0" min="0" max="120" oninput="calculateNet()">
-                        </div>
+                        <div class="input-group"><label>✅ Doğru Sayısı</label><input type="number" id="dogru" placeholder="0" min="0" max="120" oninput="calculateNet()"></div>
+                        <div class="input-group"><label>❌ Yanlış Sayısı</label><input type="number" id="yanlis" placeholder="0" min="0" max="120" oninput="calculateNet()"></div>
                     </div>
-
                     <div class="results-display" id="denemeResults">
-                        <div class="result-item">
-                            <span class="result-label">Boş Bırakılan:</span>
-                            <span class="result-value" id="bosResult">0</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">📊 Net Sayısı:</span>
-                            <span class="result-value" id="netResult">0.00</span>
-                        </div>
+                        <div class="result-item"><span>Boş Bırakılan:</span><span class="result-value" id="bosResult">0</span></div>
+                        <div class="result-item"><span>📊 Net Sayısı:</span><span class="result-value" id="netResult">0.00</span></div>
                     </div>
-
                     <button class="btn btn-primary btn-full" onclick="saveDeneme()" style="margin-top: 1.5rem;">💾 Denemeyi Kaydet</button>
                 </div>
 
@@ -679,156 +196,338 @@
                         <h2 class="card-title">📊 Net Grafiği</h2>
                         <div class="date-selector">
                             <select id="denemeMonthSelect" onchange="updateDenemeChart()">
-                                <option value="0">Ocak</option>
-                                <option value="1">Şubat</option>
-                                <option value="2">Mart</option>
-                                <option value="3">Nisan</option>
-                                <option value="4">Mayıs</option>
-                                <option value="5">Haziran</option>
-                                <option value="6">Temmuz</option>
-                                <option value="7">Ağustos</option>
-                                <option value="8">Eylül</option>
-                                <option value="9">Ekim</option>
-                                <option value="10">Kasım</option>
-                                <option value="11">Aralık</option>
+                                <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
+                                <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
+                                <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
+                                <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
                             </select>
                             <select id="denemeYearSelect" onchange="updateDenemeChart()">
-                                <option value="2024">2024</option>
-                                <option value="2025" selected>2025</option>
-                                <option value="2026">2026</option>
+                                <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
                             </select>
                         </div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="denemeChart"></canvas>
-                    </div>
+                    <div class="chart-container"><canvas id="denemeChart"></canvas></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">📚 Deneme Geçmişi</h2>
-                    </div>
-                    <div id="denemeHistory">
-                        <p style="text-align: center; color: var(--warm-brown); padding: 2rem;">Henüz deneme kaydı yok. İlk denemenizi ekleyin!</p>
-                    </div>
+                    <div class="card-header"><h2 class="card-title">📚 Deneme Geçmişi</h2></div>
+                    <div id="denemeHistory"><p style="text-align: center; color: var(--warm-brown); padding: 2rem;">Henüz deneme kaydı yok.</p></div>
                 </div>
             </div>
         </div>
 
         <aside class="sidebar">
-            <div class="sidebar-ad">
-                <div class="ad-placeholder" style="height: 250px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.5rem;">
-                    <span>📢 Reklam Alanı</span>
-                    <span style="font-size: 0.8rem; color: var(--warm-tan);">(300x250)</span>
-                </div>
-            </div>
-
             <div class="stats-card">
                 <h3>📊 Bugünün Özeti</h3>
-                <div class="stat-row">
-                    <span class="stat-name">Türkçe</span>
-                    <span class="stat-value" id="today-turkce">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-name">Matematik</span>
-                    <span class="stat-value" id="today-matematik">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-name">Tarih</span>
-                    <span class="stat-value" id="today-tarih">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-name">Coğrafya</span>
-                    <span class="stat-value" id="today-cografya">0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-name">Vatandaşlık</span>
-                    <span class="stat-value" id="today-vatandaslik">0</span>
-                </div>
-            </div>
-
-            <div class="sidebar-ad">
-                <div class="ad-placeholder" style="height: 250px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 0.5rem;">
-                    <span>📢 Reklam Alanı</span>
-                    <span style="font-size: 0.8rem; color: var(--warm-tan);">(300x250)</span>
-                </div>
+                <div class="stat-row"><span class="stat-name">Türkçe</span><span class="stat-value" id="today-turkce">0</span></div>
+                <div class="stat-row"><span class="stat-name">Matematik</span><span class="stat-value" id="today-matematik">0</span></div>
+                <div class="stat-row"><span class="stat-name">Tarih</span><span class="stat-value" id="today-tarih">0</span></div>
+                <div class="stat-row"><span class="stat-name">Coğrafya</span><span class="stat-value" id="today-cografya">0</span></div>
+                <div class="stat-row"><span class="stat-name">Vatandaşlık</span><span class="stat-value" id="today-vatandaslik">0</span></div>
             </div>
         </aside>
     </div>
 
     <script>
         const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
-            window.location.href = 'index.html';
-        }
+        if (!currentUser) window.location.href = 'index.html';
 
         document.getElementById('userName').textContent = currentUser;
+        document.getElementById('profileName').textContent = currentUser;
         document.getElementById('userAvatar').textContent = currentUser.charAt(0).toUpperCase();
 
         let questionsData = JSON.parse(localStorage.getItem('questionsData_' + currentUser)) || {};
         let denemeData = JSON.parse(localStorage.getItem('denemeData_' + currentUser)) || [];
         let currentFilter = 'all';
-        let chart = null;
-        let denemeChart = null;
+        let chart = null, denemeChart = null;
+        let stopwatchInterval = null, stopwatchTime = 0, isRunning = false;
 
-        function openNameModal() {
+        function goHome() { window.location.href = 'index.html'; }
+        function logout() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
+        function toggleProfilePopup() { document.getElementById('profilePopup').classList.toggle('active'); }
+        function showNotification(message, type = 'success') {
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `<strong>${type === 'success' ? '✅' : '❌'}</strong> ${message}`;
+            document.body.appendChild(notif);
+            setTimeout(() => { notif.classList.add('hide'); setTimeout(() => notif.remove(), 300); }, 3000);
+        }
+
+        function updateStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastActivity = localStorage.getItem('lastStreakActivity_' + currentUser);
+            const streak = parseInt(localStorage.getItem('streak_' + currentUser) || '0');
+            const todayData = questionsData[today] || {};
+            const totalToday = (todayData.turkce||0) + (todayData.matematik||0) + (todayData.tarih||0) + (todayData.cografya||0) + (todayData.vatandaslik||0);
+
+            if (totalToday >= 10 && lastActivity !== today) {
+                const newStreak = streak + 1;
+                localStorage.setItem('streak_' + currentUser, newStreak.toString());
+                localStorage.setItem('lastStreakActivity_' + currentUser, today);
+                document.getElementById('streakCount').textContent = newStreak;
+            } else {
+                document.getElementById('streakCount').textContent = streak;
+            }
+        }
+
+        function startStopwatch() {
+            if (!isRunning) {
+                isRunning = true;
+                stopwatchInterval = setInterval(() => {
+                    stopwatchTime++;
+                    const h = Math.floor(stopwatchTime / 3600).toString().padStart(2, '0');
+                    const m = Math.floor((stopwatchTime % 3600) / 60).toString().padStart(2, '0');
+                    const s = (stopwatchTime % 60).toString().padStart(2, '0');
+                    document.getElementById('stopwatchDisplay').textContent = `${h}:${m}:${s}`;
+                }, 1000);
+            }
+        }
+        function pauseStopwatch() { isRunning = false; clearInterval(stopwatchInterval); }
+        function resetStopwatch() { pauseStopwatch(); stopwatchTime = 0; document.getElementById('stopwatchDisplay').textContent = '00:00:00'; }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
+        function saveQuestions() {
+            const today = new Date().toISOString().split('T')[0];
+            const turkce = parseInt(document.getElementById('turkce').value) || 0;
+            const matematik = parseInt(document.getElementById('matematik').value) || 0;
+            const tarih = parseInt(document.getElementById('tarih').value) || 0;
+            const cografya = parseInt(document.getElementById('cografya').value) || 0;
+            const vatandaslik = parseInt(document.getElementById('vatandaslik').value) || 0;
+
+            const existing = questionsData[today] || {turkce:0, matematik:0, tarih:0, cografya:0, vatandaslik:0};
+            questionsData[today] = {
+                turkce: existing.turkce + turkce,
+                matematik: existing.matematik + matematik,
+                tarih: existing.tarih + tarih,
+                cografya: existing.cografya + cografya,
+                vatandaslik: existing.vatandaslik + vatandaslik
+            };
+
+            localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
+            localStorage.setItem('lastActivity_' + currentUser, today);
+            
+            showNotification('Sorular başarıyla eklendi!', 'success');
+            updateChart();
+            loadTodayStats();
+            updateStreak();
+            
+            document.getElementById('turkce').value = '';
+            document.getElementById('matematik').value = '';
+            document.getElementById('tarih').value = '';
+            document.getElementById('cografya').value = '';
+            document.getElementById('vatandaslik').value = '';
+        }
+
+        function clearTodayQuestions() {
+            if (!confirm('⚠️ Bugünün tüm soru verilerini silmek istediğinizden emin misiniz?')) return;
+            const today = new Date().toISOString().split('T')[0];
+            delete questionsData[today];
+            localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
+            showNotification('Bugünün verileri temizlendi!', 'success');
+            updateChart();
+            loadTodayStats();
+        }
+
+        function loadTodayStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayData = questionsData[today] || {turkce:0, matematik:0, tarih:0, cografya:0, vatandaslik:0};
+            document.getElementById('today-turkce').textContent = todayData.turkce;
+            document.getElementById('today-matematik').textContent = todayData.matematik;
+            document.getElementById('today-tarih').textContent = todayData.tarih;
+            document.getElementById('today-cografya').textContent = todayData.cografya;
+            document.getElementById('today-vatandaslik').textContent = todayData.vatandaslik;
+        }
+
+        function filterSubject(subject) {
+            currentFilter = subject;
+            document.querySelectorAll('.filter-chip').forEach(chip => chip.classList.remove('active'));
+            event.target.classList.add('active');
+            updateChart();
+        }
+
+        function updateChart() {
+            const month = parseInt(document.getElementById('monthSelect').value);
+            const year = parseInt(document.getElementById('yearSelect').value);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
+            const datasets = [];
+            let monthlyTotal = 0;
+
+            if (currentFilter === 'all') {
+                const subjects = ['turkce', 'matematik', 'tarih', 'cografya', 'vatandaslik'];
+                const colors = ['#e74c3c', '#3498db', '#f39c12', '#2ecc71', '#9b59b6'];
+                const names = ['Türkçe', 'Matematik', 'Tarih', 'Coğrafya', 'Vatandaşlık'];
+                subjects.forEach((subject, index) => {
+                    const data = labels.map(day => {
+                        const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                        const value = questionsData[date]?.[subject] || 0;
+                        monthlyTotal += value;
+                        return value;
+                    });
+                    datasets.push({label: names[index], data: data, borderColor: colors[index], backgroundColor: 'transparent', tension: 0.4, fill: false});
+                });
+            } else {
+                const colors = {turkce: '#e74c3c', matematik: '#3498db', tarih: '#f39c12', cografya: '#2ecc71', vatandaslik: '#9b59b6'};
+                const names = {turkce: 'Türkçe', matematik: 'Matematik', tarih: 'Tarih', cografya: 'Coğrafya', vatandaslik: 'Vatandaşlık'};
+                const data = labels.map(day => {
+                    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const value = questionsData[date]?.[currentFilter] || 0;
+                    monthlyTotal += value;
+                    return value;
+                });
+                datasets.push({label: names[currentFilter], data: data, borderColor: colors[currentFilter], backgroundColor: 'transparent', tension: 0.4, fill: false});
+            }
+
+            document.getElementById('monthlyTotal').textContent = monthlyTotal;
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('questionsChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {labels: labels, datasets: datasets},
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {legend: {display: true, position: 'top'}},
+                    scales: {y: {beginAtZero: true, ticks: {stepSize: 5}}}
+                }
+            });
+        }
+
+        function calculateNet() {
+            const dogru = parseInt(document.getElementById('dogru').value) || 0;
+            const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
+            if (dogru + yanlis > 120) { alert('⚠️ Toplam soru sayısı 120\'yi geçemez!'); return; }
+            const bos = 120 - dogru - yanlis;
+            const net = (dogru - (yanlis * 0.25)).toFixed(2);
+            document.getElementById('bosResult').textContent = bos;
+            document.getElementById('netResult').textContent = net;
+            document.getElementById('denemeResults').classList.add('show');
+        }
+
+        function saveDeneme() {
+            const dogru = parseInt(document.getElementById('dogru').value) || 0;
+            const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
+            if (dogru + yanlis > 120) { alert('⚠️ Toplam soru sayısı 120\'yi geçemez!'); return; }
+            if (dogru === 0 && yanlis === 0) { alert('⚠️ Lütfen doğru ve yanlış sayısını girin!'); return; }
+            const bos = 120 - dogru - yanlis;
+            const net = (dogru - (yanlis * 0.25)).toFixed(2);
+            const today = new Date().toLocaleDateString('tr-TR');
+            denemeData.unshift({date: today, dogru: dogru, yanlis: yanlis, bos: bos, net: net});
+            localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
+            showNotification('Deneme başarıyla kaydedildi!', 'success');
+            updateDenemeChart();
+            loadDenemeHistory();
+            document.getElementById('dogru').value = '';
+            document.getElementById('yanlis').value = '';
+            document.getElementById('denemeResults').classList.remove('show');
+        }
+
+        function updateDenemeChart() {
+            const month = parseInt(document.getElementById('denemeMonthSelect').value);
+            const year = parseInt(document.getElementById('denemeYearSelect').value);
+            const monthStart = new Date(year, month, 1);
+            const monthEnd = new Date(year, month + 1, 0);
+            const filteredDenemeler = denemeData.filter(deneme => {
+                const parts = deneme.date.split('.');
+                const denemeDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                return denemeDate >= monthStart && denemeDate <= monthEnd;
+            });
+            const labels = filteredDenemeler.map((d, i) => `Deneme ${i + 1}`);
+            const netData = filteredDenemeler.map(d => parseFloat(d.net));
+            if (denemeChart) denemeChart.destroy();
+            const ctx = document.getElementById('denemeChart').getContext('2d');
+            denemeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Veri Yok'],
+                    datasets: [{label: 'Net Sayısı', data: netData.length > 0 ? netData : [0], borderColor: '#d97449', backgroundColor: 'transparent', tension: 0.4, fill: false, pointRadius: 5}]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {legend: {display: true, position: 'top'}},
+                    scales: {y: {beginAtZero: true, max: 120, ticks: {stepSize: 10}}}
+                }
+            });
+        }
+
+        function loadDenemeHistory() {
+            const container = document.getElementById('denemeHistory');
+            if (denemeData.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--warm-brown); padding: 2rem;">Henüz deneme kaydı yok.</p>';
+                return;
+            }
+            let html = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
+            denemeData.forEach((deneme, index) => {
+                html += `<div style="background: var(--warm-light); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--warm-orange);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <strong>📅 ${deneme.date}</strong>
+                        <button onclick="deleteDeneme(${index})" style="background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer;">🗑️</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
+                        <div><div style="color: var(--warm-tan); font-size: 0.9rem;">Doğru</div><div style="color: #2ecc71; font-weight: bold; font-size: 1.3rem;">${deneme.dogru}</div></div>
+                        <div><div style="color: var(--warm-tan); font-size: 0.9rem;">Yanlış</div><div style="color: #e74c3c; font-weight: bold; font-size: 1.3rem;">${deneme.yanlis}</div></div>
+                        <div><div style="color: var(--warm-tan); font-size: 0.9rem;">Boş</div><div style="color: var(--warm-brown); font-weight: bold; font-size: 1.3rem;">${deneme.bos}</div></div>
+                        <div style="background: var(--warm-orange); color: white; padding: 0.5rem; border-radius: 8px;"><div style="font-size: 0.9rem;">Net</div><div style="font-weight: bold; font-size: 1.5rem;">${deneme.net}</div></div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html + '</div>';
+        }
+
+        function deleteDeneme(index) {
+            if (confirm('Bu denemeyi silmek istediğinizden emin misiniz?')) {
+                denemeData.splice(index, 1);
+                localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
+                updateDenemeChart();
+                loadDenemeHistory();
+            }
+        }
+
+        function showReferral() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.name === currentUser);
+            if (user && user.referralCode) {
+                const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
+                prompt('Referans Linkiniz:', refLink);
+            }
+        }
+
+        function openNameChange() {
             const lastChange = localStorage.getItem('lastNameChange_' + currentUser);
             const now = Date.now();
-            
             if (lastChange && (now - parseInt(lastChange)) < 86400000) {
                 const remaining = 86400000 - (now - parseInt(lastChange));
                 const hours = Math.floor(remaining / 3600000);
                 const minutes = Math.floor((remaining % 3600000) / 60000);
-                document.getElementById('nameChangeMessage').textContent = 
-                    `⏰ İsim değiştirmek için ${hours} saat ${minutes} dakika beklemelisiniz.`;
-                document.getElementById('newNameInput').disabled = true;
-            } else {
-                document.getElementById('nameChangeMessage').textContent = 
-                    '📝 Yeni isminizi girin (24 saatte bir değiştirebilirsiniz)';
-                document.getElementById('newNameInput').disabled = false;
-                document.getElementById('newNameInput').value = '';
-            }
-            
-            document.getElementById('nameModal').classList.add('active');
-        }
-
-        function closeNameModal() {
-            document.getElementById('nameModal').classList.remove('active');
-        }
-
-        function changeName() {
-            const newName = document.getElementById('newNameInput').value.trim();
-            
-            if (!newName) {
-                alert('⚠️ Lütfen yeni isminizi girin!');
+                showNotification(`İsim değiştirmek için ${hours} saat ${minutes} dakika beklemelisiniz.`, 'error');
                 return;
             }
-
-            const lastChange = localStorage.getItem('lastNameChange_' + currentUser);
-            const now = Date.now();
-            
-            if (lastChange && (now - parseInt(lastChange)) < 86400000) {
-                alert('⚠️ 24 saat geçmeden isim değiştiremezsiniz!');
-                return;
+            const newName = prompt('Yeni isminizi girin:', currentUser);
+            if (newName && newName.trim()) {
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const userIndex = users.findIndex(u => u.name === currentUser);
+                if (userIndex !== -1) {
+                    users[userIndex].name = newName.trim();
+                    localStorage.setItem('users', JSON.stringify(users));
+                    localStorage.setItem('currentUser', newName.trim());
+                    localStorage.setItem('lastNameChange_' + newName.trim(), now.toString());
+                    showNotification('İsim başarıyla değiştirildi!', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                }
             }
+        }
 
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const userIndex = users.findIndex(u => u.name === currentUser);
-            if (userIndex !== -1) {
-                const oldName = currentUser;
-                questionsData = JSON.parse(localStorage.getItem('questionsData_' + oldName)) || {};
-                denemeData = JSON.parse(localStorage.getItem('denemeData_' + oldName)) || [];
-                
-                localStorage.setItem('questionsData_' + newName, JSON.stringify(questionsData));
-                localStorage.setItem('denemeData_' + newName, JSON.stringify(denemeData));
-                
-                users[userIndex].name = newName;
-                localStorage.setItem('users', JSON.stringify(users));
-                localStorage.setItem('currentUser', newName);
-                localStorage.setItem('lastNameChange_' + newName, now.toString());
-                
-                alert('✅ İsminiz başarıyla değiştirildi!');
-                location.reload();
+        window.onclick = function(event) {
+            if (!event.target.matches('.user-avatar')) {
+                const popup = document.getElementById('profilePopup');
+                if (popup.classList.contains('active')) popup.classList.remove('active');
             }
         }
 
@@ -842,357 +541,8 @@
             updateDenemeChart();
             loadTodayStats();
             loadDenemeHistory();
+            updateStreak();
         });
-
-        function switchTab(tabName) {
-            const tabs = document.querySelectorAll('.tab');
-            const contents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            contents.forEach(content => content.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            document.getElementById(tabName + '-tab').classList.add('active');
-        }
-
-        function saveQuestions() {
-            const today = new Date().toISOString().split('T')[0];
-            const turkce = parseInt(document.getElementById('turkce').value) || 0;
-            const matematik = parseInt(document.getElementById('matematik').value) || 0;
-            const tarih = parseInt(document.getElementById('tarih').value) || 0;
-            const cografya = parseInt(document.getElementById('cografya').value) || 0;
-            const vatandaslik = parseInt(document.getElementById('vatandaslik').value) || 0;
-
-            const existing = questionsData[today] || {
-                turkce: 0, matematik: 0, tarih: 0, cografya: 0, vatandaslik: 0
-            };
-
-            questionsData[today] = {
-                turkce: existing.turkce + turkce,
-                matematik: existing.matematik + matematik,
-                tarih: existing.tarih + tarih,
-                cografya: existing.cografya + cografya,
-                vatandaslik: existing.vatandaslik + vatandaslik
-            };
-
-            localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
-            
-            alert('✅ Sorular eklendi ve toplandı!');
-            updateChart();
-            loadTodayStats();
-            
-            document.getElementById('turkce').value = '';
-            document.getElementById('matematik').value = '';
-            document.getElementById('tarih').value = '';
-            document.getElementById('cografya').value = '';
-            document.getElementById('vatandaslik').value = '';
-        }
-
-        function clearTodayQuestions() {
-            if (!confirm('⚠️ Bugünün tüm soru verilerini silmek istediğinizden emin misiniz?')) {
-                return;
-            }
-
-            const today = new Date().toISOString().split('T')[0];
-            delete questionsData[today];
-            localStorage.setItem('questionsData_' + currentUser, JSON.stringify(questionsData));
-            
-            alert('✅ Bugünün verileri temizlendi!');
-            updateChart();
-            loadTodayStats();
-        }
-
-        function loadTodayStats() {
-            const today = new Date().toISOString().split('T')[0];
-            const todayData = questionsData[today] || {
-                turkce: 0, matematik: 0, tarih: 0, cografya: 0, vatandaslik: 0
-            };
-
-            document.getElementById('today-turkce').textContent = todayData.turkce;
-            document.getElementById('today-matematik').textContent = todayData.matematik;
-            document.getElementById('today-tarih').textContent = todayData.tarih;
-            document.getElementById('today-cografya').textContent = todayData.cografya;
-            document.getElementById('today-vatandaslik').textContent = todayData.vatandaslik;
-        }
-
-        function filterSubject(subject) {
-            currentFilter = subject;
-            
-            const chips = document.querySelectorAll('.filter-chip');
-            chips.forEach(chip => chip.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            updateChart();
-        }
-
-        function updateChart() {
-            const month = parseInt(document.getElementById('monthSelect').value);
-            const year = parseInt(document.getElementById('yearSelect').value);
-            
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const labels = Array.from({length: daysInMonth}, (_, i) => i + 1);
-            
-            const datasets = [];
-            let monthlyTotal = 0;
-
-            if (currentFilter === 'all') {
-                const subjects = ['turkce', 'matematik', 'tarih', 'cografya', 'vatandaslik'];
-                const colors = ['#e74c3c', '#3498db', '#f39c12', '#2ecc71', '#9b59b6'];
-                const names = ['Türkçe', 'Matematik', 'Tarih', 'Coğrafya', 'Vatandaşlık'];
-
-                subjects.forEach((subject, index) => {
-                    const data = labels.map(day => {
-                        const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        const value = questionsData[date]?.[subject] || 0;
-                        monthlyTotal += value;
-                        return value;
-                    });
-
-                    datasets.push({
-                        label: names[index],
-                        data: data,
-                        borderColor: colors[index],
-                        backgroundColor: 'transparent',
-                        tension: 0.4,
-                        fill: false
-                    });
-                });
-            } else {
-                const colors = {
-                    'turkce': '#e74c3c',
-                    'matematik': '#3498db',
-                    'tarih': '#f39c12',
-                    'cografya': '#2ecc71',
-                    'vatandaslik': '#9b59b6'
-                };
-                const names = {
-                    'turkce': 'Türkçe',
-                    'matematik': 'Matematik',
-                    'tarih': 'Tarih',
-                    'cografya': 'Coğrafya',
-                    'vatandaslik': 'Vatandaşlık'
-                };
-
-                const data = labels.map(day => {
-                    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const value = questionsData[date]?.[currentFilter] || 0;
-                    monthlyTotal += value;
-                    return value;
-                });
-
-                datasets.push({
-                    label: names[currentFilter],
-                    data: data,
-                    borderColor: colors[currentFilter],
-                    backgroundColor: 'transparent',
-                    tension: 0.4,
-                    fill: false
-                });
-            }
-
-            document.getElementById('monthlyTotal').textContent = monthlyTotal;
-
-            if (chart) {
-                chart.destroy();
-            }
-
-            const ctx = document.getElementById('questionsChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 5
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateDenemeChart() {
-            const month = parseInt(document.getElementById('denemeMonthSelect').value);
-            const year = parseInt(document.getElementById('denemeYearSelect').value);
-            
-            const monthStart = new Date(year, month, 1);
-            const monthEnd = new Date(year, month + 1, 0);
-            
-            const filteredDenemeler = denemeData.filter(deneme => {
-                const parts = deneme.date.split('.');
-                const denemeDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                return denemeDate >= monthStart && denemeDate <= monthEnd;
-            });
-
-            const labels = filteredDenemeler.map((d, i) => `Deneme ${i + 1}`);
-            const netData = filteredDenemeler.map(d => parseFloat(d.net));
-
-            if (denemeChart) {
-                denemeChart.destroy();
-            }
-
-            const ctx = document.getElementById('denemeChart').getContext('2d');
-            denemeChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels.length > 0 ? labels : ['Veri Yok'],
-                    datasets: [{
-                        label: 'Net Sayısı',
-                        data: netData.length > 0 ? netData : [0],
-                        borderColor: '#d97449',
-                        backgroundColor: 'transparent',
-                        tension: 0.4,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 120,
-                            ticks: {
-                                stepSize: 10
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function calculateNet() {
-            const dogru = parseInt(document.getElementById('dogru').value) || 0;
-            const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
-            
-            if (dogru + yanlis > 120) {
-                alert('⚠️ Toplam soru sayısı 120\'yi geçemez!');
-                return;
-            }
-
-            const bos = 120 - dogru - yanlis;
-            const net = (dogru - (yanlis * 0.25)).toFixed(2);
-
-            document.getElementById('bosResult').textContent = bos;
-            document.getElementById('netResult').textContent = net;
-            document.getElementById('denemeResults').classList.add('show');
-        }
-
-        function saveDeneme() {
-            const dogru = parseInt(document.getElementById('dogru').value) || 0;
-            const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
-            
-            if (dogru + yanlis > 120) {
-                alert('⚠️ Toplam soru sayısı 120\'yi geçemez!');
-                return;
-            }
-
-            if (dogru === 0 && yanlis === 0) {
-                alert('⚠️ Lütfen doğru ve yanlış sayısını girin!');
-                return;
-            }
-
-            const bos = 120 - dogru - yanlis;
-            const net = (dogru - (yanlis * 0.25)).toFixed(2);
-            const today = new Date().toLocaleDateString('tr-TR');
-
-            denemeData.unshift({
-                date: today,
-                dogru: dogru,
-                yanlis: yanlis,
-                bos: bos,
-                net: net
-            });
-
-            localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
-            
-            alert('✅ Deneme kaydedildi!');
-            updateDenemeChart();
-            loadDenemeHistory();
-            
-            document.getElementById('dogru').value = '';
-            document.getElementById('yanlis').value = '';
-            document.getElementById('denemeResults').classList.remove('show');
-        }
-
-        function loadDenemeHistory() {
-            const container = document.getElementById('denemeHistory');
-            
-            if (denemeData.length === 0) {
-                container.innerHTML = '<p style="text-align: center; color: var(--warm-brown); padding: 2rem;">Henüz deneme kaydı yok. İlk denemenizi ekleyin!</p>';
-                return;
-            }
-
-            let html = '<div style="display: flex; flex-direction: column; gap: 1rem;">';
-            
-            denemeData.forEach((deneme, index) => {
-                html += `
-                    <div style="background: var(--warm-light); padding: 1.5rem; border-radius: 10px; border-left: 4px solid var(--warm-orange);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                            <strong style="color: var(--warm-brown);">📅 ${deneme.date}</strong>
-                            <button onclick="deleteDeneme(${index})" style="background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer;">🗑️</button>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center;">
-                            <div>
-                                <div style="color: var(--warm-tan); font-size: 0.9rem;">Doğru</div>
-                                <div style="color: #2ecc71; font-weight: bold; font-size: 1.3rem;">${deneme.dogru}</div>
-                            </div>
-                            <div>
-                                <div style="color: var(--warm-tan); font-size: 0.9rem;">Yanlış</div>
-                                <div style="color: #e74c3c; font-weight: bold; font-size: 1.3rem;">${deneme.yanlis}</div>
-                            </div>
-                            <div>
-                                <div style="color: var(--warm-tan); font-size: 0.9rem;">Boş</div>
-                                <div style="color: var(--warm-brown); font-weight: bold; font-size: 1.3rem;">${deneme.bos}</div>
-                            </div>
-                            <div style="background: var(--warm-orange); color: white; padding: 0.5rem; border-radius: 8px;">
-                                <div style="font-size: 0.9rem; opacity: 0.9;">Net</div>
-                                <div style="font-weight: bold; font-size: 1.5rem;">${deneme.net}</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        function deleteDeneme(index) {
-            if (confirm('Bu denemeyi silmek istediğinizden emin misiniz?')) {
-                denemeData.splice(index, 1);
-                localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
-                updateDenemeChart();
-                loadDenemeHistory();
-            }
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('name-modal')) {
-                event.target.classList.remove('active');
-            }
-        }
     </script>
 </body>
 </html>

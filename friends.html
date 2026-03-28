@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arkadaşlar - KPSS Günlüğüm</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
+        header { background: rgba(61, 50, 40, 0.95); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); cursor: pointer; }
+        .logo::before { content: "📚"; font-size: 1.8rem; margin-right: 0.5rem; }
+        .nav-menu { display: flex; gap: 2rem; list-style: none; }
+        .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 2rem; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
+        .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; }
+        .btn:hover { transform: translateY(-2px); }
+        .friend-list { display: grid; gap: 1rem; }
+        .friend-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .friend-info { display: flex; align-items: center; gap: 1rem; }
+        .avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--warm-orange); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.5rem; }
+        .search-box { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo" onclick="location.href='dashboard.html'">KPSS Günlüğüm</div>
+            <ul class="nav-menu">
+                <li><a href="dashboard.html">📊 Dashboard</a></li>
+                <li><a href="friends.html">👥 Arkadaşlar</a></li>
+                <li><a href="groups.html">👨‍👩‍👧‍👦 Gruplar</a></li>
+                <li><a href="streak.html">🔥 Streak</a></li>
+                <li><a href="achievements.html">🏆 Başarılar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>👥 Arkadaşlarım</h2>
+                <button class="btn" onclick="showAddFriend()">➕ Arkadaş Ekle</button>
+            </div>
+            <div class="friend-list" id="friendsList">
+                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok. Arkadaş ekleyin!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>🔗 Referanslarım</h2>
+            </div>
+            <p style="margin-bottom: 1rem; color: var(--warm-brown);">Referans linkiniz üzerinden kayıt olan: <strong id="refCount">0</strong> kişi</p>
+            <button class="btn" onclick="copyRefLink()">📋 Referans Linkimi Kopyala</button>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('currentUser');
+        if (!currentUser) window.location.href = 'index.html';
+
+        function loadFriends() {
+            const friends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
+            const container = document.getElementById('friendsList');
+            if (friends.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok.</p>';
+                return;
+            }
+            let html = '';
+            friends.forEach(friend => {
+                html += `<div class="friend-item">
+                    <div class="friend-info">
+                        <div class="avatar">${friend.charAt(0).toUpperCase()}</div>
+                        <strong>${friend}</strong>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function showAddFriend() {
+            const username = prompt('Arkadaş eklemek için kullanıcı adını girin:');
+            if (!username) return;
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.name === username);
+            if (!user) { alert('Kullanıcı bulunamadı!'); return; }
+            if (user.name === currentUser) { alert('Kendinizi ekleyemezsiniz!'); return; }
+            const friends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
+            if (friends.includes(username)) { alert('Bu kullanıcı zaten arkadaşınız!'); return; }
+            friends.push(username);
+            localStorage.setItem('friends_' + currentUser, JSON.stringify(friends));
+            const theirFriends = JSON.parse(localStorage.getItem('friends_' + username)) || [];
+            if (!theirFriends.includes(currentUser)) {
+                theirFriends.push(currentUser);
+                localStorage.setItem('friends_' + username, JSON.stringify(theirFriends));
+            }
+            alert('Arkadaş eklendi!');
+            loadFriends();
+        }
+
+        function copyRefLink() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.name === currentUser);
+            if (user && user.referralCode) {
+                const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
+                navigator.clipboard.writeText(refLink);
+                alert('Referans linki kopyalandı!');
+            }
+        }
+
+        function loadReferrals() {
+            const count = parseInt(localStorage.getItem('referrals_' + currentUser) || '0');
+            document.getElementById('refCount').textContent = count;
+        }
+
+        loadFriends();
+        loadReferrals();
+    </script>
+</body>
+</html>
