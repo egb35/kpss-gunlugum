@@ -193,12 +193,22 @@
                 container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok.</p>';
                 return;
             }
+            const today = new Date().toISOString().split('T')[0];
             let html = '';
             friends.forEach(friend => {
+                const qData = JSON.parse(localStorage.getItem('questionsData_' + friend)) || {};
+                const td = qData[today] || {};
+                const todayTotal = (td.turkce||0) + (td.matematik||0) + (td.tarih||0) + (td.cografya||0) + (td.vatandaslik||0);
+                const todayBadge = todayTotal > 0
+                    ? `<span style="background:linear-gradient(135deg,var(--warm-orange),var(--warm-peach));color:white;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.78rem;font-weight:bold;">📚 ${todayTotal} soru</span>`
+                    : `<span style="background:var(--warm-cream);color:var(--warm-brown);padding:0.2rem 0.6rem;border-radius:12px;font-size:0.78rem;">Bugün çalışmadı</span>`;
                 html += `<div class="friend-item">
                     <div class="friend-info">
                         <div class="avatar">${friend.charAt(0).toUpperCase()}</div>
-                        <strong>${friend}</strong>
+                        <div>
+                            <strong>${friend}</strong><br>
+                            <span style="margin-top:0.3rem;display:inline-block;">${todayBadge}</span>
+                        </div>
                     </div>
                     <button class="btn btn-small btn-danger" onclick="removeFriend('${friend}')">🗑️ Sil</button>
                 </div>`;

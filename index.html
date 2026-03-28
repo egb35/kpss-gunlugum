@@ -96,22 +96,18 @@
         .nav-buttons { display: flex; gap: 1rem; }
         .btn-outline { background: transparent; color: white; border: 2px solid white; padding: 0.5rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
         .btn-primary { background: var(--warm-orange); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
-        .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; padding: 4rem 3rem; max-width: 1400px; margin: 0 auto; align-items: center; min-height: calc(100vh - 80px); }
+        .hero { padding: 3rem 3rem 1rem; max-width: 900px; margin: 0 auto; text-align: center; }
         .hero-text h1 { font-size: 2.8rem; color: var(--warm-dark); margin-bottom: 1.5rem; line-height: 1.2; }
         .hero-text p { font-size: 1.1rem; color: var(--warm-brown); margin-bottom: 2rem; line-height: 1.6; }
-        .hero-buttons { display: flex; gap: 1rem; }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; }
         .btn-hero { padding: 1rem 2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
         .btn-hero-primary { background: var(--warm-orange); color: white; }
         .btn-hero-secondary { background: white; color: var(--warm-dark); border: 2px solid var(--warm-cream); }
-        .hero-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .hero-card h3 { color: var(--warm-brown); margin-bottom: 1.5rem; font-size: 1.1rem; }
-        .progress-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--warm-light); border-radius: 10px; margin-bottom: 0.8rem; border-left: 4px solid var(--warm-orange); }
-        .progress-label { color: var(--warm-brown); font-weight: 500; }
-        .progress-value { color: var(--warm-orange); font-weight: bold; font-size: 1.1rem; }
-        .features { padding: 4rem 3rem; background: white; }
+        .features { padding: 3rem 3rem 4rem; background: white; }
         .features h2 { text-align: center; font-size: 2.5rem; color: var(--warm-dark); margin-bottom: 3rem; }
-        .features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; max-width: 1400px; margin: 0 auto; }
-        .feature-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; max-width: 1400px; margin: 0 auto; }
+        .feature-card { background: var(--warm-light); padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.06); text-align: center; transition: transform 0.3s; }
+        .feature-card:hover { transform: translateY(-4px); }
         .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
         .feature-title { font-size: 1.2rem; font-weight: bold; color: var(--warm-dark); margin-bottom: 0.8rem; }
         .feature-desc { color: var(--warm-brown); font-size: 0.95rem; line-height: 1.5; }
@@ -129,11 +125,15 @@
         .btn { width: 100%; padding: 1rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; margin-bottom: 0.5rem; }
         .btn:hover { background: #c25f35; }
         .forgot-link { display: block; text-align: center; margin-top: 1rem; font-size: 0.9rem; }
-        @media (max-width: 768px) { 
-            .hero { grid-template-columns: 1fr; }
-            .features-grid { grid-template-columns: 1fr; }
+        @media (max-width: 1024px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) {
+            .hero { padding: 2rem 1.5rem 1rem; }
+            .hero-text h1 { font-size: 2rem; }
+            .features { padding: 2rem 1.5rem 3rem; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
             .nav-links { display: none; }
         }
+        @media (max-width: 480px) { .features-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -171,25 +171,6 @@
                 <button class="btn-hero btn-hero-secondary" onclick="document.getElementById('ozellikler').scrollIntoView({behavior: 'smooth'})">Daha Fazla Bilgi</button>
             </div>
         </div>
-        <div class="hero-card">
-            <h3>Bugünkü İlerlemeniz</h3>
-            <div class="progress-item">
-                <span class="progress-label">Türkçe</span>
-                <span class="progress-value">25 soru</span>
-            </div>
-            <div class="progress-item">
-                <span class="progress-label">Matematik</span>
-                <span class="progress-value">20 soru</span>
-            </div>
-            <div class="progress-item">
-                <span class="progress-label">Tarih</span>
-                <span class="progress-value">15 soru</span>
-            </div>
-            <div class="progress-item">
-                <span class="progress-label">Coğrafya</span>
-                <span class="progress-value">18 soru</span>
-            </div>
-        </div>
     </section>
 
     <section id="ozellikler" class="features">
@@ -197,23 +178,33 @@
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <div class="feature-title">Günlük Takip</div>
-                <div class="feature-desc">Her ders için çözdüğünüz soruları günlük olarak kaydedin ve ilerlemenizi görün.</div>
+                <div class="feature-title">Günlük Soru Takibi</div>
+                <div class="feature-desc">Türkçe, Matematik, Tarih, Coğrafya ve Vatandaşlık sorularını günlük olarak kaydedin, gelişiminizi görün.</div>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📝</div>
-                <div class="feature-title">Deneme Yönetimi</div>
-                <div class="feature-desc">Deneme sınavlarınızı kaydedin, net sayılarınızı takip edin, gelişiminizi analiz edin.</div>
+                <div class="feature-title">Deneme Analizi</div>
+                <div class="feature-desc">Deneme sınavlarınızı kaydedin, net sayılarınızı takip edin, grafik üzerinde gelişiminizi izleyin.</div>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <div class="feature-title">İstatistikler</div>
-                <div class="feature-desc">Detaylı grafikler ve analizlerle çalışma verilerinizi görselleştirin.</div>
+                <div class="feature-icon">🔥</div>
+                <div class="feature-title">Streak Sistemi</div>
+                <div class="feature-desc">Her gün çalışarak streak'inizi artırın. Sıralamada arkadaşlarınızla yarışın, motivasyonunuzu yüksek tutun.</div>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <div class="feature-title">Hedef Belirleme</div>
-                <div class="feature-desc">Günlük ve haftalık hedefler koyun, motivasyonunuzu yüksek tutun.</div>
+                <div class="feature-icon">👨‍👩‍👧‍👦</div>
+                <div class="feature-title">Çalışma Grupları</div>
+                <div class="feature-desc">Arkadaşlarınızla gruplar kurun, haftalık soru sıralamalarını takip edin, birlikte motive olun.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏫</div>
+                <div class="feature-title">Sınıf Sistemi</div>
+                <div class="feature-desc">Öğretmenler sınıf oluşturur, öğrencilerin günlük ilerlemesini takip eder, mesaj gönderir.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <div class="feature-title">Rozetler ve Başarılar</div>
+                <div class="feature-desc">100 sorudan 1000'e, ilk denemeden 50. denemeye kadar özel rozetler kazanın, koleksiyonunuzu büyütün.</div>
             </div>
         </div>
     </section>
@@ -234,7 +225,7 @@
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('register')">&times;</button>
             <h2>Kayıt Ol</h2>
-            <div class="form-group"><label>İsim</label><input type="text" id="registerName" placeholder="Adınız Soyadınız"></div>
+            <div class="form-group"><label>Kullanıcı Adı</label><input type="text" id="registerName" placeholder="İstediğiniz kullanıcı adını yazın"></div>
             <div class="form-group"><label>E-posta</label><input type="email" id="registerEmail" placeholder="ornek@email.com"></div>
             <div class="form-group"><label>Şifre</label><input type="password" id="registerPassword" placeholder="••••••••"></div>
             <button class="btn" onclick="register()">Kayıt Ol</button>
@@ -308,7 +299,7 @@
             if (password.length < 6) { showNotification('Şifre en az 6 karakter olmalıdır!', 'warning'); return; }
             const users = JSON.parse(localStorage.getItem('users')) || [];
             if (users.find(u => u.email === email)) { showNotification('Bu e-posta zaten kayıtlı!', 'error'); return; }
-            if (users.find(u => u.name === name)) { showNotification('Bu isim zaten kullanılıyor!', 'error'); return; }
+            if (users.find(u => u.name === name)) { showNotification('Bu kullanıcı adı zaten kullanılıyor!', 'error'); return; }
             const referralCode = 'REF' + Date.now().toString(36).toUpperCase();
             const friendCode = generateFriendCode();
             const newUser = { name, email, password, createdAt: new Date().toISOString(), isPremium: false, referralCode, friendCode };

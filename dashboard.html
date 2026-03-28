@@ -134,6 +134,24 @@
         .avatar-use-btn { margin-top: 0.5rem; padding: 0.4rem 1rem; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; width: 100%; }
         .avatar-use-btn:disabled { background: #ccc; cursor: not-allowed; }
         
+        /* Onboarding */
+        .onboarding-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); z-index: 20000; align-items: center; justify-content: center; animation: fadeIn 0.4s; }
+        .onboarding-overlay.active { display: flex; }
+        .onboarding-box { background: white; border-radius: 20px; padding: 2.5rem; max-width: 480px; width: 90%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.4); animation: slideUp 0.4s; position: relative; }
+        .onboarding-step-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .onboarding-step-title { font-size: 1.5rem; font-weight: bold; color: var(--warm-dark); margin-bottom: 1rem; }
+        .onboarding-step-desc { font-size: 1rem; color: var(--warm-brown); line-height: 1.6; margin-bottom: 2rem; }
+        .onboarding-dots { display: flex; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
+        .onboarding-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--warm-cream); transition: background 0.3s; }
+        .onboarding-dot.active { background: var(--warm-orange); }
+        .onboarding-btns { display: flex; gap: 1rem; justify-content: center; }
+        .onboarding-btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: all 0.2s; }
+        .onboarding-btn-primary { background: var(--warm-orange); color: white; }
+        .onboarding-btn-primary:hover { background: #c25f35; }
+        .onboarding-btn-secondary { background: var(--warm-light); color: var(--warm-brown); }
+        .onboarding-btn-secondary:hover { background: var(--warm-cream); }
+        .onboarding-skip { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: var(--warm-tan); font-size: 0.85rem; cursor: pointer; }
+        .onboarding-skip:hover { color: var(--warm-brown); }
         @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { 
             .question-entry, .deneme-entry { grid-template-columns: 1fr; } 
@@ -163,6 +181,22 @@
     </style>
 </head>
 <body>
+
+    <!-- Onboarding Turu -->
+    <div class="onboarding-overlay" id="onboardingOverlay">
+        <div class="onboarding-box">
+            <button class="onboarding-skip" onclick="finishOnboarding()">Atla ✕</button>
+            <div class="onboarding-step-icon" id="onboardingIcon"></div>
+            <div class="onboarding-step-title" id="onboardingTitle"></div>
+            <div class="onboarding-step-desc" id="onboardingDesc"></div>
+            <div class="onboarding-dots" id="onboardingDots"></div>
+            <div class="onboarding-btns">
+                <button class="onboarding-btn onboarding-btn-secondary" id="onboardingBack" onclick="onboardingPrev()">← Geri</button>
+                <button class="onboarding-btn onboarding-btn-primary" id="onboardingNext" onclick="onboardingNext()">İleri →</button>
+            </div>
+        </div>
+    </div>
+
     <header>
         <nav>
             <a onclick="goHome()" class="logo">KPSS Günlüğüm</a>
@@ -922,7 +956,66 @@
             }
             
             checkStreakLoss();
+            startOnboarding();
         });
+
+        // ---------- ONBOARDING ----------
+        const ONBOARDING_STEPS = [
+            { icon: '👋', title: 'Hoş Geldin!', desc: 'KPSS Günlüğüm\'e hoş geldin! Bu kısa tur sana platformu tanıtacak. Hazırsan başlayalım.' },
+            { icon: '📊', title: 'Günlük Soru Takibi', desc: 'Her gün çözdüğün soruları buraya gir: Türkçe, Matematik, Tarih, Coğrafya ve Vatandaşlık. Kaydet butonuna basınca streak\'in artar!' },
+            { icon: '📝', title: 'Deneme Ekle', desc: '"Deneme Ekle" sekmesinden deneme sınavı sonuçlarını kaydet. Net sayıların grafiğe işlenir ve gelişimini takip edebilirsin.' },
+            { icon: '🔥', title: 'Streak Sistemi', desc: 'Her gün giriş yapıp soru kaydedersen streak\'in artar. Streak\'ini kırmamak için her gün birkaç soru bile olsa gir!' },
+            { icon: '👥', title: 'Arkadaşlar & Gruplar', desc: 'Üst menüden Arkadaşlar sayfasına giderek arkadaş kodunu paylaş. Gruplar kurarak haftalık sıralamada yarış!' },
+            { icon: '✅', title: 'Hazırsın!', desc: 'Artık her şeyi biliyorsun. Başarılar! Sormak istediğin bir şey olursa ayarlardan bize ulaşabilirsin.' }
+        ];
+        let onboardingStep = 0;
+
+        function startOnboarding() {
+            if (localStorage.getItem('onboardingDone_' + currentUser)) return;
+            onboardingStep = 0;
+            renderOnboardingStep();
+            document.getElementById('onboardingOverlay').classList.add('active');
+        }
+
+        function renderOnboardingStep() {
+            const step = ONBOARDING_STEPS[onboardingStep];
+            document.getElementById('onboardingIcon').textContent = step.icon;
+            document.getElementById('onboardingTitle').textContent = step.title;
+            document.getElementById('onboardingDesc').textContent = step.desc;
+
+            const dotsEl = document.getElementById('onboardingDots');
+            dotsEl.innerHTML = ONBOARDING_STEPS.map((_, i) =>
+                `<div class="onboarding-dot ${i === onboardingStep ? 'active' : ''}"></div>`
+            ).join('');
+
+            const backBtn = document.getElementById('onboardingBack');
+            const nextBtn = document.getElementById('onboardingNext');
+            backBtn.style.display = onboardingStep === 0 ? 'none' : 'inline-block';
+            const isLast = onboardingStep === ONBOARDING_STEPS.length - 1;
+            nextBtn.textContent = isLast ? '🎉 Başla!' : 'İleri →';
+        }
+
+        function onboardingNext() {
+            if (onboardingStep < ONBOARDING_STEPS.length - 1) {
+                onboardingStep++;
+                renderOnboardingStep();
+            } else {
+                finishOnboarding();
+            }
+        }
+
+        function onboardingPrev() {
+            if (onboardingStep > 0) {
+                onboardingStep--;
+                renderOnboardingStep();
+            }
+        }
+
+        function finishOnboarding() {
+            localStorage.setItem('onboardingDone_' + currentUser, '1');
+            document.getElementById('onboardingOverlay').classList.remove('active');
+        }
+        // ---------- /ONBOARDING ----------
 
         function checkStreakLoss() {
             const today = new Date().toISOString().split('T')[0];
