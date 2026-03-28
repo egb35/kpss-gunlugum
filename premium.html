@@ -33,11 +33,7 @@
         .premium-header { text-align: center; padding: 3rem 0; background: linear-gradient(135deg, #ffd700, #ffed4e); border-radius: 20px; margin-bottom: 3rem; }
         .premium-header h1 { font-size: 3rem; color: var(--warm-dark); margin-bottom: 1rem; }
         .premium-header p { font-size: 1.3rem; color: var(--warm-brown); }
-        .pricing-card { background: white; padding: 3rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); text-align: center; max-width: 500px; margin: 0 auto 3rem; border: 3px solid #ffd700; }
-        .price { font-size: 4rem; font-weight: bold; color: var(--warm-orange); margin: 1rem 0; }
-        .price span { font-size: 1.5rem; color: var(--warm-brown); }
-        .duration { color: var(--warm-brown); font-size: 1.2rem; margin-bottom: 2rem; }
-        .buy-button { background: linear-gradient(135deg, #ffd700, #ffed4e); color: var(--warm-dark); padding: 1.5rem 3rem; border: none; border-radius: 15px; font-size: 1.3rem; font-weight: bold; cursor: pointer; transition: all 0.3s; width: 100%; }
+        .buy-button { background: linear-gradient(135deg, #ffd700, #ffed4e); color: var(--warm-dark); padding: 1rem 2rem; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; display: inline-block; }
         .buy-button:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4); }
         .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
         .feature-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
@@ -55,7 +51,6 @@
             .user-info { flex-wrap: wrap; justify-content: center; }
             .premium-header h1 { font-size: 2rem; }
             .premium-header p { font-size: 1rem; }
-            .price { font-size: 3rem; }
             .features-grid { grid-template-columns: 1fr; }
             .profile-popup { right: 0; left: 0; margin: 0 1rem; min-width: auto; }
             header { position: relative; }
@@ -91,13 +86,6 @@
         <div class="premium-header">
             <h1>⭐ Premium Üyelik</h1>
             <p>Daha fazla özellik, daha fazla motivasyon!</p>
-        </div>
-
-        <div class="pricing-card">
-            <h2 style="color: var(--warm-brown); margin-bottom: 1rem;">Premium Üyelik</h2>
-            <div class="price">100 TL <span>/yıl</span></div>
-            <div class="duration">365 Gün Kesintisiz Erişim</div>
-            <button class="buy-button" onclick="buyPremium()">💳 Premium Satın Al</button>
         </div>
 
         <h2 style="text-align: center; color: var(--warm-dark); margin-bottom: 2rem; font-size: 2rem;">Premium Avantajları</h2>
@@ -183,6 +171,12 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div style="text-align: center; margin: 3rem 0; padding: 2rem; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08);">
+            <h3 style="color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.5rem;">Premium'a geçin ve tüm avantajlardan yararlanın!</h3>
+            <p style="color: var(--warm-brown); margin-bottom: 1.5rem;">365 gün kesintisiz erişim</p>
+            <button class="buy-button" onclick="buyPremium()" style="max-width: 400px; margin: 0 auto; font-size: 1.1rem; padding: 1rem 2rem;">💳 Premium Satın Al - 100 TL/Yıl</button>
         </div>
     </div>
 
