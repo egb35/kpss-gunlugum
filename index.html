@@ -7,6 +7,7 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
         body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
         .navbar { background: rgba(61, 50, 40, 0.95); padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center; }
@@ -75,6 +76,18 @@
         <div class="hero-text">
             <h1>KPSS Yolculuğunuzda Yanınızdayız</h1>
             <p>Her gün attığınız adımları takip edin, ilerlemenizi görün, hedefinize ulaşın. Günlük soru çözümlerinizi ve deneme sonuçlarınızı kolayca kaydedin.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0;">
+                <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--warm-orange);" id="totalUsers">0</div>
+                    <div style="color: var(--warm-brown); font-weight: 600; margin-top: 0.5rem;">Kayıtlı Üye</div>
+                </div>
+                <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                    <div style="font-size: 2.5rem; font-weight: bold; color: #2ecc71;" id="todayActiveUsers">0</div>
+                    <div style="color: var(--warm-brown); font-weight: 600; margin-top: 0.5rem;">Bugün Aktif</div>
+                </div>
+            </div>
+            
             <div class="hero-buttons">
                 <button class="btn-hero btn-hero-primary" onclick="showRegister()">Hemen Başla</button>
                 <button class="btn-hero btn-hero-secondary" onclick="document.getElementById('ozellikler').scrollIntoView({behavior: 'smooth'})">Daha Fazla Bilgi</button>
@@ -232,6 +245,34 @@
             users.push({ name: 'admin', email: 'admin@kpss.com', password: 'admin2254', createdAt: new Date().toISOString(), isPremium: true, referralCode: 'ADMIN' });
             localStorage.setItem('users', JSON.stringify(users));
         }
+
+        function updateLiveCounters() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            document.getElementById('totalUsers').textContent = users.length;
+            
+            const today = new Date().toISOString().split('T')[0];
+            let activeToday = 0;
+            
+            users.forEach(user => {
+                const lastActivity = localStorage.getItem('lastStreakActivity_' + user.name);
+                if (lastActivity === today) {
+                    activeToday++;
+                }
+            });
+            
+            document.getElementById('todayActiveUsers').textContent = activeToday;
+        }
+        
+        updateLiveCounters();
+        setInterval(updateLiveCounters, 5000);
+
+        document.getElementById('loginUsername').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+        });
+        
+        document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
 
         if (localStorage.getItem('currentUser')) window.location.href = 'dashboard.html';
         document.querySelectorAll('.modal').forEach(modal => { modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });

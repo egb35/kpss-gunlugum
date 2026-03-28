@@ -33,9 +33,11 @@
         .profile-popup h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.1rem; }
         .profile-item { padding: 0.8rem; margin-bottom: 0.5rem; background: var(--warm-light); border-radius: 8px; cursor: pointer; transition: all 0.3s; color: var(--warm-dark); font-weight: 500; }
         .profile-item:hover { background: var(--warm-orange); color: white; }
-        .name-change-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; }
+        .name-change-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; animation: fadeIn 0.3s; }
         .name-change-modal.active { display: flex; }
-        .name-change-modal-content { background: white; padding: 2.5rem; border-radius: 20px; max-width: 450px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .name-change-modal-content { background: white; padding: 2.5rem; border-radius: 20px; max-width: 450px; width: 90%; box-shadow: 0 10px 40px rgba(0,0,0,0.3); animation: slideUp 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .notification-modal { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; max-width: 400px; animation: slideInRight 0.3s; }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .notification-modal.success { border-left: 5px solid #2ecc71; }
@@ -492,7 +494,15 @@
             const cografya = parseInt(document.getElementById('cografya').value) || 0;
             const vatandaslik = parseInt(document.getElementById('vatandaslik').value) || 0;
 
+            const newTotal = turkce + matematik + tarih + cografya + vatandaslik;
             const existing = questionsData[today] || {turkce:0, matematik:0, tarih:0, cografya:0, vatandaslik:0};
+            const currentTotal = existing.turkce + existing.matematik + existing.tarih + existing.cografya + existing.vatandaslik;
+            
+            if (currentTotal + newTotal > 2000) {
+                showNotification(`Günlük maksimum 2000 soru girebilirsiniz! (Şu an: ${currentTotal})`, 'warning');
+                return;
+            }
+
             questionsData[today] = {
                 turkce: existing.turkce + turkce,
                 matematik: existing.matematik + matematik,
@@ -616,13 +626,20 @@
         }
 
         function saveDeneme() {
+            const today = new Date().toLocaleDateString('tr-TR');
+            const todayDenemeler = denemeData.filter(d => d.date === today);
+            
+            if (todayDenemeler.length >= 10) {
+                showNotification('Günlük maksimum 10 deneme girebilirsiniz!', 'warning');
+                return;
+            }
+            
             const dogru = parseInt(document.getElementById('dogru').value) || 0;
             const yanlis = parseInt(document.getElementById('yanlis').value) || 0;
-            if (dogru + yanlis > 120) { alert('⚠️ Toplam soru sayısı 120\'yi geçemez!'); return; }
-            if (dogru === 0 && yanlis === 0) { alert('⚠️ Lütfen doğru ve yanlış sayısını girin!'); return; }
+            if (dogru + yanlis > 120) { showNotification('Toplam soru sayısı 120\'yi geçemez!', 'warning'); return; }
+            if (dogru === 0 && yanlis === 0) { showNotification('Lütfen doğru ve yanlış sayısını girin!', 'warning'); return; }
             const bos = 120 - dogru - yanlis;
             const net = (dogru - (yanlis * 0.25)).toFixed(2);
-            const today = new Date().toLocaleDateString('tr-TR');
             denemeData.unshift({date: today, dogru: dogru, yanlis: yanlis, bos: bos, net: net});
             localStorage.setItem('denemeData_' + currentUser, JSON.stringify(denemeData));
             showNotification('Deneme başarıyla kaydedildi!', 'success');
@@ -642,7 +659,7 @@
                 const parts = deneme.date.split('.');
                 const denemeDate = new Date(parts[2], parts[1] - 1, parts[0]);
                 return denemeDate >= monthStart && denemeDate <= monthEnd;
-            });
+            }).reverse();
             const labels = filteredDenemeler.map((d, i) => `Deneme ${i + 1}`);
             const netData = filteredDenemeler.map(d => parseFloat(d.net));
             if (denemeChart) denemeChart.destroy();
@@ -725,19 +742,33 @@
             const newName = document.getElementById('newNameInput').value.trim();
             
             if (!newName) {
-                showNotification('⚠️ Lütfen yeni isim girin!', 'warning');
+                showNotification('Lütfen yeni isim girin!', 'warning');
                 return;
             }
             
             if (newName === currentUser) {
-                showNotification('⚠️ Yeni isim mevcut isminizle aynı!', 'warning');
+                showNotification('Yeni isim mevcut isminizle aynı!', 'warning');
                 return;
+            }
+            
+            const lastNameChange = localStorage.getItem('lastNameChange_' + currentUser);
+            if (lastNameChange) {
+                const now = Date.now();
+                const timeDiff = now - parseInt(lastNameChange);
+                const hoursPassed = timeDiff / (1000 * 60 * 60);
+                
+                if (hoursPassed < 24) {
+                    const hoursLeft = Math.ceil(24 - hoursPassed);
+                    const minutesLeft = Math.ceil((24 - hoursPassed - Math.floor(24 - hoursPassed)) * 60);
+                    showNotification(`İsim değiştirmek için ${hoursLeft} saat ${minutesLeft} dakika beklemelisiniz.`, 'warning');
+                    return;
+                }
             }
             
             const users = JSON.parse(localStorage.getItem('users')) || [];
             
             if (users.find(u => u.name === newName)) {
-                showNotification('❌ Bu isim zaten kullanılıyor!', 'error');
+                showNotification('Bu isim zaten kullanılıyor!', 'error');
                 return;
             }
             
@@ -750,7 +781,7 @@
             const keysToMove = [
                 'streak_', 'lastActivity_', 'lastStreakActivity_', 'lastStreakCheck_',
                 'questionsData_', 'denemeler_', 'profilePicture_', 'ownedProfilePictures_',
-                'friends_', 'friendRequests_', 'rejectedRequests_', 'deletedMessages_'
+                'friends_', 'friendRequests_', 'rejectedRequests_', 'deletedMessages_', 'lastNameChange_'
             ];
             
             keysToMove.forEach(prefix => {
@@ -760,6 +791,8 @@
                     localStorage.removeItem(prefix + oldName);
                 }
             });
+            
+            localStorage.setItem('lastNameChange_' + newName, Date.now().toString());
             
             const groups = JSON.parse(localStorage.getItem('groups')) || [];
             groups.forEach(group => {

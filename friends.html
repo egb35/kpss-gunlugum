@@ -99,40 +99,43 @@
         </nav>
     </header>
 
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <h2>📬 Arkadaşlık İstekleri</h2>
-            </div>
-            <div id="friendRequestsContainer"></div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2>➕ Arkadaş Ekle</h2>
-            </div>
-            <div style="display: flex; gap: 1rem;">
-                <input type="text" id="friendRequestName" placeholder="Kullanıcı adı girin" style="flex: 1; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem;">
-                <button class="btn" onclick="sendFriendRequest()">İstek Gönder</button>
+    <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; max-width: 1400px;">
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>👥 Arkadaşlarım</h2>
+                </div>
+                <div class="friend-list" id="friendsList">
+                    <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok.</p>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2>👥 Arkadaşlarım</h2>
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>➕ Arkadaş Ekle</h2>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <input type="text" id="friendRequestName" placeholder="Kullanıcı adı girin" style="flex: 1; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem;">
+                    <button class="btn" onclick="sendFriendRequest()">İstek Gönder</button>
+                </div>
             </div>
-            <div class="friend-list" id="friendsList">
-                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok.</p>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2>🔗 Referans Sistemim</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h2>📬 Arkadaşlık İstekleri</h2>
+                </div>
+                <div id="friendRequestsContainer"></div>
             </div>
-            <p style="margin-bottom: 1rem; color: var(--warm-brown);">Referans linkiniz üzerinden kayıt olan: <strong id="refCount">0</strong> kişi</p>
-            <div class="ref-box">
-                <input type="text" class="ref-link" id="refLinkInput" readonly>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>🔗 Referans Sistemim</h2>
+                </div>
+                <p style="margin-bottom: 1rem; color: var(--warm-brown);">Referans linkiniz üzerinden kayıt olan: <strong id="refCount">0</strong> kişi</p>
+                <div class="ref-box">
+                    <input type="text" class="ref-link" id="refLinkInput" readonly>
                 <button class="btn" onclick="copyRefLink()">📋 Kopyala</button>
             </div>
         </div>

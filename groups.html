@@ -131,13 +131,6 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <h2>💬 Grup Mesajları</h2>
-            </div>
-            <div id="groupMessagesContainer"></div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
                 <h2>👨‍👩‍👧‍👦 Gruplarım</h2>
                 <button class="btn" onclick="showCreateGroup()">➕ Grup Kur</button>
             </div>
@@ -236,6 +229,7 @@
             let html = '';
             myGroups.forEach((group, index) => {
                 const isFounder = group.founder === currentUser;
+                const isLeader = group.leader === currentUser;
                 html += `
                     <div class="group-accordion">
                         <div class="group-header" onclick="toggleGroup(${index})">
@@ -247,9 +241,14 @@
                                 <div class="tabs">
                                     <button class="tab active" onclick="switchGroupTab(${index}, 'weekly')">📅 Haftalık</button>
                                     <button class="tab" onclick="switchGroupTab(${index}, 'total')">📊 Genel</button>
+                                    <button class="tab" onclick="switchGroupTab(${index}, 'messages')">💬 Mesajlar</button>
                                 </div>
                                 <div id="weekly-${index}">${generateRanking(calculateWeeklyScores(group.members), group.leader)}</div>
                                 <div id="total-${index}" style="display:none;">${generateRanking(calculateTotalScores(group.members))}</div>
+                                <div id="messages-${index}" style="display:none;">
+                                    ${isLeader ? `<button class="btn" onclick="sendGroupMessageToGroup('${group.id}')" style="width: 100%; margin-bottom: 1rem;">💬 Mesaj Gönder</button>` : ''}
+                                    <div id="group-messages-${group.id}"></div>
+                                </div>
                                 <div class="group-actions">
                                     ${isFounder ? `<button class="btn btn-small" onclick="showMembers('${group.id}')">👥 Üyeleri Yönet</button>` : ''}
                                     <button class="btn btn-small btn-warning" onclick="leaveGroup('${group.id}')">🚪 Gruptan Çık</button>
@@ -261,6 +260,10 @@
                 `;
             });
             container.innerHTML = html;
+            
+            myGroups.forEach(group => {
+                loadGroupMessagesForGroup(group.id);
+            });
         }
 
         function toggleGroup(index) {
@@ -285,18 +288,19 @@
         function switchGroupTab(groupIndex, type) {
             const weeklyDiv = document.getElementById(`weekly-${groupIndex}`);
             const totalDiv = document.getElementById(`total-${groupIndex}`);
+            const messagesDiv = document.getElementById(`messages-${groupIndex}`);
             const tabs = document.querySelectorAll(`#body-${groupIndex} .tab`);
             
             tabs.forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
             
-            if (type === 'weekly') {
-                weeklyDiv.style.display = 'block';
-                totalDiv.style.display = 'none';
-            } else {
-                weeklyDiv.style.display = 'none';
-                totalDiv.style.display = 'block';
-            }
+            weeklyDiv.style.display = 'none';
+            totalDiv.style.display = 'none';
+            messagesDiv.style.display = 'none';
+            
+            if (type === 'weekly') weeklyDiv.style.display = 'block';
+            else if (type === 'total') totalDiv.style.display = 'block';
+            else if (type === 'messages') messagesDiv.style.display = 'block';
         }
 
         function calculateWeeklyScores(members) {
@@ -536,6 +540,123 @@
             }
         }
 
+        function loadGroupMessagesForGroup(groupId) {
+            const messages = JSON.parse(localStorage.getItem('groupMessages_' + groupId)) || [];
+            const deletedByUser = JSON.parse(localStorage.getItem('deletedMessages_' + currentUser)) || [];
+            const container = document.getElementById('group-messages-' + groupId);
+            
+            if (!container) return;
+            
+            const visibleMessages = messages.filter(msg => !deletedByUser.includes(msg.id));
+            
+            if (visibleMessages.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz mesaj yok.</p>';
+                return;
+            }
+            
+            let html = '';
+            visibleMessages.reverse().forEach(msg => {
+                const reactions = msg.reactions || {};
+                const myReaction = reactions[currentUser] || null;
+                
+                html += `
+                    <div class="message-card">
+                        <div class="message-header">
+                            <div>
+                                <strong>👑 ${msg.sender}</strong>
+                                <span style="color: var(--warm-brown); font-size: 0.85rem; margin-left: 1rem;">${new Date(msg.date).toLocaleDateString('tr-TR')}</span>
+                            </div>
+                            <button class="btn-small btn-danger" onclick="deleteMessageForMe('${msg.id}', '${groupId}')">🗑️</button>
+                        </div>
+                        <div class="message-content">${msg.content}</div>
+                        <div class="message-reactions">
+                            ${generateReactionButtonsForGroup(msg.id, reactions, myReaction, groupId)}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function generateReactionButtonsForGroup(messageId, reactions, myReaction, groupId) {
+            const emojis = ['👍', '✅', '❤️', '❓'];
+            let html = '';
+            
+            emojis.forEach(emoji => {
+                const count = Object.values(reactions).filter(r => r === emoji).length;
+                const isActive = myReaction === emoji ? 'active' : '';
+                
+                html += `
+                    <button class="reaction-btn ${isActive}" onclick="toggleReactionForGroup('${messageId}', '${emoji}', '${groupId}')">
+                        ${emoji}
+                        ${count > 0 ? `<span class="reaction-count">${count}</span>` : ''}
+                    </button>
+                `;
+            });
+            
+            return html;
+        }
+
+        function toggleReactionForGroup(messageId, emoji, groupId) {
+            const messages = JSON.parse(localStorage.getItem('groupMessages_' + groupId)) || [];
+            const msgIndex = messages.findIndex(m => m.id === messageId);
+            
+            if (msgIndex !== -1) {
+                if (!messages[msgIndex].reactions) messages[msgIndex].reactions = {};
+                
+                if (messages[msgIndex].reactions[currentUser] === emoji) {
+                    delete messages[msgIndex].reactions[currentUser];
+                } else {
+                    messages[msgIndex].reactions[currentUser] = emoji;
+                }
+                
+                localStorage.setItem('groupMessages_' + groupId, JSON.stringify(messages));
+                loadGroupMessagesForGroup(groupId);
+            }
+        }
+
+        function deleteMessageForMe(messageId, groupId) {
+            if (!confirm('Bu mesajı silmek istediğinizden emin misiniz? (Sadece sizin için silinecek)')) return;
+            
+            const deletedMessages = JSON.parse(localStorage.getItem('deletedMessages_' + currentUser)) || [];
+            if (!deletedMessages.includes(messageId)) {
+                deletedMessages.push(messageId);
+                localStorage.setItem('deletedMessages_' + currentUser, JSON.stringify(deletedMessages));
+            }
+            
+            loadGroupMessagesForGroup(groupId);
+        }
+
+        function sendGroupMessageToGroup(groupId) {
+            const today = new Date().toLocaleDateString('tr-TR');
+            const lastMessageDate = localStorage.getItem('lastGroupMessage_' + currentUser + '_' + groupId);
+            
+            if (lastMessageDate === today) {
+                showNotification('Bugün zaten mesaj gönderdiniz! Yarın tekrar gönderebilirsiniz.', 'warning');
+                return;
+            }
+            
+            const messageContent = prompt('Grup mesajınızı yazın:');
+            if (!messageContent || !messageContent.trim()) return;
+            
+            const messages = JSON.parse(localStorage.getItem('groupMessages_' + groupId)) || [];
+            const newMessage = {
+                id: 'msg_' + Date.now(),
+                sender: currentUser,
+                content: messageContent.trim(),
+                date: new Date().toISOString(),
+                reactions: {}
+            };
+            
+            messages.push(newMessage);
+            localStorage.setItem('groupMessages_' + groupId, JSON.stringify(messages));
+            localStorage.setItem('lastGroupMessage_' + currentUser + '_' + groupId, today);
+            
+            showNotification('Mesaj gönderildi!', 'success');
+            loadGroupMessagesForGroup(groupId);
+        }
+
         function loadGroupMessages() {
             const groups = JSON.parse(localStorage.getItem('groups')) || [];
             const myGroups = groups.filter(g => g.members.includes(currentUser));
@@ -711,7 +832,6 @@
         updateStreak();
         loadGroups();
         updateWeeklyLeader();
-        loadGroupMessages();
     </script>
 </body>
 </html>
