@@ -37,6 +37,9 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
         .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: var(--warm-orange); color: white; transition: all 0.3s; }
         .btn:hover { transform: translateY(-2px); }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.85rem; }
+        .btn-danger { background: #e74c3c; }
+        .btn-success { background: #2ecc71; }
         .friend-list { display: grid; gap: 1rem; }
         .friend-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
         .friend-info { display: flex; align-items: center; gap: 1rem; }
@@ -82,6 +85,7 @@
                     <h3 id="profileName">Kullanıcı</h3>
                     <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
                     <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
+                    <div class="profile-item" onclick="location.href='premium.html'">⭐ Premium</div>
                     <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
                 </div>
@@ -92,11 +96,27 @@
     <div class="container">
         <div class="card">
             <div class="card-header">
+                <h2>📬 Arkadaşlık İstekleri</h2>
+            </div>
+            <div id="friendRequestsContainer"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>➕ Arkadaş Ekle</h2>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <input type="text" id="friendRequestName" placeholder="Kullanıcı adı girin" style="flex: 1; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem;">
+                <button class="btn" onclick="sendFriendRequest()">İstek Gönder</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
                 <h2>👥 Arkadaşlarım</h2>
-                <button class="btn" onclick="showAddFriend()">➕ Arkadaş Ekle</button>
             </div>
             <div class="friend-list" id="friendsList">
-                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok. Arkadaş ekleyin!</p>
+                <p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşınız yok.</p>
             </div>
         </div>
 
@@ -169,29 +189,151 @@
                         <div class="avatar">${friend.charAt(0).toUpperCase()}</div>
                         <strong>${friend}</strong>
                     </div>
+                    <button class="btn btn-small btn-danger" onclick="removeFriend('${friend}')">🗑️ Sil</button>
                 </div>`;
             });
             container.innerHTML = html;
         }
 
-        function showAddFriend() {
-            const username = prompt('Arkadaş eklemek için kullanıcı adını girin:');
-            if (!username) return;
+        function loadFriendRequests() {
+            const requests = JSON.parse(localStorage.getItem('friendRequests_' + currentUser)) || [];
+            const container = document.getElementById('friendRequestsContainer');
+            
+            if (requests.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown);">Henüz arkadaşlık isteği yok.</p>';
+                return;
+            }
+            
+            let html = '<div class="friend-list">';
+            requests.forEach(req => {
+                html += `
+                    <div class="friend-item">
+                        <div class="friend-info">
+                            <div class="avatar">${req.from.charAt(0).toUpperCase()}</div>
+                            <strong>${req.from}</strong>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-small btn-success" onclick="acceptFriendRequest('${req.from}')">✓ Kabul</button>
+                            <button class="btn btn-small btn-danger" onclick="rejectFriendRequest('${req.from}')">✗ Reddet</button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function sendFriendRequest() {
+            const friendName = document.getElementById('friendRequestName').value.trim();
+            
+            if (!friendName) {
+                alert('⚠️ Lütfen kullanıcı adı girin!');
+                return;
+            }
+            
+            if (friendName === currentUser) {
+                alert('⚠️ Kendinize istek gönderemezsiniz!');
+                return;
+            }
+            
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.name === username);
-            if (!user) { alert('Kullanıcı bulunamadı!'); return; }
-            if (user.name === currentUser) { alert('Kendinizi ekleyemezsiniz!'); return; }
-            const friends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
-            if (friends.includes(username)) { alert('Bu kullanıcı zaten arkadaşınız!'); return; }
-            friends.push(username);
-            localStorage.setItem('friends_' + currentUser, JSON.stringify(friends));
-            const theirFriends = JSON.parse(localStorage.getItem('friends_' + username)) || [];
+            if (!users.find(u => u.name === friendName)) {
+                alert('❌ Bu kullanıcı adı bulunamadı!');
+                return;
+            }
+            
+            const myFriends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
+            if (myFriends.includes(friendName)) {
+                alert('⚠️ Bu kullanıcı zaten arkadaşınız!');
+                return;
+            }
+            
+            const rejected = JSON.parse(localStorage.getItem('rejectedRequests_' + currentUser)) || {};
+            if (rejected[friendName]) {
+                const rejectedDate = new Date(rejected[friendName]);
+                const today = new Date();
+                const daysDiff = Math.floor((today - rejectedDate) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff < 7) {
+                    alert(`⚠️ ${friendName} kullanıcısına ${7 - daysDiff} gün boyunca istek gönderemezsiniz.`);
+                    return;
+                } else {
+                    delete rejected[friendName];
+                    localStorage.setItem('rejectedRequests_' + currentUser, JSON.stringify(rejected));
+                }
+            }
+            
+            const targetRequests = JSON.parse(localStorage.getItem('friendRequests_' + friendName)) || [];
+            
+            if (targetRequests.find(r => r.from === currentUser)) {
+                alert('⚠️ Bu kullanıcıya zaten istek gönderdiniz!');
+                return;
+            }
+            
+            targetRequests.push({
+                from: currentUser,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem('friendRequests_' + friendName, JSON.stringify(targetRequests));
+            alert('✅ Arkadaşlık isteği gönderildi!');
+            document.getElementById('friendRequestName').value = '';
+        }
+
+        function acceptFriendRequest(fromUser) {
+            const myFriends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
+            const theirFriends = JSON.parse(localStorage.getItem('friends_' + fromUser)) || [];
+            
+            if (!myFriends.includes(fromUser)) {
+                myFriends.push(fromUser);
+                localStorage.setItem('friends_' + currentUser, JSON.stringify(myFriends));
+            }
+            
             if (!theirFriends.includes(currentUser)) {
                 theirFriends.push(currentUser);
-                localStorage.setItem('friends_' + username, JSON.stringify(theirFriends));
+                localStorage.setItem('friends_' + fromUser, JSON.stringify(theirFriends));
             }
-            alert('Arkadaş eklendi!');
+            
+            let requests = JSON.parse(localStorage.getItem('friendRequests_' + currentUser)) || [];
+            requests = requests.filter(r => r.from !== fromUser);
+            localStorage.setItem('friendRequests_' + currentUser, JSON.stringify(requests));
+            
+            alert('✅ Arkadaş eklendi!');
+            loadFriendRequests();
             loadFriends();
+        }
+
+        function rejectFriendRequest(fromUser) {
+            const rejected = JSON.parse(localStorage.getItem('rejectedRequests_' + fromUser)) || {};
+            rejected[currentUser] = new Date().toISOString();
+            localStorage.setItem('rejectedRequests_' + fromUser, JSON.stringify(rejected));
+            
+            let requests = JSON.parse(localStorage.getItem('friendRequests_' + currentUser)) || [];
+            requests = requests.filter(r => r.from !== fromUser);
+            localStorage.setItem('friendRequests_' + currentUser, JSON.stringify(requests));
+            
+            alert('❌ İstek reddedildi. Bu kullanıcı 7 gün boyunca size istek gönderemeyecek.');
+            loadFriendRequests();
+        }
+
+        function removeFriend(friendName) {
+            if (!confirm(`${friendName} kullanıcısını arkadaş listenizden çıkarmak istediğinizden emin misiniz?`)) return;
+            
+            let myFriends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
+            let theirFriends = JSON.parse(localStorage.getItem('friends_' + friendName)) || [];
+            
+            myFriends = myFriends.filter(f => f !== friendName);
+            theirFriends = theirFriends.filter(f => f !== currentUser);
+            
+            localStorage.setItem('friends_' + currentUser, JSON.stringify(myFriends));
+            localStorage.setItem('friends_' + friendName, JSON.stringify(theirFriends));
+            
+            alert('✅ Arkadaş silindi!');
+            loadFriends();
+        }
+
+        function showAddFriend() {
+            document.getElementById('friendRequestName').focus();
         }
 
         function loadReferralLink() {
@@ -240,6 +382,7 @@
             document.getElementById('refCount').textContent = count;
         }
 
+        loadFriendRequests();
         loadFriends();
         loadReferralLink();
         loadReferrals();
