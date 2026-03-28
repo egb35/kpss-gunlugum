@@ -160,8 +160,10 @@
                 <div class="user-avatar text-only" id="userAvatar" onclick="toggleProfilePopup(event)">K</div>
                 <div class="profile-popup" id="profilePopup">
                     <h3 id="profileName">Kullanıcı</h3>
-                    <div class="profile-item" onclick="location.href='dashboard.html'">📊 Dashboard</div>
+                    <div class="profile-item" onclick="openProfilePicture()">🖼️ Profil Resmi</div>
+                    <div class="profile-item" onclick="openNameChange()">✏️ İsim Değiştir</div>
                     <div class="profile-item" onclick="location.href='premium.html'">⭐ Premium</div>
+                    <div class="profile-item" onclick="showReferral()">🔗 Referans Linkim</div>
                     <div class="profile-item" onclick="logout()">🚪 Çıkış Yap</div>
                 </div>
             </div>
@@ -271,6 +273,52 @@
         function closeModal(name) { document.getElementById(name + 'Modal').classList.remove('active'); }
         function toggleProfilePopup(e) { e.stopPropagation(); document.getElementById('profilePopup').classList.toggle('active'); }
         function logout() { localStorage.removeItem('currentUser'); location.href = 'index.html'; }
+        function ensureFriendCode() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const u = allU.find(x => x.name === currentUser);
+            if (u && !u.friendCode) {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+                u.friendCode = code;
+                localStorage.setItem('users', JSON.stringify(allU));
+            }
+            return u?.friendCode || '';
+        }
+        function applyTeacherNav() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const u = allU.find(x => x.name === currentUser);
+            if (u?.isTeacher) {
+                document.querySelectorAll('.nav-menu a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href === 'dashboard.html' || href === 'achievements.html') a.closest('li').style.display = 'none';
+                });
+            }
+        }
+        function showFriendCodeInPopup() {
+            const code = ensureFriendCode();
+            const el = document.getElementById('profileName');
+            if (el) el.innerHTML = `${currentUser}<br><small style="font-family:monospace;background:var(--warm-light);padding:0.15rem 0.5rem;border-radius:6px;font-size:0.75rem;font-weight:normal;color:var(--warm-brown);letter-spacing:1px;">📎 ${code}</small>`;
+        }
+
+        function openProfilePicture() { showNotification('Profil resmi değiştirmek için Dashboard sayfasına gidin.', 'info'); }
+        function openNameChange() { showNotification('İsim değiştirmek için Dashboard sayfasına gidin.', 'info'); }
+        function showReferral() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const user = allU.find(u => u.name === currentUser);
+            if (user && user.referralCode) {
+                const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
+                navigator.clipboard.writeText(refLink).then(() => showNotification('Referans linki kopyalandı!', 'success')).catch(() => {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = refLink;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showNotification('Referans linki kopyalandı!', 'success');
+                });
+            }
+        }
 
         function loadUserProfile() {
             const savedPic = localStorage.getItem('profilePicture_' + currentUser) || 'default';
@@ -677,6 +725,8 @@
         // ---------- BAŞLAT ----------
         loadUserProfile();
         updateStreak();
+        showFriendCodeInPopup();
+        applyTeacherNav();
 
         if (isTeacher) {
             document.getElementById('teacherView').style.display = 'block';

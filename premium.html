@@ -212,9 +212,36 @@
             document.getElementById('profilePopup').classList.toggle('active'); 
         }
 
-        function logout() { 
-            localStorage.removeItem('currentUser'); 
-            location.href = 'index.html'; 
+        function logout() {
+            localStorage.removeItem('currentUser');
+            location.href = 'index.html';
+        }
+        function ensureFriendCode() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const u = allU.find(x => x.name === currentUser);
+            if (u && !u.friendCode) {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+                u.friendCode = code;
+                localStorage.setItem('users', JSON.stringify(allU));
+            }
+            return u?.friendCode || '';
+        }
+        function applyTeacherNav() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const u = allU.find(x => x.name === currentUser);
+            if (u?.isTeacher) {
+                document.querySelectorAll('.nav-menu a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href === 'dashboard.html' || href === 'achievements.html') a.closest('li').style.display = 'none';
+                });
+            }
+        }
+        function showFriendCodeInPopup() {
+            const code = ensureFriendCode();
+            const el = document.getElementById('profileName');
+            if (el) el.innerHTML = `${currentUser}<br><small style="font-family:monospace;background:var(--warm-light);padding:0.15rem 0.5rem;border-radius:6px;font-size:0.75rem;font-weight:normal;color:var(--warm-brown);letter-spacing:1px;">📎 ${code}</small>`;
         }
 
         function showNotification(message, type = 'info') {
@@ -249,6 +276,8 @@
 
         loadUserProfile();
         updateStreak();
+        showFriendCodeInPopup();
+        applyTeacherNav();
     </script>
 </body>
 </html>

@@ -188,6 +188,13 @@
             setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.3s'; setTimeout(() => el.remove(), 300); }, 3000);
         }
 
+        function generateFriendCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = '';
+            for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            return code;
+        }
+
         function showLogin() { closeAllModals(); document.getElementById('loginModal').classList.add('active'); }
         function showRegister() { closeAllModals(); document.getElementById('registerModal').classList.add('active'); }
         function showForgotPassword() { closeAllModals(); document.getElementById('forgotModal').classList.add('active'); }
@@ -207,6 +214,8 @@
                 if (user.name === 'admin') {
                     localStorage.setItem('isAdmin', 'true');
                     window.location.href = 'admin.html';
+                } else if (user.isTeacher) {
+                    window.location.href = 'classroom.html';
                 } else {
                     window.location.href = 'dashboard.html';
                 }
@@ -223,7 +232,8 @@
             if (users.find(u => u.email === email)) { showNotification('Bu e-posta zaten kayıtlı!', 'error'); return; }
             if (users.find(u => u.name === name)) { showNotification('Bu isim zaten kullanılıyor!', 'error'); return; }
             const referralCode = 'REF' + Date.now().toString(36).toUpperCase();
-            const newUser = { name, email, password, createdAt: new Date().toISOString(), isPremium: false, referralCode };
+            const friendCode = generateFriendCode();
+            const newUser = { name, email, password, createdAt: new Date().toISOString(), isPremium: false, referralCode, friendCode };
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('ownedProfilePictures_' + name, JSON.stringify(['default']));
@@ -293,7 +303,9 @@
             if (_cu === 'admin' && localStorage.getItem('isAdmin') === 'true') {
                 window.location.href = 'admin.html';
             } else {
-                window.location.href = 'dashboard.html';
+                const _users = JSON.parse(localStorage.getItem('users')) || [];
+                const _cu_data = _users.find(u => u.name === _cu);
+                window.location.href = _cu_data?.isTeacher ? 'classroom.html' : 'dashboard.html';
             }
         }
         document.querySelectorAll('.modal').forEach(modal => { modal.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('active'); }); });

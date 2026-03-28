@@ -118,7 +118,7 @@
                     <h2>➕ Arkadaş Ekle</h2>
                 </div>
                 <div style="display: flex; gap: 1rem;">
-                    <input type="text" id="friendRequestName" placeholder="Kullanıcı adı girin" style="flex: 1; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem;">
+                    <input type="text" id="friendRequestName" placeholder="8 haneli arkadaş kodu (örn: AB3D7K9P)" maxlength="8" style="flex: 1; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 10px; font-size: 1rem; font-family: monospace; text-transform: uppercase; letter-spacing: 1px;">
                     <button class="btn" onclick="sendFriendRequest()">İstek Gönder</button>
                 </div>
             </div>
@@ -234,59 +234,59 @@
         }
 
         function sendFriendRequest() {
-            const friendName = document.getElementById('friendRequestName').value.trim();
-            
-            if (!friendName) {
-                showNotification('Lütfen kullanıcı adı girin!', 'warning');
+            const enteredCode = document.getElementById('friendRequestName').value.trim().toUpperCase();
+
+            if (!enteredCode) {
+                showNotification('Lütfen arkadaş kodu girin!', 'warning');
                 return;
             }
-            
-            if (friendName === currentUser) {
-                showNotification('Kendinize istek gönderemezsiniz!', 'warning');
+            if (enteredCode.length !== 8) {
+                showNotification('Arkadaş kodu 8 haneli olmalıdır!', 'warning');
                 return;
             }
-            
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            if (!users.find(u => u.name === friendName)) {
-                showNotification('Bu kullanıcı adı bulunamadı!', 'error');
+
+            const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const meData = allUsers.find(u => u.name === currentUser);
+            if (meData && meData.friendCode === enteredCode) {
+                showNotification('Kendi kodunuzu kullanamazsınız!', 'warning');
                 return;
             }
-            
+
+            const targetUser = allUsers.find(u => u.friendCode === enteredCode);
+            if (!targetUser) {
+                showNotification('Bu koda ait kullanıcı bulunamadı!', 'error');
+                return;
+            }
+            const friendName = targetUser.name;
+
             const myFriends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
             if (myFriends.includes(friendName)) {
                 showNotification('Bu kullanıcı zaten arkadaşınız!', 'warning');
                 return;
             }
-            
+
             const rejected = JSON.parse(localStorage.getItem('rejectedRequests_' + currentUser)) || {};
             if (rejected[friendName]) {
                 const rejectedDate = new Date(rejected[friendName]);
-                const today = new Date();
-                const daysDiff = Math.floor((today - rejectedDate) / (1000 * 60 * 60 * 24));
-                
+                const daysDiff = Math.floor((new Date() - rejectedDate) / (1000 * 60 * 60 * 24));
                 if (daysDiff < 7) {
-                    showNotification(`${friendName} kullanıcısına ${7 - daysDiff} gün boyunca istek gönderemezsiniz.`, 'warning');
+                    showNotification(`Bu kullanıcıya ${7 - daysDiff} gün daha istek gönderemezsiniz.`, 'warning');
                     return;
                 } else {
                     delete rejected[friendName];
                     localStorage.setItem('rejectedRequests_' + currentUser, JSON.stringify(rejected));
                 }
             }
-            
+
             const targetRequests = JSON.parse(localStorage.getItem('friendRequests_' + friendName)) || [];
-            
             if (targetRequests.find(r => r.from === currentUser)) {
                 showNotification('Bu kullanıcıya zaten istek gönderdiniz!', 'warning');
                 return;
             }
-            
-            targetRequests.push({
-                from: currentUser,
-                date: new Date().toISOString()
-            });
-            
+
+            targetRequests.push({ from: currentUser, date: new Date().toISOString() });
             localStorage.setItem('friendRequests_' + friendName, JSON.stringify(targetRequests));
-            showNotification('Arkadaşlık isteği gönderildi!', 'success');
+            showNotification(`"${friendName}" kullanıcısına arkadaşlık isteği gönderildi!`, 'success');
             document.getElementById('friendRequestName').value = '';
         }
 
@@ -401,6 +401,38 @@
             document.getElementById('refCount').textContent = count;
         }
 
+        function ensureFriendCode() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const u = allU.find(x => x.name === currentUser);
+            if (u && !u.friendCode) {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+                let code = '';
+                for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+                u.friendCode = code;
+                localStorage.setItem('users', JSON.stringify(allU));
+            }
+            return u?.friendCode || '';
+        }
+
+        function applyTeacherNav() {
+            const allU = JSON.parse(localStorage.getItem('users')) || [];
+            const u = allU.find(x => x.name === currentUser);
+            if (u?.isTeacher) {
+                document.querySelectorAll('.nav-menu a').forEach(a => {
+                    const href = a.getAttribute('href');
+                    if (href === 'dashboard.html' || href === 'achievements.html') a.closest('li').style.display = 'none';
+                });
+            }
+        }
+
+        function showFriendCodeInPopup() {
+            const code = ensureFriendCode();
+            const el = document.getElementById('profileName');
+            if (el) el.innerHTML = `${currentUser}<br><small style="font-family:monospace;background:var(--warm-light);padding:0.15rem 0.5rem;border-radius:6px;font-size:0.75rem;font-weight:normal;color:var(--warm-brown);letter-spacing:1px;">📎 ${code}</small>`;
+        }
+
+        showFriendCodeInPopup();
+        applyTeacherNav();
         loadFriendRequests();
         loadFriends();
         loadReferralLink();
