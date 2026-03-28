@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPSS Günlüğüm - Çalışma Yolculuğunuz</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <title>KPSS Takip - Çalışma Yolculuğunuz</title>
     <style>
         * {
             margin: 0;
@@ -71,7 +70,6 @@
             text-decoration: none;
             transition: color 0.3s;
             font-weight: 500;
-            cursor: pointer;
         }
 
         .nav-links a:hover {
@@ -326,7 +324,6 @@
             color: var(--warm-orange);
             text-decoration: none;
             font-weight: 600;
-            cursor: pointer;
         }
 
         /* Responsive */
@@ -348,10 +345,10 @@
 <body>
     <header>
         <nav>
-            <div class="logo">KPSS Günlüğüm</div>
+            <div class="logo">KPSS Takip</div>
             <ul class="nav-links">
                 <li><a href="#anasayfa">Ana Sayfa</a></li>
-                <li><a href="#ozellikler" onclick="scrollToFeatures()">Özellikler</a></li>
+                <li><a href="#ozellikler">Özellikler</a></li>
                 <li><a href="#hakkimizda">Hakkımızda</a></li>
             </ul>
             <div class="auth-buttons">
@@ -367,7 +364,7 @@
             <p>Her gün attığınız adımları takip edin, ilerlemenizi görün, hedefinize ulaşın. Günlük soru çözümlerinizi ve deneme sonuçlarınızı kolayca kaydedin.</p>
             <div>
                 <button class="btn btn-primary" onclick="openModal('register')" style="margin-right: 1rem;">Hemen Başla</button>
-                <button class="btn btn-secondary" onclick="scrollToFeatures()">Daha Fazla Bilgi</button>
+                <button class="btn btn-secondary">Daha Fazla Bilgi</button>
             </div>
         </div>
         <div class="hero-image">
@@ -395,7 +392,7 @@
 
     <section class="features" id="ozellikler">
         <div class="features-container">
-            <h2>Neden KPSS Günlüğüm?</h2>
+            <h2>Neden KPSS Takip?</h2>
             <div class="feature-grid">
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
@@ -428,16 +425,16 @@
             <h2>Giriş Yap</h2>
             <form onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label>E-posta veya Kullanıcı Adı</label>
-                    <input type="text" id="loginUsername" required placeholder="ornek@email.com">
+                    <label>E-posta</label>
+                    <input type="email" required placeholder="ornek@email.com">
                 </div>
                 <div class="form-group">
                     <label>Şifre</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                    <input type="password" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Giriş Yap</button>
                 <div class="form-footer">
-                    Hesabınız yok mu? <a onclick="switchModal('login', 'register')">Kayıt Olun</a>
+                    Hesabınız yok mu? <a href="#" onclick="switchModal('login', 'register')">Kayıt Olun</a>
                 </div>
             </form>
         </div>
@@ -451,29 +448,25 @@
             <form onsubmit="handleRegister(event)">
                 <div class="form-group">
                     <label>Ad Soyad</label>
-                    <input type="text" id="registerName" required placeholder="Adınız Soyadınız">
+                    <input type="text" required placeholder="Adınız Soyadınız">
                 </div>
                 <div class="form-group">
                     <label>E-posta</label>
-                    <input type="email" id="registerEmail" required placeholder="ornek@email.com">
+                    <input type="email" required placeholder="ornek@email.com">
                 </div>
                 <div class="form-group">
                     <label>Şifre</label>
-                    <input type="password" id="registerPassword" required placeholder="••••••••">
+                    <input type="password" required placeholder="••••••••">
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Kayıt Ol</button>
                 <div class="form-footer">
-                    Zaten hesabınız var mı? <a onclick="switchModal('register', 'login')">Giriş Yapın</a>
+                    Zaten hesabınız var mı? <a href="#" onclick="switchModal('register', 'login')">Giriş Yapın</a>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        function scrollToFeatures() {
-            document.getElementById('ozellikler').scrollIntoView({ behavior: 'smooth' });
-        }
-
         function openModal(type) {
             const modal = document.getElementById(type + 'Modal');
             modal.classList.add('active');
@@ -491,56 +484,13 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-
-            // Admin kontrolü
-            if (username === 'admin' && password === 'admin123') {
-                localStorage.setItem('isAdmin', 'true');
-                localStorage.setItem('currentUser', 'Admin');
-                window.location.href = 'admin.html';
-                return;
-            }
-
-            // Normal kullanıcı girişi
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => (u.email === username || u.name === username) && u.password === password);
-
-            if (user) {
-                localStorage.setItem('currentUser', user.name);
-                localStorage.setItem('isAdmin', 'false');
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('❌ E-posta/kullanıcı adı veya şifre hatalı!');
-            }
+            alert('Giriş yapıldı! Dashboard sayfasına yönlendiriliyorsunuz...');
+            closeModal('login');
         }
 
         function handleRegister(e) {
             e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            
-            // Email kontrolü
-            if (users.find(u => u.email === email)) {
-                alert('❌ Bu e-posta adresi zaten kayıtlı!');
-                return;
-            }
-
-            const newUser = {
-                id: Date.now(),
-                name: name,
-                email: email,
-                password: password,
-                createdAt: new Date().toISOString()
-            };
-
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            alert('✅ Kayıt başarılı! Şimdi giriş yapabilirsiniz.');
+            alert('Kayıt başarılı! Giriş yapabilirsiniz.');
             switchModal('register', 'login');
         }
 

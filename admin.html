@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - KPSS Günlüğüm</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --warm-dark: #3d3228;
+            --warm-brown: #7d5a3f;
+            --warm-tan: #b8905f;
+            --warm-cream: #e6d4b8;
+            --warm-light: #f5ede0;
+            --warm-orange: #d97449;
+            --warm-peach: #e8a87c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--warm-light) 0%, var(--warm-cream) 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: rgba(61, 50, 40, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--warm-peach);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo::before {
+            content: "🔐";
+            font-size: 1.8rem;
+        }
+
+        .admin-badge {
+            background: var(--warm-orange);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--warm-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--warm-brown);
+            font-weight: 600;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--warm-light);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--warm-dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--warm-light);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            color: var(--warm-brown);
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--warm-light);
+        }
+
+        tr:hover {
+            background: var(--warm-light);
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--warm-orange);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            margin-right: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .search-box {
+            padding: 0.8rem;
+            border: 2px solid var(--warm-cream);
+            border-radius: 10px;
+            font-size: 1rem;
+            width: 300px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--warm-orange);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">Admin Panel</a>
+            <div class="admin-badge">👑 Yönetici</div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- İstatistikler -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-label">Toplam Kullanıcı</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-value" id="totalQuestions">0</div>
+                <div class="stat-label">Toplam Soru Çözüldü</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="totalDenemeler">0</div>
+                <div class="stat-label">Toplam Deneme</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value" id="activeToday">0</div>
+                <div class="stat-label">Bugün Aktif</div>
+            </div>
+        </div>
+
+        <!-- Kullanıcı Listesi -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">👥 Kullanıcı Listesi</h2>
+                <input type="text" class="search-box" id="searchBox" placeholder="🔍 Kullanıcı ara..." oninput="filterUsers()">
+            </div>
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>E-posta</th>
+                        <th>Kayıt Tarihi</th>
+                        <th>Toplam Soru</th>
+                        <th>Deneme Sayısı</th>
+                        <th>Son Aktivite</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--warm-brown);">
+                            Yükleniyor...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">🏆 En Çok Soru Çözenler</h2>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sıra</th>
+                        <th>Kullanıcı</th>
+                        <th>Toplam Soru</th>
+                    </tr>
+                </thead>
+                <tbody id="topPerformersBody">
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 2rem; color: var(--warm-brown);">
+                            Yükleniyor...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Çıkış Butonu -->
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="btn btn-danger" onclick="logout()">🚪 Çıkış Yap</button>
+        </div>
+    </div>
+
+    <script>
+        // Admin kontrolü
+        const isAdmin = localStorage.getItem('isAdmin');
+        if (isAdmin !== 'true') {
+            alert('⚠️ Bu sayfaya erişim yetkiniz yok!');
+            window.location.href = 'index.html';
+        }
+
+        let allUsersData = [];
+
+        function loadAdminData() {
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            allUsersData = [];
+
+            let totalQuestions = 0;
+            let totalDenemeler = 0;
+            let activeToday = 0;
+            const today = new Date().toISOString().split('T')[0];
+
+            users.forEach(user => {
+                const questionsData = JSON.parse(localStorage.getItem('questionsData_' + user.name)) || {};
+                const denemeData = JSON.parse(localStorage.getItem('denemeData_' + user.name)) || [];
+
+                // Toplam soru sayısı hesapla
+                let userTotalQuestions = 0;
+                Object.values(questionsData).forEach(day => {
+                    userTotalQuestions += (day.turkce || 0) + (day.matematik || 0) + 
+                                        (day.tarih || 0) + (day.cografya || 0) + (day.vatandaslik || 0);
+                });
+
+                totalQuestions += userTotalQuestions;
+                totalDenemeler += denemeData.length;
+
+                // Son aktivite kontrolü
+                const dates = Object.keys(questionsData);
+                const lastActivity = dates.length > 0 ? dates.sort().reverse()[0] : null;
+                
+                if (lastActivity === today || denemeData.some(d => {
+                    const parts = d.date.split('.');
+                    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}` === today;
+                })) {
+                    activeToday++;
+                }
+
+                allUsersData.push({
+                    name: user.name,
+                    email: user.email,
+                    createdAt: user.createdAt,
+                    totalQuestions: userTotalQuestions,
+                    denemeCount: denemeData.length,
+                    lastActivity: lastActivity
+                });
+            });
+
+            // İstatistikleri güncelle
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalQuestions').textContent = totalQuestions.toLocaleString('tr-TR');
+            document.getElementById('totalDenemeler').textContent = totalDenemeler;
+            document.getElementById('activeToday').textContent = activeToday;
+
+            // Kullanıcı tablosunu doldur
+            renderUsersTable(allUsersData);
+
+            // Top performers
+            renderTopPerformers(allUsersData);
+        }
+
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 2rem; color: var(--warm-brown);">
+                            Henüz kayıtlı kullanıcı yok.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            users.forEach(user => {
+                const createdDate = new Date(user.createdAt).toLocaleDateString('tr-TR');
+                const lastActivity = user.lastActivity ? 
+                    new Date(user.lastActivity).toLocaleDateString('tr-TR') : 
+                    'Henüz yok';
+
+                html += `
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center;">
+                                <div class="user-avatar-small">${user.name.charAt(0).toUpperCase()}</div>
+                                <strong>${user.name}</strong>
+                            </div>
+                        </td>
+                        <td>${user.email}</td>
+                        <td>${createdDate}</td>
+                        <td><strong style="color: var(--warm-orange);">${user.totalQuestions.toLocaleString('tr-TR')}</strong></td>
+                        <td>${user.denemeCount}</td>
+                        <td>${lastActivity}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function renderTopPerformers(users) {
+            const tbody = document.getElementById('topPerformersBody');
+            const sorted = [...users].sort((a, b) => b.totalQuestions - a.totalQuestions).slice(0, 10);
+
+            if (sorted.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 2rem; color: var(--warm-brown);">
+                            Henüz veri yok.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            sorted.forEach((user, index) => {
+                const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+                html += `
+                    <tr>
+                        <td style="font-size: 1.3rem;">${medal}</td>
+                        <td>
+                            <div style="display: flex; align-items: center;">
+                                <div class="user-avatar-small">${user.name.charAt(0).toUpperCase()}</div>
+                                <strong>${user.name}</strong>
+                            </div>
+                        </td>
+                        <td><strong style="color: var(--warm-orange); font-size: 1.2rem;">${user.totalQuestions.toLocaleString('tr-TR')}</strong></td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            const filtered = allUsersData.filter(user => 
+                user.name.toLowerCase().includes(searchTerm) || 
+                user.email.toLowerCase().includes(searchTerm)
+            );
+            renderUsersTable(filtered);
+        }
+
+        function logout() {
+            localStorage.removeItem('isAdmin');
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadAdminData);
+    </script>
+</body>
+</html>
