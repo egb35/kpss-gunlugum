@@ -40,6 +40,12 @@
         .btn-small { padding: 0.5rem 1rem; font-size: 0.85rem; }
         .btn-danger { background: #e74c3c; }
         .btn-success { background: #2ecc71; }
+        .notification-modal { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; max-width: 400px; animation: slideInRight 0.3s; }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+        .notification-modal.success { border-left: 5px solid #2ecc71; }
+        .notification-modal.error { border-left: 5px solid #e74c3c; }
+        .notification-modal.warning { border-left: 5px solid #f39c12; }
+        .notification-modal.info { border-left: 5px solid #3498db; }
         .friend-list { display: grid; gap: 1rem; }
         .friend-item { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
         .friend-info { display: flex; align-items: center; gap: 1rem; }
@@ -227,24 +233,24 @@
             const friendName = document.getElementById('friendRequestName').value.trim();
             
             if (!friendName) {
-                alert('⚠️ Lütfen kullanıcı adı girin!');
+                showNotification('Lütfen kullanıcı adı girin!', 'warning');
                 return;
             }
             
             if (friendName === currentUser) {
-                alert('⚠️ Kendinize istek gönderemezsiniz!');
+                showNotification('Kendinize istek gönderemezsiniz!', 'warning');
                 return;
             }
             
             const users = JSON.parse(localStorage.getItem('users')) || [];
             if (!users.find(u => u.name === friendName)) {
-                alert('❌ Bu kullanıcı adı bulunamadı!');
+                showNotification('Bu kullanıcı adı bulunamadı!', 'error');
                 return;
             }
             
             const myFriends = JSON.parse(localStorage.getItem('friends_' + currentUser)) || [];
             if (myFriends.includes(friendName)) {
-                alert('⚠️ Bu kullanıcı zaten arkadaşınız!');
+                showNotification('Bu kullanıcı zaten arkadaşınız!', 'warning');
                 return;
             }
             
@@ -266,7 +272,7 @@
             const targetRequests = JSON.parse(localStorage.getItem('friendRequests_' + friendName)) || [];
             
             if (targetRequests.find(r => r.from === currentUser)) {
-                alert('⚠️ Bu kullanıcıya zaten istek gönderdiniz!');
+                showNotification('Bu kullanıcıya zaten istek gönderdiniz!', 'warning');
                 return;
             }
             
@@ -276,7 +282,7 @@
             });
             
             localStorage.setItem('friendRequests_' + friendName, JSON.stringify(targetRequests));
-            alert('✅ Arkadaşlık isteği gönderildi!');
+            showNotification('Arkadaşlık isteği gönderildi!', 'success');
             document.getElementById('friendRequestName').value = '';
         }
 
@@ -298,7 +304,7 @@
             requests = requests.filter(r => r.from !== fromUser);
             localStorage.setItem('friendRequests_' + currentUser, JSON.stringify(requests));
             
-            alert('✅ Arkadaş eklendi!');
+            showNotification('Arkadaş eklendi!', 'success');
             loadFriendRequests();
             loadFriends();
         }
@@ -328,12 +334,28 @@
             localStorage.setItem('friends_' + currentUser, JSON.stringify(myFriends));
             localStorage.setItem('friends_' + friendName, JSON.stringify(theirFriends));
             
-            alert('✅ Arkadaş silindi!');
+            showNotification('Arkadaş silindi!', 'success');
             loadFriends();
         }
 
         function showAddFriend() {
             document.getElementById('friendRequestName').focus();
+        }
+
+        function showNotification(message, type = 'info') {
+            document.querySelectorAll('.notification-modal').forEach(n => n.remove());
+            const notification = document.createElement('div');
+            notification.className = `notification-modal ${type}`;
+            const icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
+            notification.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+                    <span style="font-weight:bold;color:var(--warm-dark);">${icons[type]}</span>
+                    <button onclick="this.closest('.notification-modal').remove()" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+                </div>
+                <p style="color:var(--warm-brown);margin:0;">${message}</p>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => { notification.style.opacity = '0'; setTimeout(() => notification.remove(), 300); }, 3000);
         }
 
         function loadReferralLink() {

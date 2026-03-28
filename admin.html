@@ -872,7 +872,14 @@
             }
 
             const height = location === 'top' ? '90px' : '250px';
-            const content = `<img src="${selectedImage.image}" style="max-width: 100%; height: ${height}; object-fit: contain;">`;
+            const imgTag = `<img src="${selectedImage.image}" style="max-width: 100%; height: ${height}; object-fit: contain; cursor: pointer;">`;
+            
+            let content;
+            if (selectedImage.url && selectedImage.url.trim()) {
+                content = `<a href="${selectedImage.url}" target="_blank" rel="noopener noreferrer" style="display: block;">${imgTag}</a>`;
+            } else {
+                content = imgTag;
+            }
 
             localStorage.setItem('adBanner_' + location, content);
             localStorage.setItem('selectedBanner_' + location, selectedId);
