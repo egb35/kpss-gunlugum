@@ -15,6 +15,14 @@
         .logo::before { content: "🔐"; font-size: 1.8rem; margin-right: 0.5rem; }
         .admin-badge { background: var(--warm-orange); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 600; }
         .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .tab { padding: 1rem 2rem; background: transparent; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
+        .tab.active { background: var(--warm-orange); color: white; box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3); }
+        .tab:hover:not(.active) { background: var(--warm-light); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
         .stat-card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; }
         .stat-icon { font-size: 3rem; margin-bottom: 1rem; }
@@ -45,13 +53,6 @@
         .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; border-radius: 50%; transition: 0.4s; }
         input:checked + .slider { background-color: var(--warm-orange); }
         input:checked + .slider:before { transform: translateX(30px); }
-        .ad-control { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--warm-light); border-radius: 10px; margin-bottom: 1rem; }
-        .ad-input-section { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; margin-top: 1rem; }
-        .ad-input-section h4 { color: var(--warm-dark); margin-bottom: 1rem; }
-        .ad-input-section textarea { width: 100%; min-height: 100px; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-family: monospace; font-size: 0.9rem; margin-bottom: 1rem; }
-        .ad-input-section input[type="text"] { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; margin-bottom: 1rem; }
-        .ad-input-section input[type="file"] { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; background: white; margin-bottom: 1rem; }
-        .file-upload-label { display: block; color: var(--warm-brown); margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
         .button-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
@@ -69,13 +70,22 @@
         .profile-pic-name { font-weight: 600; color: var(--warm-dark); margin-bottom: 0.5rem; }
         .profile-pic-status { font-size: 0.8rem; color: var(--warm-brown); margin-bottom: 0.5rem; }
         
+        .ad-image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .ad-image-item { position: relative; background: var(--warm-light); padding: 1rem; border-radius: 10px; text-align: center; }
+        .ad-image-preview { width: 100%; max-height: 150px; object-fit: contain; border-radius: 8px; margin-bottom: 1rem; }
+        .ad-image-name { font-weight: 600; color: var(--warm-dark); margin-bottom: 0.5rem; }
+        
+        .ad-banner-section { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; }
+        .ad-banner-section h4 { color: var(--warm-dark); margin-bottom: 1rem; }
+        
         .crop-container { position: relative; width: 100%; max-width: 400px; height: 400px; margin: 1rem auto; background: #f0f0f0; border-radius: 10px; overflow: hidden; }
         .crop-container img { max-width: 100%; max-height: 100%; }
         .crop-preview { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; margin: 1rem auto; border: 3px solid var(--warm-orange); }
         .crop-preview img { width: 100%; height: 100%; object-fit: cover; }
         
         input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; }
-        select { padding: 0.5rem; border: 2px solid var(--warm-cream); border-radius: 8px; background: white; cursor: pointer; }
+        select { padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; background: white; cursor: pointer; font-size: 1rem; }
+        input[type="text"] { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; margin-bottom: 1rem; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -87,134 +97,130 @@
     </header>
 
     <div class="container">
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">👥</div>
-                <div class="stat-value" id="totalUsers">0</div>
-                <div class="stat-label">Toplam Kullanıcı</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📝</div>
-                <div class="stat-value" id="totalQuestions">0</div>
-                <div class="stat-label">Toplam Soru</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-value" id="totalDenemeler">0</div>
-                <div class="stat-label">Toplam Deneme</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🔥</div>
-                <div class="stat-value" id="activeToday">0</div>
-                <div class="stat-label">Bugün Aktif</div>
-            </div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('ana')">📊 Ana Sayfa</button>
+            <button class="tab" onclick="switchTab('kullanici')">👥 Kullanıcı Yönetimi</button>
+            <button class="tab" onclick="switchTab('profil')">🖼️ Profil Resimleri</button>
+            <button class="tab" onclick="switchTab('reklam')">📢 Reklam Yönetimi</button>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h2>🖼️ Profil Resimleri Yönetimi</h2>
-                <button class="btn btn-success" onclick="openAddProfilePicture()">➕ Yeni Profil Resmi Ekle</button>
-            </div>
-            <div class="profile-pic-grid" id="profilePicsGrid"></div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h2>👥 Kullanıcı Yönetimi</h2>
-                <select id="sortBy" onchange="loadUsers()">
-                    <option value="name">İsme Göre</option>
-                    <option value="questions">Soru Sayısına Göre</option>
-                    <option value="streak">Streak'e Göre</option>
-                    <option value="date">Kayıt Tarihine Göre</option>
-                </select>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th onclick="sortTable('name')">Kullanıcı ⇅</th>
-                        <th onclick="sortTable('email')">E-posta ⇅</th>
-                        <th onclick="sortTable('questions')">Toplam Soru ⇅</th>
-                        <th onclick="sortTable('streak')">Streak ⇅</th>
-                        <th onclick="sortTable('date')">Kayıt Tarihi ⇅</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody"></tbody>
-            </table>
-        </div>
-
-        <div class="card">
-            <div class="card-header"><h2>📢 Reklam Yönetimi</h2></div>
-            
-            <div class="ad-control">
-                <span><strong>Üst Banner (728x90)</strong></span>
-                <label class="toggle">
-                    <input type="checkbox" id="adTop" onchange="toggleAd('top')" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="ad-input-section">
-                <h4>Üst Banner İçeriği</h4>
-                <p style="color: var(--warm-brown); margin-bottom: 1rem; font-size: 0.9rem;">3 seçenekten birini kullanın:</p>
-                <label class="file-upload-label">1️⃣ Bilgisayardan Görsel Yükle:</label>
-                <input type="file" id="adTopFile" accept="image/*" onchange="handleFileUpload('top')">
-                <label class="file-upload-label">2️⃣ Görsel URL'si:</label>
-                <input type="text" id="adTopImage" placeholder="https://example.com/banner.jpg">
-                <label class="file-upload-label">3️⃣ HTML/AdSense Kodu:</label>
-                <textarea id="adTopHTML" placeholder="<script>...</script> veya HTML kodunu buraya yapıştırın"></textarea>
-                <div class="button-group">
-                    <button class="btn btn-success" onclick="saveAdContent('top')">💾 Kaydet</button>
-                    <button class="btn btn-warning" onclick="clearAdContent('top')">🗑️ Temizle</button>
+        <!-- ANA SAYFA -->
+        <div id="ana-tab" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Toplam Kullanıcı</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-value" id="totalQuestions">0</div>
+                    <div class="stat-label">Toplam Soru</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-value" id="totalDenemeler">0</div>
+                    <div class="stat-label">Toplam Deneme</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="activeToday">0</div>
+                    <div class="stat-label">Bugün Aktif</div>
                 </div>
             </div>
-
-            <div class="ad-control" style="margin-top: 2rem;">
-                <span><strong>Sidebar Reklam 1 (300x250)</strong></span>
-                <label class="toggle">
-                    <input type="checkbox" id="adSide1" onchange="toggleAd('side1')" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="ad-input-section">
-                <h4>Sidebar 1 İçeriği</h4>
-                <p style="color: var(--warm-brown); margin-bottom: 1rem; font-size: 0.9rem;">3 seçenekten birini kullanın:</p>
-                <label class="file-upload-label">1️⃣ Bilgisayardan Görsel Yükle:</label>
-                <input type="file" id="adSide1File" accept="image/*" onchange="handleFileUpload('side1')">
-                <label class="file-upload-label">2️⃣ Görsel URL'si:</label>
-                <input type="text" id="adSide1Image" placeholder="https://example.com/sidebar.jpg">
-                <label class="file-upload-label">3️⃣ HTML/AdSense Kodu:</label>
-                <textarea id="adSide1HTML" placeholder="<script>...</script> veya HTML kodunu buraya yapıştırın"></textarea>
-                <div class="button-group">
-                    <button class="btn btn-success" onclick="saveAdContent('side1')">💾 Kaydet</button>
-                    <button class="btn btn-warning" onclick="clearAdContent('side1')">🗑️ Temizle</button>
-                </div>
-            </div>
-
-            <div class="ad-control" style="margin-top: 2rem;">
-                <span><strong>Sidebar Reklam 2 (300x250)</strong></span>
-                <label class="toggle">
-                    <input type="checkbox" id="adSide2" onchange="toggleAd('side2')" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="ad-input-section">
-                <h4>Sidebar 2 İçeriği</h4>
-                <p style="color: var(--warm-brown); margin-bottom: 1rem; font-size: 0.9rem;">3 seçenekten birini kullanın:</p>
-                <label class="file-upload-label">1️⃣ Bilgisayardan Görsel Yükle:</label>
-                <input type="file" id="adSide2File" accept="image/*" onchange="handleFileUpload('side2')">
-                <label class="file-upload-label">2️⃣ Görsel URL'si:</label>
-                <input type="text" id="adSide2Image" placeholder="https://example.com/sidebar.jpg">
-                <label class="file-upload-label">3️⃣ HTML/AdSense Kodu:</label>
-                <textarea id="adSide2HTML" placeholder="<script>...</script> veya HTML kodunu buraya yapıştırın"></textarea>
-                <div class="button-group">
-                    <button class="btn btn-success" onclick="saveAdContent('side2')">💾 Kaydet</button>
-                    <button class="btn btn-warning" onclick="clearAdContent('side2')">🗑️ Temizle</button>
-                </div>
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn btn-danger" onclick="logout()">🚪 Çıkış Yap</button>
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 2rem;">
-            <button class="btn btn-danger" onclick="logout()">🚪 Çıkış Yap</button>
+        <!-- KULLANICI YÖNETİMİ -->
+        <div id="kullanici-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>👥 Kullanıcı Yönetimi</h2>
+                    <select id="sortBy" onchange="loadUsers()">
+                        <option value="name">İsme Göre</option>
+                        <option value="questions">Soru Sayısına Göre</option>
+                        <option value="streak">Streak'e Göre</option>
+                        <option value="date">Kayıt Tarihine Göre</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('name')">Kullanıcı ⇅</th>
+                            <th onclick="sortTable('email')">E-posta ⇅</th>
+                            <th onclick="sortTable('questions')">Toplam Soru ⇅</th>
+                            <th onclick="sortTable('streak')">Streak ⇅</th>
+                            <th onclick="sortTable('date')">Kayıt Tarihi ⇅</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- PROFİL RESİMLERİ YÖNETİMİ -->
+        <div id="profil-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🖼️ Profil Resimleri Yönetimi</h2>
+                    <button class="btn btn-success" onclick="openAddProfilePicture()">➕ Yeni Profil Resmi Ekle</button>
+                </div>
+                <div class="profile-pic-grid" id="profilePicsGrid"></div>
+            </div>
+        </div>
+
+        <!-- REKLAM YÖNETİMİ -->
+        <div id="reklam-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>🖼️ Reklam Görselleri Kütüphanesi</h2>
+                    <button class="btn btn-success" onclick="openAddAdImage()">➕ Yeni Reklam Görseli Yükle</button>
+                </div>
+                <div class="ad-image-grid" id="adImagesGrid"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h2>📢 Banner Atama</h2></div>
+                
+                <div class="ad-banner-section">
+                    <h4>Üst Banner (728x90)</h4>
+                    <label class="toggle" style="margin-bottom: 1rem; display: inline-block;">
+                        <input type="checkbox" id="adTop" onchange="toggleAd('top')" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span style="margin-left: 1rem;">Banner Göster</span>
+                    <select id="topBannerSelect" onchange="assignBanner('top')" style="width: 100%; margin-top: 1rem;">
+                        <option value="">Görsel Seçin</option>
+                    </select>
+                </div>
+
+                <div class="ad-banner-section">
+                    <h4>Sidebar Banner 1 (300x250)</h4>
+                    <label class="toggle" style="margin-bottom: 1rem; display: inline-block;">
+                        <input type="checkbox" id="adSide1" onchange="toggleAd('side1')" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span style="margin-left: 1rem;">Banner Göster</span>
+                    <select id="side1BannerSelect" onchange="assignBanner('side1')" style="width: 100%; margin-top: 1rem;">
+                        <option value="">Görsel Seçin</option>
+                    </select>
+                </div>
+
+                <div class="ad-banner-section">
+                    <h4>Sidebar Banner 2 (300x250)</h4>
+                    <label class="toggle" style="margin-bottom: 1rem; display: inline-block;">
+                        <input type="checkbox" id="adSide2" onchange="toggleAd('side2')" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <span style="margin-left: 1rem;">Banner Göster</span>
+                    <select id="side2BannerSelect" onchange="assignBanner('side2')" style="width: 100%; margin-top: 1rem;">
+                        <option value="">Görsel Seçin</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -234,7 +240,7 @@
                 <div class="crop-preview">
                     <canvas id="previewCanvas"></canvas>
                 </div>
-                <input type="text" id="pictureName" placeholder="Profil Resmi Adı (örn: Altın Rozet)" style="width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; margin-bottom: 1rem;">
+                <input type="text" id="pictureName" placeholder="Profil Resmi Adı (örn: Altın Rozet)">
                 <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
                     <input type="checkbox" id="pictureIsLocked">
                     <span>🔒 Kilitli (Kullanıcılar satın almalı/hediye almalı)</span>
@@ -242,6 +248,26 @@
                 <div class="button-group">
                     <button class="btn btn-success" onclick="saveProfilePicture()">💾 Kaydet</button>
                     <button class="btn btn-warning" onclick="closeModal('addProfilePic')">İptal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Ad Image Modal -->
+    <div id="addAdImageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Reklam Görseli Yükle</h2>
+                <button class="close-modal" onclick="closeModal('addAdImage')">&times;</button>
+            </div>
+            <p style="color: var(--warm-brown); margin-bottom: 1rem;">📏 Banner boyutları: <strong>728x90 (üst)</strong> veya <strong>300x250 (yan)</strong></p>
+            <input type="file" id="adImageFile" accept="image/*" onchange="previewAdImage()" style="margin-bottom: 1rem; width: 100%;">
+            <div id="adImagePreviewSection" style="display: none;">
+                <img id="adImagePreview" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; margin-bottom: 1rem;">
+                <input type="text" id="adImageName" placeholder="Reklam Adı (örn: Bahar Kampanyası)">
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="saveAdImage()">💾 Kaydet</button>
+                    <button class="btn btn-warning" onclick="closeModal('addAdImage')">İptal</button>
                 </div>
             </div>
         </div>
@@ -269,12 +295,17 @@
             window.location.href = 'index.html';
         }
 
-        let currentSortBy = 'name';
-        let currentSortOrder = 'asc';
         let cropCanvas, cropCtx, previewCanvas, previewCtx;
         let currentImage, cropStartX = 50, cropStartY = 50, cropSize = 200;
         let isDragging = false, dragStartX, dragStartY;
         let currentGiftUser = null;
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
 
         function loadAdminData() {
             const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -300,6 +331,8 @@
 
             loadUsers();
             loadProfilePictures();
+            loadAdImages();
+            populateBannerSelects();
         }
 
         function loadUsers() {
@@ -666,54 +699,149 @@
             loadProfilePictures();
         }
 
-        function toggleAd(location) {
-            const isEnabled = document.getElementById('ad' + location.charAt(0).toUpperCase() + location.slice(1)).checked;
-            localStorage.setItem('adEnabled_' + location, isEnabled.toString());
-            alert(`${location} reklam alanı ${isEnabled ? 'açıldı' : 'kapatıldı'}!`);
+        // REKLAM GÖRSELLERİ BAŞLANGIÇ
+        function loadAdImages() {
+            const images = JSON.parse(localStorage.getItem('adImages')) || [];
+            const grid = document.getElementById('adImagesGrid');
+
+            if (images.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--warm-brown); grid-column: 1 / -1;">Henüz reklam görseli yok. Yukarıdaki butona tıklayarak ekleyin.</p>';
+                return;
+            }
+
+            let html = '';
+            images.forEach(img => {
+                html += `
+                    <div class="ad-image-item">
+                        <img src="${img.image}" alt="${img.name}" class="ad-image-preview">
+                        <div class="ad-image-name">${img.name}</div>
+                        <button class="btn btn-danger" onclick="deleteAdImage('${img.id}')" style="width: 100%;">🗑️ Sil</button>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
         }
 
-        function handleFileUpload(location) {
-            const fileInput = document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}File`);
-            const file = fileInput.files[0];
+        function openAddAdImage() {
+            document.getElementById('addAdImageModal').classList.add('active');
+        }
+
+        function previewAdImage() {
+            const file = document.getElementById('adImageFile').files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('adImagePreview').src = e.target.result;
+                document.getElementById('adImagePreviewSection').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAdImage() {
+            const name = document.getElementById('adImageName').value.trim();
+            const file = document.getElementById('adImageFile').files[0];
             
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64Image = e.target.result;
-                    const height = location === 'top' ? '90px' : '250px';
-                    const content = `<img src="${base64Image}" style="max-width: 100%; height: ${height}; object-fit: contain;">`;
-                    localStorage.setItem('adBanner_' + location, content);
-                    alert('✅ Görsel başarıyla yüklendi!');
-                };
-                reader.readAsDataURL(file);
+            if (!name) {
+                alert('❌ Lütfen reklam adı girin!');
+                return;
             }
+            
+            if (!file) {
+                alert('❌ Lütfen görsel seçin!');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const images = JSON.parse(localStorage.getItem('adImages')) || [];
+                const newImage = {
+                    id: 'ad_' + Date.now(),
+                    name: name,
+                    image: e.target.result,
+                    createdAt: new Date().toISOString()
+                };
+
+                images.push(newImage);
+                localStorage.setItem('adImages', JSON.stringify(images));
+
+                alert('✅ Reklam görseli başarıyla eklendi!');
+                closeModal('addAdImage');
+                loadAdImages();
+                populateBannerSelects();
+            };
+            reader.readAsDataURL(file);
         }
 
-        function saveAdContent(location) {
-            const imageUrl = document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}Image`).value.trim();
-            const htmlCode = document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}HTML`).value.trim();
+        function deleteAdImage(imgId) {
+            if (!confirm('Bu reklam görselini silmek istediğinizden emin misiniz?')) return;
 
-            let content = '';
-            if (imageUrl) {
-                const height = location === 'top' ? '90px' : '250px';
-                content = `<img src="${imageUrl}" style="max-width: 100%; height: ${height}; object-fit: contain;">`;
-            } else if (htmlCode) {
-                content = htmlCode;
+            const images = JSON.parse(localStorage.getItem('adImages')) || [];
+            const updatedImages = images.filter(i => i.id !== imgId);
+            localStorage.setItem('adImages', JSON.stringify(updatedImages));
+
+            alert('✅ Reklam görseli silindi!');
+            loadAdImages();
+            populateBannerSelects();
+        }
+
+        function populateBannerSelects() {
+            const images = JSON.parse(localStorage.getItem('adImages')) || [];
+            const topSelect = document.getElementById('topBannerSelect');
+            const side1Select = document.getElementById('side1BannerSelect');
+            const side2Select = document.getElementById('side2BannerSelect');
+
+            let options = '<option value="">Görsel Seçin</option>';
+            images.forEach(img => {
+                options += `<option value="${img.id}">${img.name}</option>`;
+            });
+
+            topSelect.innerHTML = options;
+            side1Select.innerHTML = options;
+            side2Select.innerHTML = options;
+
+            const topBanner = localStorage.getItem('selectedBanner_top');
+            const side1Banner = localStorage.getItem('selectedBanner_side1');
+            const side2Banner = localStorage.getItem('selectedBanner_side2');
+
+            if (topBanner) topSelect.value = topBanner;
+            if (side1Banner) side1Select.value = side1Banner;
+            if (side2Banner) side2Select.value = side2Banner;
+        }
+
+        function assignBanner(location) {
+            const selectId = location === 'top' ? 'topBannerSelect' : (location === 'side1' ? 'side1BannerSelect' : 'side2BannerSelect');
+            const selectedId = document.getElementById(selectId).value;
+
+            if (!selectedId) {
+                localStorage.removeItem('adBanner_' + location);
+                localStorage.removeItem('selectedBanner_' + location);
+                alert('✅ Banner kaldırıldı!');
+                return;
             }
+
+            const images = JSON.parse(localStorage.getItem('adImages')) || [];
+            const selectedImage = images.find(i => i.id === selectedId);
+
+            if (!selectedImage) {
+                alert('❌ Görsel bulunamadı!');
+                return;
+            }
+
+            const height = location === 'top' ? '90px' : '250px';
+            const content = `<img src="${selectedImage.image}" style="max-width: 100%; height: ${height}; object-fit: contain;">`;
 
             localStorage.setItem('adBanner_' + location, content);
-            alert('✅ Reklam içeriği kaydedildi!');
+            localStorage.setItem('selectedBanner_' + location, selectedId);
+
+            alert(`✅ ${selectedImage.name} bannera atandı!`);
         }
 
-        function clearAdContent(location) {
-            if (!confirm('Bu reklam içeriğini tamamen silmek istediğinizden emin misiniz?')) return;
-            
-            localStorage.setItem('adBanner_' + location, '');
-            document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}Image`).value = '';
-            document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}HTML`).value = '';
-            document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}File`).value = '';
-            
-            alert('✅ Reklam içeriği temizlendi!');
+        function toggleAd(location) {
+            const checkboxId = location === 'top' ? 'adTop' : (location === 'side1' ? 'adSide1' : 'adSide2');
+            const isEnabled = document.getElementById(checkboxId).checked;
+            localStorage.setItem('adEnabled_' + location, isEnabled.toString());
+            alert(`Banner ${isEnabled ? 'gösteriliyor' : 'gizleniyor'}!`);
         }
 
         function closeModal(type) {
@@ -723,6 +851,10 @@
                 document.getElementById('pictureName').value = '';
                 document.getElementById('pictureIsLocked').checked = false;
                 document.getElementById('cropSection').style.display = 'none';
+            } else if (type === 'addAdImage') {
+                document.getElementById('adImageFile').value = '';
+                document.getElementById('adImageName').value = '';
+                document.getElementById('adImagePreviewSection').style.display = 'none';
             }
         }
 
