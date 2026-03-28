@@ -29,6 +29,8 @@
         .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .btn-danger { background: #e74c3c; color: white; }
         .btn-danger:hover { background: #c0392b; }
+        .btn-success { background: #2ecc71; color: white; }
+        .btn-success:hover { background: #27ae60; }
         .toggle { position: relative; display: inline-block; width: 60px; height: 30px; }
         .toggle input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 30px; transition: 0.4s; }
@@ -36,6 +38,10 @@
         input:checked + .slider { background-color: var(--warm-orange); }
         input:checked + .slider:before { transform: translateX(30px); }
         .ad-control { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--warm-light); border-radius: 10px; margin-bottom: 1rem; }
+        .ad-input-section { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; margin-top: 1rem; }
+        .ad-input-section h4 { color: var(--warm-dark); margin-bottom: 1rem; }
+        .ad-input-section textarea { width: 100%; min-height: 100px; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-family: monospace; font-size: 0.9rem; margin-bottom: 1rem; }
+        .ad-input-section input[type="text"] { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; margin-bottom: 1rem; }
     </style>
 </head>
 <body>
@@ -72,6 +78,7 @@
 
         <div class="card">
             <div class="card-header"><h2>📢 Reklam Yönetimi</h2></div>
+            
             <div class="ad-control">
                 <span><strong>Üst Banner (728x90)</strong></span>
                 <label class="toggle">
@@ -79,19 +86,42 @@
                     <span class="slider"></span>
                 </label>
             </div>
-            <div class="ad-control">
+            <div class="ad-input-section">
+                <h4>Üst Banner İçeriği</h4>
+                <p style="color: var(--warm-brown); margin-bottom: 1rem; font-size: 0.9rem;">Görsel URL'si veya HTML/AdSense kodu girin:</p>
+                <input type="text" id="adTopImage" placeholder="Görsel URL'si (örn: https://example.com/banner.jpg)">
+                <textarea id="adTopHTML" placeholder="veya HTML/AdSense kodu buraya yapıştırın"></textarea>
+                <button class="btn btn-success" onclick="saveAdContent('top')">💾 Kaydet</button>
+            </div>
+
+            <div class="ad-control" style="margin-top: 2rem;">
                 <span><strong>Sidebar Reklam 1 (300x250)</strong></span>
                 <label class="toggle">
                     <input type="checkbox" id="adSide1" onchange="toggleAd('side1')" checked>
                     <span class="slider"></span>
                 </label>
             </div>
-            <div class="ad-control">
+            <div class="ad-input-section">
+                <h4>Sidebar 1 İçeriği</h4>
+                <p style="color: var(--warm-brown); margin-bottom: 1rem; font-size: 0.9rem;">Görsel URL'si veya HTML/AdSense kodu girin:</p>
+                <input type="text" id="adSide1Image" placeholder="Görsel URL'si (örn: https://example.com/sidebar.jpg)">
+                <textarea id="adSide1HTML" placeholder="veya HTML/AdSense kodu buraya yapıştırın"></textarea>
+                <button class="btn btn-success" onclick="saveAdContent('side1')">💾 Kaydet</button>
+            </div>
+
+            <div class="ad-control" style="margin-top: 2rem;">
                 <span><strong>Sidebar Reklam 2 (300x250)</strong></span>
                 <label class="toggle">
                     <input type="checkbox" id="adSide2" onchange="toggleAd('side2')" checked>
                     <span class="slider"></span>
                 </label>
+            </div>
+            <div class="ad-input-section">
+                <h4>Sidebar 2 İçeriği</h4>
+                <p style="color: var(--warm-brown); margin-bottom: 1rem; font-size: 0.9rem;">Görsel URL'si veya HTML/AdSense kodu girin:</p>
+                <input type="text" id="adSide2Image" placeholder="Görsel URL'si (örn: https://example.com/sidebar.jpg)">
+                <textarea id="adSide2HTML" placeholder="veya HTML/AdSense kodu buraya yapıştırın"></textarea>
+                <button class="btn btn-success" onclick="saveAdContent('side2')">💾 Kaydet</button>
             </div>
         </div>
 
@@ -146,7 +176,6 @@
             const users = JSON.parse(localStorage.getItem('users')) || [];
             let totalQuestions = 0, totalDenemeler = 0, activeToday = 0;
             const today = new Date().toISOString().split('T')[0];
-
             const userData = [];
 
             users.forEach(user => {
@@ -162,7 +191,6 @@
 
                 totalQuestions += userTotalQuestions;
                 totalDenemeler += denemeData.length;
-
                 if (lastActivity === today) activeToday++;
 
                 userData.push({
@@ -207,7 +235,6 @@
                     </tr>
                 `;
             });
-
             tbody.innerHTML = html;
         }
 
@@ -233,7 +260,6 @@
                     </tr>
                 `;
             });
-
             tbody.innerHTML = html;
         }
 
@@ -243,18 +269,51 @@
             alert(`${location} reklam alanı ${isEnabled ? 'açıldı' : 'kapatıldı'}!`);
         }
 
+        function saveAdContent(location) {
+            const imageUrl = document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}Image`).value.trim();
+            const htmlCode = document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}HTML`).value.trim();
+
+            let content = '';
+            if (imageUrl) {
+                const height = location === 'top' ? '90px' : '250px';
+                content = `<img src="${imageUrl}" style="max-width: 100%; height: ${height}; object-fit: contain;">`;
+            } else if (htmlCode) {
+                content = htmlCode;
+            } else {
+                alert('Lütfen görsel URL\'si veya HTML kodu girin!');
+                return;
+            }
+
+            localStorage.setItem('adBanner_' + location, content);
+            alert('Reklam içeriği kaydedildi!');
+        }
+
+        function loadAdInputs() {
+            ['top', 'side1', 'side2'].forEach(location => {
+                const savedContent = localStorage.getItem('adBanner_' + location);
+                if (savedContent && savedContent.startsWith('<img')) {
+                    const match = savedContent.match(/src="([^"]*)"/);
+                    if (match) {
+                        document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}Image`).value = match[1];
+                    }
+                } else if (savedContent) {
+                    document.getElementById(`ad${location.charAt(0).toUpperCase() + location.slice(1)}HTML`).value = savedContent;
+                }
+            });
+        }
+
         function logout() {
             localStorage.removeItem('isAdmin');
             localStorage.removeItem('currentUser');
             window.location.href = 'index.html';
         }
 
-        // Load saved ad settings
         document.getElementById('adTop').checked = localStorage.getItem('adEnabled_top') !== 'false';
         document.getElementById('adSide1').checked = localStorage.getItem('adEnabled_side1') !== 'false';
         document.getElementById('adSide2').checked = localStorage.getItem('adEnabled_side2') !== 'false';
 
         loadAdminData();
+        loadAdInputs();
     </script>
 </body>
 </html>

@@ -8,12 +8,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f;
-            --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c;
-        }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, var(--warm-light) 0%, var(--warm-cream) 100%); min-height: 100vh; }
-        header { background: rgba(61, 50, 40, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        :root { --warm-dark: #3d3228; --warm-brown: #7d5a3f; --warm-tan: #b8905f; --warm-cream: #e6d4b8; --warm-light: #f5ede0; --warm-orange: #d97449; --warm-peach: #e8a87c; }
+        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, var(--warm-light), var(--warm-cream)); min-height: 100vh; }
+        header { background: rgba(61, 50, 40, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; box-shadow: 0 2px 20px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         nav { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 1.5rem; font-weight: bold; color: var(--warm-peach); display: flex; align-items: center; gap: 0.5rem; text-decoration: none; cursor: pointer; }
         .logo::before { content: "📚"; font-size: 1.8rem; }
@@ -21,7 +18,7 @@
         .streak-badge { background: linear-gradient(135deg, #ff6b6b, #ff8e53); color: white; padding: 0.4rem 0.8rem; border-radius: 15px; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 0.3rem; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--warm-orange); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; cursor: pointer; transition: transform 0.3s; }
         .user-avatar:hover { transform: scale(1.1); }
-        .profile-popup { display: none; position: absolute; top: 60px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 250px; z-index: 1000; animation: slideDown 0.3s ease; }
+        .profile-popup { display: none; position: absolute; top: 60px; right: 0; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 1.5rem; min-width: 250px; z-index: 1000; animation: slideDown 0.3s; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .profile-popup.active { display: block; }
         .profile-popup h3 { color: var(--warm-dark); margin-bottom: 1rem; }
@@ -30,18 +27,22 @@
         .nav-menu { display: flex; gap: 2rem; list-style: none; }
         .nav-menu a { color: var(--warm-cream); text-decoration: none; font-weight: 500; transition: color 0.3s; }
         .nav-menu a:hover { color: var(--warm-peach); }
+        .top-ad { background: rgba(255, 255, 255, 0.6); padding: 1rem; text-align: center; border-bottom: 1px solid rgba(125, 90, 63, 0.1); display: none; }
+        .top-ad.show { display: block; }
+        .ad-banner { max-width: 1400px; margin: 0 auto; min-height: 90px; display: flex; align-items: center; justify-content: center; }
         .container { max-width: 1400px; margin: 0 auto; padding: 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2rem; }
         .main-content { min-width: 0; }
-        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
-        .tab { flex: 1; padding: 1rem 2rem; background: transparent; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
+        .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; background: white; padding: 1rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
+        .tab { padding: 0.8rem 1.5rem; background: transparent; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600; color: var(--warm-brown); cursor: pointer; transition: all 0.3s; }
+        .tab.mini { font-size: 0.85rem; padding: 0.6rem 1rem; }
         .tab.active { background: var(--warm-orange); color: white; box-shadow: 0 4px 15px rgba(217, 116, 73, 0.3); }
         .tab:hover:not(.active) { background: var(--warm-light); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); margin-bottom: 2rem; }
+        .card { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); margin-bottom: 2rem; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid var(--warm-light); }
         .card-title { font-size: 1.5rem; color: var(--warm-dark); display: flex; align-items: center; gap: 0.5rem; }
-        .stopwatch { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; padding: 2rem; border-radius: 15px; text-align: center; margin-bottom: 2rem; }
+        .stopwatch { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; padding: 2rem; border-radius: 15px; text-align: center; }
         .stopwatch-display { font-size: 3rem; font-weight: bold; margin: 1rem 0; font-family: 'Courier New', monospace; }
         .stopwatch-buttons { display: flex; gap: 1rem; justify-content: center; }
         .stopwatch-btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; background: white; color: var(--warm-orange); transition: all 0.3s; }
@@ -49,7 +50,7 @@
         .question-entry { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .subject-input { background: var(--warm-light); padding: 1rem; border-radius: 10px; border-left: 4px solid var(--warm-orange); }
         .subject-input label { display: block; font-weight: 600; color: var(--warm-brown); margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .subject-input input { width: 100%; padding: 0.6rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-size: 1rem; transition: border-color 0.3s; }
+        .subject-input input { width: 100%; padding: 0.6rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-size: 1rem; }
         .subject-input input:focus { outline: none; border-color: var(--warm-orange); }
         .button-group { display: flex; gap: 1rem; }
         .btn { padding: 0.8rem 2rem; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
@@ -63,7 +64,7 @@
         .filter-chip { padding: 0.5rem 1rem; border: 2px solid var(--warm-cream); border-radius: 20px; background: white; color: var(--warm-brown); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s; }
         .filter-chip:hover { border-color: var(--warm-tan); }
         .filter-chip.active { background: var(--warm-orange); color: white; border-color: var(--warm-orange); }
-        .monthly-total { background: linear-gradient(135deg, var(--warm-orange) 0%, var(--warm-peach) 100%); color: white; padding: 1.5rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem; }
+        .monthly-total { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); color: white; padding: 1.5rem; border-radius: 15px; text-align: center; margin-bottom: 1.5rem; }
         .monthly-total h3 { font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.9; }
         .monthly-total .total-number { font-size: 3rem; font-weight: bold; }
         .date-selector { display: flex; gap: 1rem; align-items: center; }
@@ -72,21 +73,23 @@
         .input-group { background: var(--warm-light); padding: 1.5rem; border-radius: 10px; }
         .input-group label { display: block; font-weight: 600; color: var(--warm-brown); margin-bottom: 0.5rem; }
         .input-group input { width: 100%; padding: 0.8rem; border: 2px solid var(--warm-cream); border-radius: 8px; font-size: 1.1rem; }
-        .results-display { background: linear-gradient(135deg, var(--warm-orange) 0%, var(--warm-peach) 100%); padding: 2rem; border-radius: 15px; color: white; margin-top: 1.5rem; display: none; }
+        .results-display { background: linear-gradient(135deg, var(--warm-orange), var(--warm-peach)); padding: 2rem; border-radius: 15px; color: white; margin-top: 1.5rem; display: none; }
         .results-display.show { display: block; }
-        .result-item { display: flex; justify-content: space-between; padding: 1rem; background: rgba(255, 255, 255, 0.2); border-radius: 10px; margin-bottom: 1rem; }
+        .result-item { display: flex; justify-content: space-between; padding: 1rem; background: rgba(255,255,255,0.2); border-radius: 10px; margin-bottom: 1rem; }
         .result-value { font-size: 1.3rem; font-weight: bold; }
         .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
-        .stats-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+        .sidebar-ad { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: center; display: none; }
+        .sidebar-ad.show { display: block; }
+        .stats-card { background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); }
         .stats-card h3 { color: var(--warm-dark); margin-bottom: 1rem; font-size: 1.1rem; }
         .stat-row { display: flex; justify-content: space-between; padding: 0.8rem; background: var(--warm-light); border-radius: 8px; margin-bottom: 0.5rem; }
         .stat-name { color: var(--warm-brown); font-weight: 600; font-size: 0.9rem; }
         .stat-value { color: var(--warm-orange); font-weight: bold; }
-        .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; animation: slideInRight 0.3s ease; }
+        .notification { position: fixed; top: 20px; right: 20px; background: white; padding: 1.5rem; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; min-width: 300px; animation: slideInRight 0.3s; }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
         .notification.success { border-left: 5px solid #2ecc71; }
         .notification.error { border-left: 5px solid #e74c3c; }
-        .notification.hide { animation: slideOutRight 0.3s ease; }
+        .notification.hide { animation: slideOutRight 0.3s; }
         @keyframes slideOutRight { to { opacity: 0; transform: translateX(100px); } }
         @media (max-width: 1024px) { .container { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .question-entry, .deneme-entry { grid-template-columns: 1fr; } .button-group { flex-direction: column; } }
@@ -116,14 +119,19 @@
         </nav>
     </header>
 
+    <div class="top-ad" id="topAd">
+        <div class="ad-banner" id="topBanner"></div>
+    </div>
+
     <div class="container">
         <div class="main-content">
             <div class="tabs">
                 <button class="tab active" onclick="switchTab('soru')">📊 Soru Takibi</button>
                 <button class="tab" onclick="switchTab('deneme')">📝 Deneme Takibi</button>
+                <button class="tab mini" onclick="switchTab('kronometre')">⏱️ Kronometre</button>
             </div>
 
-            <div id="soru-tab" class="tab-content active">
+            <div id="kronometre-tab" class="tab-content">
                 <div class="stopwatch">
                     <h2>⏱️ Kronometre</h2>
                     <div class="stopwatch-display" id="stopwatchDisplay">00:00:00</div>
@@ -133,7 +141,9 @@
                         <button class="stopwatch-btn" onclick="resetStopwatch()">🔄 Sıfırla</button>
                     </div>
                 </div>
+            </div>
 
+            <div id="soru-tab" class="tab-content active">
                 <div class="card">
                     <div class="card-header"><h2 class="card-title">📝 Bugün Çözdüğüm Sorular</h2></div>
                     <div class="question-entry">
@@ -154,10 +164,7 @@
                         <h2 class="card-title">📈 Aylık İlerleme</h2>
                         <div class="date-selector">
                             <select id="monthSelect" onchange="updateChart()">
-                                <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
-                                <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
-                                <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
-                                <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
+                                <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option><option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option><option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option><option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
                             </select>
                             <select id="yearSelect" onchange="updateChart()">
                                 <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
@@ -196,10 +203,7 @@
                         <h2 class="card-title">📊 Net Grafiği</h2>
                         <div class="date-selector">
                             <select id="denemeMonthSelect" onchange="updateDenemeChart()">
-                                <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option>
-                                <option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option>
-                                <option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option>
-                                <option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
+                                <option value="0">Ocak</option><option value="1">Şubat</option><option value="2">Mart</option><option value="3">Nisan</option><option value="4">Mayıs</option><option value="5">Haziran</option><option value="6">Temmuz</option><option value="7">Ağustos</option><option value="8">Eylül</option><option value="9">Ekim</option><option value="10">Kasım</option><option value="11">Aralık</option>
                             </select>
                             <select id="denemeYearSelect" onchange="updateDenemeChart()">
                                 <option value="2024">2024</option><option value="2025" selected>2025</option><option value="2026">2026</option>
@@ -217,6 +221,7 @@
         </div>
 
         <aside class="sidebar">
+            <div class="sidebar-ad" id="sideAd1"></div>
             <div class="stats-card">
                 <h3>📊 Bugünün Özeti</h3>
                 <div class="stat-row"><span class="stat-name">Türkçe</span><span class="stat-value" id="today-turkce">0</span></div>
@@ -225,6 +230,7 @@
                 <div class="stat-row"><span class="stat-name">Coğrafya</span><span class="stat-value" id="today-cografya">0</span></div>
                 <div class="stat-row"><span class="stat-name">Vatandaşlık</span><span class="stat-value" id="today-vatandaslik">0</span></div>
             </div>
+            <div class="sidebar-ad" id="sideAd2"></div>
         </aside>
     </div>
 
@@ -241,6 +247,33 @@
         let currentFilter = 'all';
         let chart = null, denemeChart = null;
         let stopwatchInterval = null, stopwatchTime = 0, isRunning = false;
+
+        // Load ad settings
+        function loadAdSettings() {
+            const topEnabled = localStorage.getItem('adEnabled_top') !== 'false';
+            const side1Enabled = localStorage.getItem('adEnabled_side1') !== 'false';
+            const side2Enabled = localStorage.getItem('adEnabled_side2') !== 'false';
+
+            if (topEnabled) {
+                document.getElementById('topAd').classList.add('show');
+                const topBanner = localStorage.getItem('adBanner_top');
+                if (topBanner) document.getElementById('topBanner').innerHTML = topBanner;
+            }
+            if (side1Enabled) {
+                const side1 = document.getElementById('sideAd1');
+                side1.classList.add('show');
+                const side1Banner = localStorage.getItem('adBanner_side1');
+                if (side1Banner) side1.innerHTML = side1Banner;
+                else side1.innerHTML = '<div style="height:250px; display:flex; align-items:center; justify-content:center; color: var(--warm-brown);">📢 Reklam Alanı (300x250)</div>';
+            }
+            if (side2Enabled) {
+                const side2 = document.getElementById('sideAd2');
+                side2.classList.add('show');
+                const side2Banner = localStorage.getItem('adBanner_side2');
+                if (side2Banner) side2.innerHTML = side2Banner;
+                else side2.innerHTML = '<div style="height:250px; display:flex; align-items:center; justify-content:center; color: var(--warm-brown);">📢 Reklam Alanı (300x250)</div>';
+            }
+        }
 
         function goHome() { window.location.href = 'index.html'; }
         function logout() { localStorage.removeItem('currentUser'); window.location.href = 'index.html'; }
@@ -360,17 +393,23 @@
             let monthlyTotal = 0;
 
             if (currentFilter === 'all') {
-                const subjects = ['turkce', 'matematik', 'tarih', 'cografya', 'vatandaslik'];
-                const colors = ['#e74c3c', '#3498db', '#f39c12', '#2ecc71', '#9b59b6'];
-                const names = ['Türkçe', 'Matematik', 'Tarih', 'Coğrafya', 'Vatandaşlık'];
-                subjects.forEach((subject, index) => {
-                    const data = labels.map(day => {
-                        const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                        const value = questionsData[date]?.[subject] || 0;
-                        monthlyTotal += value;
-                        return value;
-                    });
-                    datasets.push({label: names[index], data: data, borderColor: colors[index], backgroundColor: 'transparent', tension: 0.4, fill: false});
+                // TEK ÇİZGİ - TOPLAM
+                const data = labels.map(day => {
+                    const date = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const dayData = questionsData[date] || {};
+                    const total = (dayData.turkce||0) + (dayData.matematik||0) + (dayData.tarih||0) + (dayData.cografya||0) + (dayData.vatandaslik||0);
+                    monthlyTotal += total;
+                    return total;
+                });
+
+                datasets.push({
+                    label: 'Toplam Soru',
+                    data: data,
+                    borderColor: '#d97449',
+                    backgroundColor: 'transparent',
+                    tension: 0.4,
+                    fill: false,
+                    borderWidth: 3
                 });
             } else {
                 const colors = {turkce: '#e74c3c', matematik: '#3498db', tarih: '#f39c12', cografya: '#2ecc71', vatandaslik: '#9b59b6'};
@@ -381,7 +420,15 @@
                     monthlyTotal += value;
                     return value;
                 });
-                datasets.push({label: names[currentFilter], data: data, borderColor: colors[currentFilter], backgroundColor: 'transparent', tension: 0.4, fill: false});
+
+                datasets.push({
+                    label: names[currentFilter],
+                    data: data,
+                    borderColor: colors[currentFilter],
+                    backgroundColor: 'transparent',
+                    tension: 0.4,
+                    fill: false
+                });
             }
 
             document.getElementById('monthlyTotal').textContent = monthlyTotal;
@@ -495,7 +542,13 @@
             const user = users.find(u => u.name === currentUser);
             if (user && user.referralCode) {
                 const refLink = `${window.location.origin}/index.html?ref=${user.referralCode}`;
-                prompt('Referans Linkiniz:', refLink);
+                const textarea = document.createElement('textarea');
+                textarea.value = refLink;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showNotification('Referans linki kopyalandı!', 'success');
             }
         }
 
@@ -537,6 +590,7 @@
             document.getElementById('yearSelect').value = now.getFullYear();
             document.getElementById('denemeMonthSelect').value = now.getMonth();
             document.getElementById('denemeYearSelect').value = now.getFullYear();
+            loadAdSettings();
             updateChart();
             updateDenemeChart();
             loadTodayStats();
