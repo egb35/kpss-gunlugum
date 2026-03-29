@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>KPSS Sınıf Takip Sistemi - KPSS Günlüğüm</title>
+    <title>YKS Sınıf Takip Sistemi - YKS Günlüğüm</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -146,7 +146,7 @@
 <body>
     <header>
         <nav>
-            <div class="logo" onclick="location.href='dashboard.html'">KPSS Günlüğüm</div>
+            <div class="logo" onclick="location.href='dashboard.html'">YKS Günlüğüm</div>
             <ul class="nav-menu">
                 <li><a href="dashboard.html">📊 Dashboard</a></li>
                 <li><a href="friends.html">👥 Arkadaşlar</a></li>
@@ -215,7 +215,7 @@
         <div class="modal-content">
             <h2>🏫 Sınıf Oluştur</h2>
             <p style="color:var(--warm-brown);margin-bottom:1rem;">Sınıf adını girin. Kod otomatik oluşturulacak.</p>
-            <input type="text" id="classroomNameInput" placeholder="Sınıf adı (örn: 2025 KPSS Hazırlık)" maxlength="50">
+            <input type="text" id="classroomNameInput" placeholder="Sınıf adı (örn: 2025 YKS Hazırlık)" maxlength="50">
             <div class="modal-actions">
                 <button class="btn" onclick="createClassroom()">Oluştur</button>
                 <button class="btn btn-secondary" onclick="closeModal('createClassroom')">İptal</button>
@@ -369,17 +369,13 @@
 
         function calcStudentScore(memberName, dateRange) {
             const qd = JSON.parse(localStorage.getItem('questionsData_' + memberName)) || {};
-            let t = 0, m = 0, ta = 0, c = 0, v = 0;
+            let total = 0;
             Object.entries(qd).forEach(([date, data]) => {
                 if (date >= dateRange.start && date <= dateRange.end) {
-                    t += data.turkce || 0;
-                    m += data.matematik || 0;
-                    ta += data.tarih || 0;
-                    c += data.cografya || 0;
-                    v += data.vatandaslik || 0;
+                    total += Object.keys(data).filter(k => k.startsWith('tyt_') || k.startsWith('ayt_')).reduce((s, k) => s + (data[k] || 0), 0);
                 }
             });
-            return { turkce: t, matematik: m, tarih: ta, cografya: c, vatandaslik: v, total: t+m+ta+c+v };
+            return { total };
         }
 
         function generateMonthSelects(clsId) {
@@ -404,14 +400,11 @@
             let html = `<div style="overflow-x:auto;"><table class="progress-table">
                 <thead><tr>
                     <th>Öğrenci</th>
-                    <th>Türkçe</th><th>Mat</th><th>Tarih</th><th>Coğ</th><th>Vat</th>
-                    <th>Toplam</th>
+                    <th>Toplam Soru</th>
                 </tr></thead><tbody>`;
             rows.forEach(s => {
                 html += `<tr>
                     <td>${s.name}</td>
-                    <td>${s.turkce}</td><td>${s.matematik}</td><td>${s.tarih}</td>
-                    <td>${s.cografya}</td><td>${s.vatandaslik}</td>
                     <td class="total-cell">${s.total}</td>
                 </tr>`;
             });
@@ -582,6 +575,9 @@
             cls.pendingRequests = cls.pendingRequests.filter(r => r !== studentName);
             if (!cls.members.includes(studentName)) cls.members.push(studentName);
             saveClassrooms(classrooms);
+            const stuUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const stuIdx = stuUsers.findIndex(u => u.name === studentName);
+            if (stuIdx !== -1) { stuUsers[stuIdx].isPremium = true; localStorage.setItem('users', JSON.stringify(stuUsers)); }
             showNotification(`${studentName} sınıfa kabul edildi.`, 'success');
             loadTeacherView();
         }

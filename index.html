@@ -35,8 +35,8 @@
                 "@type": "WebSite",
                 "@id": "https://kpssgunlugum.com.tr/#website",
                 "url": "https://kpssgunlugum.com.tr/",
-                "name": "KPSS Günlüğüm",
-                "description": "Ücretsiz KPSS hazırlık ve çalışma takip platformu",
+                "name": "YKS Günlüğüm",
+                "description": "Ücretsiz YKS hazırlık ve çalışma takip platformu",
                 "inLanguage": "tr-TR",
                 "potentialAction": {
                     "@type": "SearchAction",
@@ -47,19 +47,19 @@
             {
                 "@type": "Organization",
                 "@id": "https://kpssgunlugum.com.tr/#organization",
-                "name": "KPSS Günlüğüm",
+                "name": "YKS Günlüğüm",
                 "url": "https://kpssgunlugum.com.tr/",
                 "logo": {
                     "@type": "ImageObject",
                     "url": "https://kpssgunlugum.com.tr/og-image.jpg"
                 },
-                "description": "KPSS sınavına hazırlanan adaylar için ücretsiz soru takibi, deneme analizi ve çalışma grubu platformu",
+                "description": "YKS sınavına hazırlanan adaylar için ücretsiz soru takibi, deneme analizi ve çalışma grubu platformu",
                 "sameAs": []
             },
             {
                 "@type": "SoftwareApplication",
                 "@id": "https://kpssgunlugum.com.tr/#app",
-                "name": "KPSS Günlüğüm",
+                "name": "YKS Günlüğüm",
                 "applicationCategory": "EducationApplication",
                 "operatingSystem": "Web",
                 "offers": [
@@ -138,7 +138,7 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="logo">KPSS Günlüğüm</div>
+        <div class="logo">YKS Günlüğüm</div>
         <ul class="nav-links">
             <li><a href="#anasayfa">Ana Sayfa</a></li>
             <li><a href="#ozellikler">Özellikler</a></li>
@@ -152,8 +152,8 @@
 
     <section id="anasayfa" class="hero">
         <div class="hero-text">
-            <h1>KPSS Yolculuğunuzda Yanınızdayız</h1>
-            <p>Her gün attığınız adımları takip edin, ilerlemenizi görün, hedefinize ulaşın. Günlük soru çözümlerinizi ve deneme sonuçlarınızı kolayca kaydedin.</p>
+            <h1>YKS Yolculuğunuzda Yanınızdayız</h1>
+            <p>Her gün attığınız adımları takip edin, ilerlemenizi görün, hedefinize ulaşın. TYT ve AYT soru çözümlerinizi ve deneme sonuçlarınızı kolayca kaydedin.</p>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0;">
                 <div style="background: white; padding: 1.5rem; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
@@ -174,17 +174,17 @@
     </section>
 
     <section id="ozellikler" class="features">
-        <h2>Neden KPSS Günlüğüm?</h2>
+        <h2>Neden YKS Günlüğüm?</h2>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <div class="feature-title">Günlük Soru Takibi</div>
-                <div class="feature-desc">Türkçe, Matematik, Tarih, Coğrafya ve Vatandaşlık sorularını günlük olarak kaydedin, gelişiminizi görün.</div>
+                <div class="feature-title">TYT & AYT Soru Takibi</div>
+                <div class="feature-desc">TYT ve AYT derslerini ayrı ayrı kaydedin. Sayısal, Eşit Ağırlık ve Sözel alanlarına göre özelleştirilmiş takip.</div>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📝</div>
                 <div class="feature-title">Deneme Analizi</div>
-                <div class="feature-desc">Deneme sınavlarınızı kaydedin, net sayılarınızı takip edin, grafik üzerinde gelişiminizi izleyin.</div>
+                <div class="feature-desc">TYT ve AYT denemelerinizi ayrı kaydedin, net sayılarınızı takip edin, grafik üzerinde gelişiminizi izleyin.</div>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🔥</div>
@@ -229,6 +229,15 @@
             <div class="form-group"><label>E-posta</label><input type="email" id="registerEmail" placeholder="ornek@email.com"></div>
             <div class="form-group"><label>Şifre</label><input type="password" id="registerPassword" placeholder="••••••••"></div>
             <div class="form-group"><label>Şifre Tekrar</label><input type="password" id="registerPasswordConfirm" placeholder="Şifrenizi tekrar girin"></div>
+            <div class="form-group">
+                <label>AYT Alanı (isteğe bağlı)</label>
+                <select id="registerAytType" style="width:100%;padding:0.8rem;border:2px solid var(--warm-cream);border-radius:10px;font-size:1rem;color:var(--warm-brown);">
+                    <option value="">Sonra Seçeceğim</option>
+                    <option value="sayisal">🔢 Sayısal</option>
+                    <option value="esit_agirlik">⚖️ Eşit Ağırlık</option>
+                    <option value="sozel">📚 Sözel</option>
+                </select>
+            </div>
             <button class="btn" onclick="register()">Kayıt Ol</button>
             <div class="form-footer">Zaten hesabınız var mı? <a onclick="showLogin()">Giriş Yap</a></div>
         </div>
@@ -309,6 +318,8 @@
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
             localStorage.setItem('ownedProfilePictures_' + name, JSON.stringify(['default']));
+            const aytType = document.getElementById('registerAytType')?.value;
+            if (aytType) localStorage.setItem('aytType_' + name, aytType);
             const urlParams = new URLSearchParams(window.location.search);
             const refCode = urlParams.get('ref');
             if (refCode) {
@@ -338,8 +349,24 @@
         const adminExists = (JSON.parse(localStorage.getItem('users')) || []).find(u => u.name === 'admin');
         if (!adminExists) {
             const users = JSON.parse(localStorage.getItem('users')) || [];
-            users.push({ name: 'admin', email: 'admin@kpss.com', password: 'admin2254', createdAt: new Date().toISOString(), isPremium: true, referralCode: 'ADMIN' });
+            users.push({ name: 'admin', email: 'admin@yks.com', password: 'admin2254', createdAt: new Date().toISOString(), isPremium: true, referralCode: 'ADMIN' });
             localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        if (!localStorage.getItem('yksSystemInit')) {
+            const allUsers = JSON.parse(localStorage.getItem('users')) || [];
+            const adminUser = allUsers.find(u => u.name === 'admin');
+            const newUsers = adminUser ? [adminUser] : [];
+            localStorage.setItem('users', JSON.stringify(newUsers));
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key !== 'users' && key !== 'yksSystemInit' && !key.startsWith('adEnabled') && !key.startsWith('adBanner') && !key.startsWith('profilePictures')) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+            localStorage.setItem('yksSystemInit', '1');
         }
 
         function updateLiveCounters() {

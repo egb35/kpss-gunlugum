@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="KPSS başarı rozetleri ve ödüller. Çalışma hedeflerinize ulaşın, özel rozetler kazanın. Motivasyon için gamification sistemi.">
-    <meta name="keywords" content="KPSS başarı, rozet sistemi, KPSS ödül, başarı rozeti, KPSS gamification">
-    <meta name="author" content="KPSS Günlüğüm">
+    <meta name="description" content="YKS başarı rozetleri ve ödüller. Çalışma hedeflerinize ulaşın, özel rozetler kazanın. Motivasyon için gamification sistemi.">
+    <meta name="keywords" content="YKS başarı, rozet sistemi, YKS ödül, başarı rozeti, YKS gamification">
+    <meta name="author" content="YKS Günlüğüm">
     <meta name="robots" content="noindex, nofollow">
-    <meta property="og:title" content="KPSS Başarılar ve Rozetler - KPSS Günlüğüm">
+    <meta property="og:title" content="YKS Başarılar ve Rozetler - YKS Günlüğüm">
     <meta property="og:description" content="Çalışma hedeflerinize ulaşın ve özel başarı rozetleri kazanın">
     <meta property="og:type" content="website">
-    <title>KPSS Başarılar | Rozet Sistemi - KPSS Günlüğüm</title>
+    <title>YKS Başarılar | Rozet Sistemi - YKS Günlüğüm</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -69,7 +69,7 @@
 <body>
     <header>
         <nav>
-            <div class="logo" onclick="location.href='dashboard.html'">KPSS Günlüğüm</div>
+            <div class="logo" onclick="location.href='dashboard.html'">YKS Günlüğüm</div>
             <ul class="nav-menu">
                 <li><a href="dashboard.html">📊 Dashboard</a></li>
                 <li><a href="friends.html">👥 Arkadaşlar</a></li>
@@ -178,7 +178,7 @@
 
             let totalQuestions = 0;
             Object.values(questionsData).forEach(day => {
-                totalQuestions += (day.turkce||0) + (day.matematik||0) + (day.tarih||0) + (day.cografya||0) + (day.vatandaslik||0);
+                totalQuestions += Object.keys(day).filter(k => k.startsWith('tyt_') || k.startsWith('ayt_')).reduce((s, k) => s + (day[k] || 0), 0);
             });
 
             const achievements = [

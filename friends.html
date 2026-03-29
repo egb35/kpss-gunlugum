@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="KPSS çalışma arkadaşları ekleyin, referans linki paylaşın. Arkadaşlarınızla birlikte KPSS'ye hazırlanın ve motivasyonunuzu artırın.">
-    <meta name="keywords" content="KPSS arkadaş, çalışma arkadaşı, KPSS referans, birlikte çalışma, KPSS arkadaşlık">
-    <meta name="author" content="KPSS Günlüğüm">
+    <meta name="description" content="YKS çalışma arkadaşları ekleyin, referans linki paylaşın. Arkadaşlarınızla birlikte YKS'ye hazırlanın ve motivasyonunuzu artırın.">
+    <meta name="keywords" content="YKS arkadaş, çalışma arkadaşı, YKS referans, birlikte çalışma, YKS arkadaşlık">
+    <meta name="author" content="YKS Günlüğüm">
     <meta name="robots" content="noindex, nofollow">
-    <meta property="og:title" content="KPSS Arkadaşlar - KPSS Günlüğüm">
-    <meta property="og:description" content="Arkadaşlarınızı ekleyin ve birlikte KPSS'ye hazırlanın">
+    <meta property="og:title" content="YKS Arkadaşlar - YKS Günlüğüm">
+    <meta property="og:description" content="Arkadaşlarınızı ekleyin ve birlikte YKS'ye hazırlanın">
     <meta property="og:type" content="website">
-    <title>KPSS Arkadaşlarım | Referans Sistemi - KPSS Günlüğüm</title>
+    <title>YKS Arkadaşlarım | Referans Sistemi - YKS Günlüğüm</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -76,7 +76,7 @@
 <body>
     <header>
         <nav>
-            <div class="logo" onclick="location.href='dashboard.html'">KPSS Günlüğüm</div>
+            <div class="logo" onclick="location.href='dashboard.html'">YKS Günlüğüm</div>
             <ul class="nav-menu">
                 <li><a href="dashboard.html">📊 Dashboard</a></li>
                 <li><a href="friends.html">👥 Arkadaşlar</a></li>
@@ -198,7 +198,7 @@
             friends.forEach(friend => {
                 const qData = JSON.parse(localStorage.getItem('questionsData_' + friend)) || {};
                 const td = qData[today] || {};
-                const todayTotal = (td.turkce||0) + (td.matematik||0) + (td.tarih||0) + (td.cografya||0) + (td.vatandaslik||0);
+                const todayTotal = Object.keys(td).filter(k => k.startsWith('tyt_') || k.startsWith('ayt_')).reduce((s, k) => s + (td[k] || 0), 0);
                 const todayBadge = todayTotal > 0
                     ? `<span style="background:linear-gradient(135deg,var(--warm-orange),var(--warm-peach));color:white;padding:0.2rem 0.6rem;border-radius:12px;font-size:0.78rem;font-weight:bold;">📚 ${todayTotal} soru</span>`
                     : `<span style="background:var(--warm-cream);color:var(--warm-brown);padding:0.2rem 0.6rem;border-radius:12px;font-size:0.78rem;">Bugün çalışmadı</span>`;
